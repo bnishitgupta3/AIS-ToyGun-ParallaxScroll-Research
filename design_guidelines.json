@@ -1,0 +1,87 @@
+{
+  "theme": "Light",
+  "archetype": "Archetype 4 (Swiss & High-Contrast)",
+  "colors": {
+    "background": "#FAFAFA",
+    "surface": "#FFFFFF",
+    "text_primary": "#0A0A0A",
+    "text_secondary": "#52525B",
+    "accent_orange": "#FF3B30",
+    "accent_orange_hover": "#D32F2F",
+    "tactical_black": "#121212",
+    "border": "#E4E4E7"
+  },
+  "typography": {
+    "heading_font": "Cabinet Grotesk",
+    "body_font": "Satoshi",
+    "hierarchy": {
+      "h1": "text-4xl sm:text-5xl lg:text-6xl tracking-tighter font-black uppercase leading-none text-text_primary",
+      "h2": "text-3xl sm:text-4xl tracking-tight font-bold text-text_primary",
+      "h3": "text-xl sm:text-2xl font-semibold text-text_primary",
+      "body": "text-base leading-relaxed text-text_secondary",
+      "overline": "text-sm uppercase tracking-[0.2em] font-bold text-accent_orange"
+    }
+  },
+  "layout_spacing": {
+    "container_padding": "px-6 md:px-12 lg:px-24",
+    "section_spacing": "py-24 md:py-32",
+    "grid_system": "grid-cols-1 md:grid-cols-12 gap-8"
+  },
+  "motion_and_interactions": {
+    "scroll_timeline": "GSAP ScrollTrigger pinned timeline (scrub: true). Sequence: 1. Hero wordmark overlays the canvas. 2. Scroll: Product zooms into center viewport. 3. Scroll: 360-degree rotation of product and transition right. 4. Specs panel fades in on the left side.",
+    "parallax": "Floating HTML circular/square elements or R3F particles in background moving at different speeds mapped to scroll.",
+    "fire_interaction": "Clicking FIRE button triggers an animated water stream (R3F Instances/Sparkles) from the gun nozzle AND a flickering orange PointLight at the nozzle. Resets after 2-3 seconds.",
+    "button_hover": "Scale-up slightly (scale-105), background changes to darker accent, adds drop-shadow-lg."
+  },
+  "three_d_scene": {
+    "libraries": [
+      "@react-three/fiber",
+      "@react-three/drei",
+      "gsap"
+    ],
+    "lighting": "Studio lighting: AmbientLight (intensity 1), strong DirectionalLight (white) to highlight the tactical body.",
+    "model": "Use the provided GLB 3D model (MP5K-UTG Electric Water Gun). Ensure transparent drum magazine material renders correctly.",
+    "effects": "Water blast uses R3F (blue/white particles). Muzzle flash uses PointLight with rapid intensity flickering."
+  },
+  "image_urls": [
+    {
+      "url": "https://images.unsplash.com/photo-1498462440456-0dba182e775b?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2NzZ8MHwxfHNlYXJjaHwzfHx3YXRlciUyMHNwbGFzaHxlbnwwfHx8fDE3ODA0MDAwNTV8MA&ixlib=rb-4.1.0&q=85",
+      "category": "texture",
+      "description": "Optional background texture for water splash or UI accents"
+    },
+    {
+      "url": "https://images.unsplash.com/photo-1615529328331-f8917597711f?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2NzZ8MHwxfHNlYXJjaHwyfHx3YXRlciUyMHNwbGFzaHxlbnwwfHx8fDE3ODA0MDAwNTV8MA&ixlib=rb-4.1.0&q=85",
+      "category": "texture",
+      "description": "Water drops for macro detailing or feature sections"
+    }
+  ],
+  "components": [
+    {
+      "name": "HeroOverlay",
+      "description": "HTML absolute positioned overlay with 'MP5K-UTG' wordmark."
+    },
+    {
+      "name": "CanvasContainer",
+      "description": "Full-screen fixed layout for the R3F Canvas."
+    },
+    {
+      "name": "ScrollContainer",
+      "description": "Tall invisible container driving ScrollTrigger progress."
+    },
+    {
+      "name": "SpecsPanel",
+      "description": "HTML container on left side fading in at the end of scroll. Contains specs list and Fire button."
+    }
+  ],
+  "accessibility_and_testing": {
+    "data_testids": [
+      "hero-title",
+      "scroll-container",
+      "specs-panel",
+      "fire-button",
+      "spec-range",
+      "spec-capacity"
+    ]
+  },
+  "instructions_to_main_agent": "Implement a single-page app in React (.js) combining HTML overlay layers and a fixed R3F Canvas. Use GSAP ScrollTrigger to pin the canvas container and animate the model (zoom, 360-spin, settle right). The 'FIRE' button triggers R3F particles and an animated PointLight at the nozzle. Use the exact provided GLB model."
+}
