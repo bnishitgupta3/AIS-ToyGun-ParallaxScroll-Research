@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { Link } from "react-router-dom";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import WaterGunScene from "@/components/scene/WaterGunScene";
@@ -170,12 +171,12 @@ export default function ProductShowcase() {
                 data-testid="top-nav"
                 className="fixed left-0 right-0 top-0 z-50 flex items-center justify-between px-6 py-5 md:px-12"
             >
-                <div className="flex items-center gap-3">
+                <Link to="/" className="flex items-center gap-3">
                     <div className="h-2.5 w-2.5 rounded-full bg-[color:var(--accent)]" />
                     <span className="font-mono-tactical text-[11px] font-bold uppercase tracking-[0.32em] text-zinc-700">
                         UTG · Tactical
                     </span>
-                </div>
+                </Link>
                 <nav className="hidden items-center gap-8 md:flex">
                     {["Models", "Specs", "Loadout", "Dealers"].map((n) => (
                         <a
@@ -188,13 +189,13 @@ export default function ProductShowcase() {
                         </a>
                     ))}
                 </nav>
-                <a
-                    href="#preorder"
+                <Link
+                    to="/"
                     data-testid="nav-cta"
                     className="hidden rounded-full border border-zinc-900/80 px-5 py-2 font-mono-tactical text-[11px] font-bold uppercase tracking-[0.22em] text-zinc-900 transition-all hover:bg-[color:var(--ink)] hover:text-white md:inline-block"
                 >
-                    Pre-Order
-                </a>
+                    ← Arsenal
+                </Link>
             </header>
 
             {/* PINNED SCROLL SECTION */}

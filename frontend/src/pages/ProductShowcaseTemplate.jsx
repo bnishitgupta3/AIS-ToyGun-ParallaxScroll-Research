@@ -1,0 +1,441 @@
+/**
+ * ProductShowcaseTemplate
+ * ─────────────────────────────────────────────────────────────────────────
+ * Reusable full-page product showcase. Uses the same GSAP scroll-driven
+ * animation (zoom-in → 360° spin → settle right → specs reveal) as the
+ * original MP5K ProductShowcase, but accepts a `product` config object
+ * so any new SKU can be scaffolded with a single wrapper component.
+ *
+ * Usage:
+ *   import ProductShowcaseTemplate from "@/pages/ProductShowcaseTemplate";
+ *   const PRODUCT = { modelUrl, name, code, tagline, ... };
+ *   export default function MyPage() { return <ProductShowcaseTemplate product={PRODUCT} />; }
+ */
+
+import { useEffect, useRef, useState } from "react";
+import { Link } from "react-router-dom";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+
+import GenericGunScene from "@/components/scene/GenericGunScene";
+import ParallaxBackground from "@/components/showcase/ParallaxBackground";
+import FireEffects from "@/components/showcase/FireEffects";
+import { useGLTF } from "@react-three/drei";
+
+/* Preload all product models so switching pages feels instant */
+useGLTF.preload("/assets/watergun.glb");
+useGLTF.preload("/assets/m416-watergun.glb");
+useGLTF.preload("/assets/crimson-blaster.glb");
+
+gsap.registerPlugin(ScrollTrigger);
+
+/* ─── Default fallback product (override by passing `product` prop) ───── */
+const DEFAULTS = {
+    modelUrl:          "/assets/watergun.glb",
+    name:              "UTG Tactical",
+    code:              "UTG·001",
+    tagline:           "Electric Water Gun",
+    eyebrow:           "/// UTG · Tactical Division · 2026",
+    accentColor:       "#ff5a1f",
+    accentDeep:        "#d63f0a",
+    specs: [
+        { label: "RANGE",        value: "10–12m" },
+        { label: "CAPACITY",     value: "500 Beads" },
+        { label: "RATE OF FIRE", value: "8 r/s" },
+        { label: "BATTERY",      value: "7.4V Li-Po" },
+        { label: "WEIGHT",       value: "1.42 kg" },
+        { label: "MODE",         value: "Semi · Burst · Auto" },
+    ],
+    specsTitle:        ["Built for", "The Backyard", "Battle."],
+    specsDescription:  "Drum-fed, electric drive, full-auto rated.",
+    price:             "$89.00",
+    squadPrice:        "$299.00",
+    version:           "v1.0.0 · UTG-001",
+    unitLabel:         "7B-001 · In stock",
+    homeLink:          "/",
+};
+
+export default function ProductShowcaseTemplate({ product: rawProduct }) {
+    const product = { ...DEFAULTS, ...rawProduct };
+
+    const sectionRef        = useRef(null);
+    const modelRef          = useRef(null);
+    const fireResetTimerRef = useRef(null);
+    const [isFiring, setIsFiring] = useState(false);
+
+    /* ── GSAP scroll timeline ───────────────────────────────────────── */
+    useEffect(() => {
+        let cancelled = false;
+        let raf;
+        let ctx;
+
+        const setup = () => {
+            if (cancelled) return;
+            const group = modelRef.current;
+            if (!group) { raf = requestAnimationFrame(setup); return; }
+            buildTimeline(group);
+        };
+        raf = requestAnimationFrame(setup);
+
+        function buildTimeline(group) {
+            group.scale.setScalar(0.12);
+            group.position.set(0, -2.5, 0);
+            group.rotation.set(0, 0, 0);
+
+            gsap.set("#specs-panel",   { opacity: 0, x: -24 });
+            gsap.set("#hero-overlay",  { opacity: 1 });
+            gsap.set("#hero-wordmark", { opacity: 1, y: 0, scale: 1 });
+            gsap.set("#hero-subline",  { opacity: 1 });
+            gsap.set("#hero-eyebrow",  { opacity: 1 });
+            gsap.set("#scroll-hint",   { opacity: 1 });
+
+            ctx = gsap.context(() => {
+                const tl = gsap.timeline({
+                    defaults: { ease: "none" },
+                    scrollTrigger: {
+                        trigger: sectionRef.current,
+                        start:  "top top",
+                        end:    "+=3200",
+                        pin:    true,
+                        scrub:  1,
+                        anticipatePin:    1,
+                        invalidateOnRefresh: true,
+                    },
+                });
+
+                /* Phase A — gun zooms in to centre (0 → 0.28) */
+                tl.to(group.scale,    { x: 1, y: 1, z: 1, duration: 0.28 }, 0)
+                  .to(group.position, { y: 0, duration: 0.28 }, 0)
+                  .to("#scroll-hint",  { opacity: 0, duration: 0.08 }, 0)
+                  .to("#hero-eyebrow", { opacity: 0, y: -20, duration: 0.18 }, 0.05)
+                  .to("#hero-subline", { opacity: 0, y: -20, duration: 0.18 }, 0.08);
+
+                /* Phase B — wordmark fades & lifts (0.12 → 0.30) */
+                tl.to("#hero-wordmark", { opacity: 0, y: -160, scale: 0.86, duration: 0.18 }, 0.12);
+
+                /* Phase C — 360° showcase spin (0.32 → 0.72) */
+                tl.to(group.rotation, { y: Math.PI * 2, duration: 0.4 }, 0.32);
+
+                /* Phase D — settle to the right (0.55 → 0.85) */
+                tl.to(group.position, { x: 1.55, duration: 0.3 }, 0.55)
+                  .to(group.scale,    { x: 0.95, y: 0.95, z: 0.95, duration: 0.3 }, 0.55);
+
+                /* Phase E — specs panel reveal (0.78 → 1.0) */
+                tl.to("#specs-panel", { opacity: 1, x: 0, duration: 0.22 }, 0.78);
+
+                /* Parallax shapes */
+                gsap.utils.toArray(".parallax-shape").forEach((el) => {
+                    const depth = parseFloat(el.dataset.parallax || "0.4");
+                    gsap.to(el, {
+                        yPercent: -120 * depth,
+                        xPercent: (Math.random() - 0.5) * 40 * depth,
+                        rotate:   (Math.random() - 0.5) * 60 * depth,
+                        ease:     "none",
+                        scrollTrigger: {
+                            trigger: sectionRef.current,
+                            start:  "top top",
+                            end:    "+=3200",
+                            scrub:  1.4,
+                        },
+                    });
+                });
+            }, sectionRef);
+
+            requestAnimationFrame(() => ScrollTrigger.refresh());
+        }
+
+        return () => {
+            cancelled = true;
+            if (raf) cancelAnimationFrame(raf);
+            if (ctx) ctx.revert();
+        };
+    }, []);
+
+    /* ── Fire handler ───────────────────────────────────────────────── */
+    const handleFire = () => {
+        if (isFiring) return;
+        setIsFiring(true);
+        clearTimeout(fireResetTimerRef.current);
+        fireResetTimerRef.current = setTimeout(() => setIsFiring(false), 2400);
+    };
+    useEffect(() => () => clearTimeout(fireResetTimerRef.current), []);
+
+    /* CSS vars override for this product's accent colour */
+    const cssVars = {
+        "--accent":      product.accentColor,
+        "--accent-deep": product.accentDeep,
+    };
+
+    return (
+        <main
+            className="relative w-full bg-[color:var(--bg)] text-[color:var(--ink)]"
+            style={cssVars}
+        >
+            {/* ── Top nav ── */}
+            <header className="fixed left-0 right-0 top-0 z-50 flex items-center justify-between px-6 py-5 md:px-12">
+                <Link to={product.homeLink || "/"} className="flex items-center gap-3">
+                    <div
+                        className="h-2.5 w-2.5 rounded-full"
+                        style={{ background: product.accentColor }}
+                    />
+                    <span className="font-mono-tactical text-[11px] font-bold uppercase tracking-[0.32em] text-zinc-700">
+                        UTG · Tactical
+                    </span>
+                </Link>
+                <nav className="hidden items-center gap-8 md:flex">
+                    {["Models", "Specs", "Loadout", "Dealers"].map((n) => (
+                        <a
+                            key={n}
+                            href={`#${n.toLowerCase()}`}
+                            className="font-mono-tactical text-[11px] font-bold uppercase tracking-[0.32em] text-zinc-600 transition-colors hover:text-[color:var(--accent)]"
+                        >
+                            {n}
+                        </a>
+                    ))}
+                </nav>
+                <Link
+                    to="/"
+                    className="hidden rounded-full border border-zinc-900/80 px-5 py-2 font-mono-tactical text-[11px] font-bold uppercase tracking-[0.22em] text-zinc-900 transition-all hover:bg-zinc-900 hover:text-white md:inline-block"
+                >
+                    ← Arsenal
+                </Link>
+            </header>
+
+            {/* ── Pinned scroll section ── */}
+            <section
+                ref={sectionRef}
+                id="scroll-section"
+                className="relative w-full"
+                style={{ height: "100vh" }}
+            >
+                <div className="relative h-screen w-full overflow-hidden">
+                    <ParallaxBackground />
+
+                    {/* 3-D canvas layer — key forces a clean WebGL context per product */}
+                    <div className="absolute inset-0 z-10">
+                        <GenericGunScene
+                            key={product.modelUrl}
+                            modelRef={modelRef}
+                            modelUrl={product.modelUrl}
+                            isFiring={isFiring}
+                        />
+                    </div>
+
+                    {/* Hero overlay */}
+                    <div
+                        id="hero-overlay"
+                        className="pointer-events-none absolute inset-0 z-20 flex flex-col items-center justify-center text-center"
+                    >
+                        <span
+                            id="hero-eyebrow"
+                            className="font-mono-tactical mb-6 text-xs font-bold uppercase tracking-[0.5em]"
+                            style={{ color: product.accentColor }}
+                        >
+                            {product.eyebrow}
+                        </span>
+
+                        <h1
+                            id="hero-wordmark"
+                            className="font-display select-none text-[clamp(72px,18vw,300px)] text-zinc-900"
+                            style={{ lineHeight: 0.78 }}
+                        >
+                            {product.code.split("·").map((part, i, arr) => (
+                                <span key={i}>
+                                    {part.trim()}
+                                    {i < arr.length - 1 && (
+                                        <span
+                                            className="inline-block translate-y-[0.08em]"
+                                            style={{ color: product.accentColor }}
+                                        >
+                                            ·
+                                        </span>
+                                    )}
+                                </span>
+                            ))}
+                        </h1>
+
+                        <div
+                            id="hero-subline"
+                            className="mt-4 flex items-center gap-4 font-mono-tactical text-xs uppercase tracking-[0.32em] text-zinc-700"
+                        >
+                            <span className="h-px w-12 bg-zinc-900/30" />
+                            <span>{product.tagline}</span>
+                            <span className="h-px w-12 bg-zinc-900/30" />
+                        </div>
+
+                        <div
+                            id="scroll-hint"
+                            className="absolute bottom-10 left-1/2 flex -translate-x-1/2 flex-col items-center gap-2"
+                        >
+                            <span className="font-mono-tactical text-[10px] uppercase tracking-[0.32em] text-zinc-500">
+                                Scroll to Engage
+                            </span>
+                            <div className="relative h-9 w-5 rounded-full border border-zinc-400/70">
+                                <div className="scroll-nub absolute left-1/2 top-1.5 h-1.5 w-1 -translate-x-1/2 rounded-full bg-zinc-700" />
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Specs panel */}
+                    <aside
+                        id="specs-panel"
+                        className="pointer-events-auto absolute left-0 top-0 z-30 h-full w-full max-w-[440px] px-6 pt-24 md:px-10 md:pt-28 lg:px-14"
+                    >
+                        <div className="flex h-full flex-col">
+                            <span
+                                className="font-mono-tactical text-xs font-bold uppercase tracking-[0.32em]"
+                                style={{ color: product.accentColor }}
+                            >
+                                /// Field Spec Sheet
+                            </span>
+                            <h2 className="font-display mt-4 text-4xl sm:text-5xl">
+                                {product.specsTitle[0]}
+                                <br />
+                                {product.specsTitle[1]}
+                                <br />
+                                <span style={{ color: product.accentColor }}>
+                                    {product.specsTitle[2]}
+                                </span>
+                            </h2>
+                            <p className="mt-5 max-w-[34ch] text-sm leading-relaxed text-zinc-600">
+                                {product.specsDescription}
+                            </p>
+
+                            <ul className="mt-8 space-y-0">
+                                {product.specs.map((s) => (
+                                    <li
+                                        key={s.label}
+                                        className="spec-row flex items-baseline justify-between py-3.5"
+                                    >
+                                        <span className="font-mono-tactical text-[11px] font-bold uppercase tracking-[0.22em] text-zinc-500">
+                                            {s.label}
+                                        </span>
+                                        <span className="font-display text-lg text-zinc-900">
+                                            {s.value}
+                                        </span>
+                                    </li>
+                                ))}
+                            </ul>
+
+                            <div className="mt-8 flex items-center gap-3">
+                                <button
+                                    type="button"
+                                    onClick={handleFire}
+                                    disabled={isFiring}
+                                    className="btn-pill group inline-flex items-center gap-3 rounded-full bg-[color:var(--ink)] px-7 py-3.5 text-white"
+                                >
+                                    <span
+                                        className={`relative inline-flex h-2.5 w-2.5 rounded-full ${isFiring ? "flicker-fast" : ""}`}
+                                        style={{ background: product.accentColor }}
+                                    />
+                                    <span className="font-mono-tactical text-sm font-bold uppercase tracking-[0.22em]">
+                                        {isFiring ? "Firing…" : "Fire Test"}
+                                    </span>
+                                    <svg
+                                        width="16" height="16" viewBox="0 0 24 24"
+                                        fill="none" stroke="currentColor" strokeWidth="2.5"
+                                        strokeLinecap="square" strokeLinejoin="miter"
+                                        className="-mr-1 transition-transform group-hover:translate-x-0.5"
+                                    >
+                                        <path d="M5 12h14M13 5l7 7-7 7" />
+                                    </svg>
+                                </button>
+                                <div className="font-mono-tactical text-[10px] uppercase tracking-[0.2em] text-zinc-400">
+                                    Hold trigger
+                                    <br />
+                                    for full auto
+                                </div>
+                            </div>
+
+                            <div className="mt-auto pt-10">
+                                <div className="font-mono-tactical text-[10px] uppercase tracking-[0.32em] text-zinc-400">
+                                    Unit · {product.unitLabel}
+                                </div>
+                            </div>
+                        </div>
+                    </aside>
+
+                    {/* Side gutter label */}
+                    <div className="pointer-events-none absolute bottom-6 right-8 z-30 hidden font-mono-tactical text-[10px] uppercase tracking-[0.32em] text-zinc-500 md:block">
+                        Sec · 01 / 02 — Showcase
+                    </div>
+                </div>
+            </section>
+
+            {/* Fire effects portal */}
+            <FireEffects active={isFiring} />
+
+            {/* ── Footer / CTA ── */}
+            <section className="relative w-full bg-[color:var(--ink)] text-white">
+                <div className="mx-auto max-w-7xl px-6 py-24 md:px-12 md:py-32">
+                    <div className="grid grid-cols-1 gap-10 md:grid-cols-12">
+                        <div className="md:col-span-7">
+                            <span
+                                className="font-mono-tactical text-xs font-bold uppercase tracking-[0.32em]"
+                                style={{ color: product.accentColor }}
+                            >
+                                /// Deploy · Q1 2026
+                            </span>
+                            <h2 className="font-display mt-5 text-5xl text-white sm:text-6xl">
+                                Ready when
+                                <br />
+                                <span
+                                    className="text-tactical-stroke"
+                                    style={{ WebkitTextStrokeColor: "#fff" }}
+                                >
+                                    summer
+                                </span>{" "}
+                                is.
+                            </h2>
+                            <p className="mt-6 max-w-md text-sm leading-relaxed text-zinc-400">
+                                {product.specsDescription}
+                            </p>
+                        </div>
+
+                        <div className="md:col-span-5 md:pl-10">
+                            <div className="flex flex-col gap-4">
+                                <div className="flex items-baseline justify-between border-b border-white/10 pb-3">
+                                    <span className="font-mono-tactical text-[11px] uppercase tracking-[0.22em] text-zinc-400">
+                                        Retail
+                                    </span>
+                                    <span className="font-display text-2xl text-white">
+                                        {product.price}
+                                    </span>
+                                </div>
+                                <div className="flex items-baseline justify-between border-b border-white/10 pb-3">
+                                    <span className="font-mono-tactical text-[11px] uppercase tracking-[0.22em] text-zinc-400">
+                                        Squad Pack (×4)
+                                    </span>
+                                    <span
+                                        className="font-display text-2xl"
+                                        style={{ color: product.accentColor }}
+                                    >
+                                        {product.squadPrice}
+                                    </span>
+                                </div>
+                                <button
+                                    type="button"
+                                    className="btn-pill mt-4 inline-flex items-center justify-between rounded-full px-7 py-4 text-black"
+                                    style={{ background: product.accentColor }}
+                                >
+                                    <span className="font-mono-tactical text-sm font-bold uppercase tracking-[0.22em]">
+                                        Pre-Order Now
+                                    </span>
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                                        <path d="M5 12h14M13 5l7 7-7 7" />
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="mt-20 flex items-center justify-between font-mono-tactical text-[10px] uppercase tracking-[0.32em] text-zinc-500">
+                        <span>© 2026 UTG Tactical</span>
+                        <span>{product.version}</span>
+                        <span>Built · React · R3F · GSAP</span>
+                    </div>
+                </div>
+            </section>
+        </main>
+    );
+}
