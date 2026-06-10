@@ -1,33 +1,54 @@
 import { Link } from "react-router-dom";
 
+const NAV_LINKS = ["Arsenal", "Engineering", "Mission", "Field Test"];
+
+/**
+ * Premium pill navbar — fixed, horizontally centered, light-theme.
+ *
+ * Outer container is pointer-events-none so clicks fall through to content.
+ * The actual <nav> is pointer-events-auto so links and button work.
+ */
 export default function LandingNav() {
     return (
-        <header className="fixed left-0 right-0 top-0 z-50 flex items-center justify-between px-6 py-5 md:px-12">
-            <Link to="/" className="flex items-center gap-3">
-                <div className="h-2.5 w-2.5 rounded-full bg-orange-500" />
-                <span className="font-mono-tactical text-[11px] font-bold uppercase tracking-[0.32em] text-zinc-400">
-                    UTG · Tactical
-                </span>
-            </Link>
+        <div className="pointer-events-none fixed left-1/2 top-6 z-50 w-[95%] max-w-5xl -translate-x-1/2">
+            <nav className="pointer-events-auto flex items-center justify-between rounded-full border border-black/10 bg-white/70 px-5 py-3 backdrop-blur-md">
 
-            <nav className="hidden items-center gap-8 md:flex">
-                {["Arsenal", "Engineering", "Mission", "Field Test"].map((n) => (
-                    <a
-                        key={n}
-                        href={`#${n.toLowerCase().replace(/\s+/, "-")}`}
-                        className="font-mono-tactical text-[11px] font-bold uppercase tracking-[0.32em] text-zinc-500 transition-colors hover:text-orange-500"
-                    >
-                        {n}
-                    </a>
-                ))}
+                {/* Logo */}
+                <Link
+                    to="/"
+                    className="font-instrument text-[28px] leading-none tracking-tight text-[#1a1a1a] select-none"
+                >
+                    UTG
+                </Link>
+
+                {/* Page links — hidden on mobile */}
+                <div className="hidden items-center gap-10 md:flex">
+                    {NAV_LINKS.map((label) => (
+                        <a
+                            key={label}
+                            href={`#${label.toLowerCase().replace(/\s+/g, "-")}`}
+                            className="font-inter text-[14px] font-medium text-[#1a1a1a]/80 transition-opacity duration-150 hover:opacity-50"
+                        >
+                            {label}
+                        </a>
+                    ))}
+                </div>
+
+                {/* CTA — blue pill with glass glint */}
+                <a
+                    href="#arsenal"
+                    className="group relative overflow-hidden rounded-full bg-[#0871E7] px-5 py-2 text-white shadow-[inset_0_-4px_4px_rgba(255,255,255,0.39)] outline outline-1 outline-[#0871E7] -outline-offset-1 transition-all duration-200 hover:brightness-110"
+                >
+                    {/* Glass glint stripe */}
+                    <span
+                        aria-hidden="true"
+                        className="pointer-events-none absolute left-[10%] top-[1px] h-4 w-[80%] rounded-[12px] bg-gradient-to-b from-[#DEF0FC] to-transparent transition-transform duration-200 group-hover:scale-x-105"
+                    />
+                    <span className="relative font-inter text-[14px] font-medium">
+                        Explore
+                    </span>
+                </a>
             </nav>
-
-            <a
-                href="#footer"
-                className="hidden rounded-full border border-zinc-700 px-5 py-2 font-mono-tactical text-[11px] font-bold uppercase tracking-[0.22em] text-zinc-300 transition-all hover:border-orange-500 hover:text-orange-500 md:inline-block"
-            >
-                Pre-Order
-            </a>
-        </header>
+        </div>
     );
 }

@@ -16,7 +16,7 @@ const PRODUCTS = [
         tagline: "Long-Range · Drum Mag · Precision",
         price: "$119",
         link: "/product/m416",
-        accent: "#3b82f6",
+        accent: "#0871E7",
         sub: "Water Gun",
     },
     {
@@ -30,102 +30,111 @@ const PRODUCTS = [
     },
 ];
 
+/**
+ * Horizontal-scroll arsenal — light dot-theme variant.
+ *
+ * Structure:
+ *   <section .arsenal-track  overflow:hidden, h:100vh>     ← pinned by GSAP
+ *     <div   .arsenal-container  flex w-max h-screen>      ← translated on X
+ *       <panel 0 />  (100vw wide)
+ *       <panel 1 />
+ *       <panel 2 />  (+ extra right padding so gun 3 settles cleanly)
+ *     </div>
+ *   </section>
+ */
 export default function ArsenalSection({ arsenalRef }) {
     return (
         <section
             ref={arsenalRef}
             id="arsenal"
-            className="relative w-full"
+            className="arsenal-track relative w-full overflow-hidden"
             style={{ height: "100vh" }}
         >
-            <div className="relative flex h-screen flex-col">
+            {/* Sticky section header — sits above the panels */}
+            <div className="pointer-events-none absolute left-6 top-24 z-20 md:left-14">
+                <span className="font-inter text-xs font-semibold uppercase tracking-[0.4em] text-[#f97316]">
+                    /// The Arsenal
+                </span>
+                <h2 className="font-instrument mt-3 text-[clamp(36px,5vw,72px)] leading-none text-[#1a1a1a]">
+                    Choose Your
+                    <br />
+                    <span className="text-[#1a1a1a]/40">Weapon.</span>
+                </h2>
+            </div>
 
-                {/* Section header */}
-                <div className="absolute left-6 top-24 z-20 md:left-14">
-                    <span className="font-mono-tactical text-xs font-bold uppercase tracking-[0.4em] text-orange-500">
-                        /// The Arsenal
-                    </span>
-                    <h2 className="font-display mt-3 text-[clamp(36px,5vw,72px)] leading-none text-white">
-                        Choose Your
-                        <br />
-                        <span className="text-zinc-600">Weapon.</span>
-                    </h2>
-                </div>
+            {/* Progress dots */}
+            <div className="absolute right-8 top-1/2 z-20 flex -translate-y-1/2 flex-col gap-3">
+                {PRODUCTS.map((_, i) => (
+                    <div
+                        key={i}
+                        id={`arsenal-dot-${i}`}
+                        className="h-1.5 w-1.5 rounded-full transition-all duration-300"
+                        style={{
+                            background: i === 0 ? "#f97316" : "rgba(0,0,0,0.18)",
+                        }}
+                    />
+                ))}
+            </div>
 
-                {/* Progress dots */}
-                <div className="absolute right-8 top-1/2 z-20 flex -translate-y-1/2 flex-col gap-3">
-                    {PRODUCTS.map((_, i) => (
-                        <div
-                            key={i}
-                            id={`arsenal-dot-${i}`}
-                            className="h-1.5 w-1.5 rounded-full"
-                            style={{ background: i === 0 ? "#f97316" : "rgba(255,255,255,0.2)" }}
-                        />
-                    ))}
-                </div>
-
-                {/*
-                  Product cards — all three absolutely positioned at the same spot.
-                  GSAP drives opacity. `pointerEvents` is also set by GSAP so the
-                  invisible cards never intercept clicks (which caused the wrong product
-                  page bug where the last card in DOM order always won).
-                */}
+            {/* ── THE TRANSLATED STRIP — GSAP targets `.arsenal-container` ── */}
+            <div className="arsenal-container flex h-screen w-max flex-nowrap">
                 {PRODUCTS.map((p, i) => (
                     <div
                         key={p.id}
                         id={`arsenal-card-${i}`}
-                        className="absolute bottom-16 left-1/2 w-full max-w-lg -translate-x-1/2 px-6 text-center"
+                        className="arsenal-panel relative flex h-screen w-screen shrink-0 items-end justify-center"
                         style={{
-                            opacity: i === 0 ? 1 : 0,
-                            pointerEvents: i === 0 ? "auto" : "none",
+                            paddingRight: i === PRODUCTS.length - 1 ? "60vw" : 0,
                         }}
                     >
-                        {/* Sub-type badge */}
-                        <span
-                            className="font-mono-tactical inline-block rounded-full border px-3 py-0.5 text-[9px] font-bold uppercase tracking-[0.3em]"
-                            style={{ borderColor: p.accent, color: p.accent }}
-                        >
-                            {p.sub}
-                        </span>
-
-                        {/* Name */}
-                        <h3 className="font-display mt-3 text-[clamp(32px,5.5vw,72px)] leading-none text-white">
-                            {p.name}
-                        </h3>
-
-                        {/* Tagline */}
-                        <p className="mt-2 font-mono-tactical text-[11px] uppercase tracking-[0.28em] text-zinc-500">
-                            {p.tagline}
-                        </p>
-
-                        {/* CTA */}
-                        <div className="mt-8 flex items-center justify-center gap-4">
-                            <Link
-                                to={p.link}
-                                className="inline-flex items-center gap-2 rounded-full px-8 py-3.5 font-mono-tactical text-[11px] font-bold uppercase tracking-[0.22em] text-black transition-opacity hover:opacity-90"
-                                style={{ background: p.accent }}
+                        <div className="mb-16 w-full max-w-lg px-6 text-center">
+                            {/* Sub-type badge */}
+                            <span
+                                className="font-inter inline-block rounded-full border px-3 py-0.5 text-[9px] font-semibold uppercase tracking-[0.3em]"
+                                style={{ borderColor: p.accent, color: p.accent }}
                             >
-                                View Details
-                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                                    <path d="M5 12h14M13 5l7 7-7 7" />
-                                </svg>
-                            </Link>
-                            <span className="font-display text-3xl text-white">{p.price}</span>
+                                {p.sub}
+                            </span>
+
+                            {/* Product name */}
+                            <h3 className="font-instrument mt-3 text-[clamp(32px,5.5vw,72px)] leading-none text-[#1a1a1a]">
+                                {p.name}
+                            </h3>
+
+                            {/* Tagline */}
+                            <p className="mt-2 font-inter text-[11px] font-medium uppercase tracking-[0.28em] text-[#1a1a1a]/50">
+                                {p.tagline}
+                            </p>
+
+                            {/* CTA row */}
+                            <div className="mt-8 flex items-center justify-center gap-4">
+                                <Link
+                                    to={p.link}
+                                    className="group relative inline-flex items-center gap-2 overflow-hidden rounded-full px-8 py-3.5 font-inter text-[11px] font-semibold uppercase tracking-[0.22em] text-white transition-all hover:brightness-110"
+                                    style={{ background: p.accent }}
+                                >
+                                    {/* Glint */}
+                                    <span
+                                        aria-hidden="true"
+                                        className="pointer-events-none absolute left-[10%] top-[1px] h-4 w-[80%] rounded-[12px] bg-gradient-to-b from-white/30 to-transparent transition-transform duration-200 group-hover:scale-x-105"
+                                    />
+                                    <span className="relative">View Details</span>
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="relative">
+                                        <path d="M5 12h14M13 5l7 7-7 7" />
+                                    </svg>
+                                </Link>
+                                <span className="font-instrument text-3xl text-[#1a1a1a]">
+                                    {p.price}
+                                </span>
+                            </div>
                         </div>
                     </div>
                 ))}
+            </div>
 
-                {/* Scroll cue */}
-                <div className="absolute bottom-4 left-1/2 z-20 -translate-x-1/2">
-                    <span className="font-mono-tactical text-[9px] uppercase tracking-[0.4em] text-zinc-700">
-                        Keep scrolling
-                    </span>
-                </div>
-
-                {/* Section label */}
-                <div className="pointer-events-none absolute bottom-6 right-8 z-20 font-mono-tactical text-[10px] uppercase tracking-[0.32em] text-zinc-700">
-                    Sec · 02 / 06 — Arsenal
-                </div>
+            {/* Section label */}
+            <div className="pointer-events-none absolute bottom-6 right-8 z-20 font-nokia text-[10px] uppercase tracking-[0.32em] text-[#1a1a1a]/30">
+                Sec · 02 / 05 — Arsenal
             </div>
         </section>
     );
