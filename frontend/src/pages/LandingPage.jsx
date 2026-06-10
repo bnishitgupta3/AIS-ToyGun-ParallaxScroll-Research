@@ -86,42 +86,71 @@ export default function LandingPage() {
                    GSAP translates the .arsenal-container flex strip on X.
                    The 3D canvas models are kept in sync via onUpdate.
                 ═══════════════════════════════════════════════════════ */
+                /*
+                 * ── Arsenal GSAP math ──────────────────────────────────
+                 * Strip = 3 × 100vw panels (no extra padding) = 300vw total.
+                 * Desired translation: -(300vw − 100vw) = −200vw.
+                 * Scroll end must equal the translation distance so that
+                 * scrub progress 0→1 maps exactly to x 0→−200vw.
+                 *
+                 * Previous bug: end used offsetWidth (300vw) instead of
+                 * (scrollWidth − innerWidth) (200vw), making the pin hold
+                 * 100vw longer than the animation needed — the "sticky" feel.
+                 */
+                const getTranslation = () => {
+                    const c = document.querySelector(".arsenal-container");
+                    return c ? c.scrollWidth - window.innerWidth : 0;
+                };
+
                 gsap.to(".arsenal-container", {
-                    x: () =>
-                        -(
-                            document.querySelector(".arsenal-container").scrollWidth -
-                            window.innerWidth
-                        ),
+                    x: () => -getTranslation(),
                     ease: "none",
                     scrollTrigger: {
-                        trigger:          arsenalRef.current,
-                        start:            "top top",
-                        end:              () =>
-                            "+=" + document.querySelector(".arsenal-container").offsetWidth,
-                        pin:              true,
-                        scrub:            1,
-                        anticipatePin:    1,
+                        trigger:             arsenalRef.current,
+                        start:               "top top",
+                        end:                 () => "+=" + getTranslation(),
+                        pin:                 true,
+                        scrub:               1,
+                        anticipatePin:       1,
                         invalidateOnRefresh: true,
                         onUpdate(self) {
                             const p = self.progress;
 
-                            /* Keep the active gun centred at world x = 0 */
+                            /* ── Sync 3D guns ──
+                               Models start at world x = 0 / 12 / 24.
+                               At p=0: gun1 centred. At p=0.5: gun2. At p=1: gun3. */
                             const shift = 24 * p;
                             g1.position.x = 0  - shift;
                             g2.position.x = 12 - shift;
                             g3.position.x = 24 - shift;
 
-                            /* Progress dot colours */
+                            /* ── Left-side product cards ──
+                               Stacked at the same absolute position; only the
+                               active one is visible and pointer-interactive. */
+                            const c0 = document.getElementById("arsenal-card-0");
+                            const c1 = document.getElementById("arsenal-card-1");
+                            const c2 = document.getElementById("arsenal-card-2");
+
+                            /* ── Progress dots ── */
                             const d0 = document.getElementById("arsenal-dot-0");
                             const d1 = document.getElementById("arsenal-dot-1");
                             const d2 = document.getElementById("arsenal-dot-2");
 
-                            const on  = (el, c) => gsap.set(el, { scale: 1.8, background: c });
-                            const off = (el)    => gsap.set(el, { scale: 1,   background: "rgba(0,0,0,0.18)" });
+                            const dotOn  = (el, c) => gsap.set(el, { scale: 1.8, background: c });
+                            const dotOff = (el)    => gsap.set(el, { scale: 1,   background: "rgba(0,0,0,0.18)" });
+                            const cardOn  = (el) => gsap.set(el, { opacity: 1, pointerEvents: "auto"  });
+                            const cardOff = (el) => gsap.set(el, { opacity: 0, pointerEvents: "none" });
 
-                            if      (p < 0.34) { on(d0, "#f97316"); off(d1); off(d2); }
-                            else if (p < 0.67) { off(d0); on(d1, "#0871E7"); off(d2); }
-                            else               { off(d0); off(d1); on(d2, "#ef4444"); }
+                            if (p < 0.34) {
+                                cardOn(c0);  cardOff(c1); cardOff(c2);
+                                dotOn(d0, "#f97316"); dotOff(d1); dotOff(d2);
+                            } else if (p < 0.67) {
+                                cardOff(c0); cardOn(c1);  cardOff(c2);
+                                dotOff(d0); dotOn(d1, "#0871E7"); dotOff(d2);
+                            } else {
+                                cardOff(c0); cardOff(c1); cardOn(c2);
+                                dotOff(d0); dotOff(d1); dotOn(d2, "#ef4444");
+                            }
                         },
                     },
                 });

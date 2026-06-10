@@ -8,18 +8,18 @@ const MESSAGES = [
     "READY.",
 ];
 
-const TYPING_MS  = 100;
-const DELETE_MS  = 50;
-const PAUSE_MS   = 2000;
+const TYPING_MS = 100;
+const DELETE_MS = 50;
+const PAUSE_MS  = 2000;
 
 /**
- * Cycles through MESSAGES with a typewriter effect.
- * Positioned to sit on the hero video subject per spec.
+ * Typewriter cycling through MESSAGES.
+ * Renders inline (no absolute positioning) — the parent positions it.
  */
 export default function TelemetryTyping() {
     const [displayed, setDisplayed] = useState("");
     const [msgIdx,    setMsgIdx]    = useState(0);
-    const [phase,     setPhase]     = useState("typing"); // "typing" | "pausing" | "deleting"
+    const [phase,     setPhase]     = useState("typing");
 
     useEffect(() => {
         const target = MESSAGES[msgIdx];
@@ -52,28 +52,15 @@ export default function TelemetryTyping() {
     }, [displayed, msgIdx, phase]);
 
     return (
-        <div
-            className={[
-                "absolute z-30 flex w-[110px] justify-start text-left",
-                /* Position on video subject */
-                "bottom-[32%]",
-                "left-[48.5%] -translate-x-1/2",
-                "sm:w-[130px]",
-                "md:left-[47.5%]",
-                "lg:left-[48.5%]",
-            ].join(" ")}
-        >
-            <span className="font-nokia text-[10px] leading-tight text-[#2A3616] break-words min-h-[1.5em] sm:text-[14px]">
-                {displayed}
-            </span>
-
-            {/* Blinking block cursor */}
+        <span className="font-nokia text-[10px] leading-tight text-[#2A3616] break-words sm:text-[13px]">
+            {displayed}
+            {/* Blinking cursor */}
             <motion.span
                 aria-hidden="true"
-                className="ml-1 inline-block h-3 w-1.5 align-middle bg-[#2A3616]"
+                className="ml-0.5 inline-block h-[0.8em] w-1 align-middle bg-[#2A3616]"
                 animate={{ opacity: [1, 0, 1] }}
                 transition={{ duration: 0.8, repeat: Infinity, ease: "linear" }}
             />
-        </div>
+        </span>
     );
 }
