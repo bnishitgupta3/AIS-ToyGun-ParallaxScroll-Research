@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 
-const PRODUCTS = [
+export const PRODUCTS = [
     {
         id: "p0",
         name: "MP5K-UTG",
@@ -31,35 +31,27 @@ const PRODUCTS = [
 ];
 
 /**
- * Horizontal-scroll Arsenal — Premium Light theme.
+ * Arsenal — Jetour UI paradigm.
  *
- * Architecture:
- *  <section  .arsenal-track   overflow:hidden h:100vh>    ← GSAP pins this
- *    [Absolute overlays — stay fixed while strip scrolls]
- *    │  Header "Choose Your Weapon"
- *    │  Product cards 0/1/2  (opacity toggled by GSAP onUpdate)
- *    │  Progress dots
- *    └  Section label
+ *   ┌──────────────────────────────────────────────┐
+ *   │  /// The Arsenal              (eyebrow, top)   │
+ *   │                                                │
+ *   │            [ centered 3D gun ]                 │  ← fixed canvas
+ *   │                                                │
+ *   │              M416 Water X      (name)          │  ← info block
+ *   │              [ View Details ]  (outline btn)   │
+ *   │                                                │
+ *   │     [thumb0]  [thumb1]  [thumb2]   (nav row)   │  ← bottom thumbs
+ *   └──────────────────────────────────────────────┘
  *
- *    <div .arsenal-container  flex w-max h-screen>        ← GSAP translates on X
- *      <panel 0 />  w-screen h-screen (pure spacer — no text content)
- *      <panel 1 />
- *      <panel 2 />
- *    </div>
- *  </section>
- *
- * Why spacer panels?
- *   The product UI lives in the absolute overlays, not inside the scrolling
- *   strip. This eliminates the center-clutter and lets GSAP drive both the
- *   CSS translation AND the 3D model positions from a single onUpdate source.
- *
- * GSAP translation math (no extra padding):
- *   Strip width = 3 × 100vw = 300vw
- *   Total translation = -(300vw - 100vw) = -200vw
- *   Scroll end = "+=(300vw - 100vw)" = "+=200vw"
- *   → scroll-progress and tween-progress are 1-to-1 ✓
+ * The pinned-scroll mechanism still lives in `.arsenal-container` (3 spacer
+ * panels). GSAP (in LandingPage) drives:
+ *   • the 3D models' world-X off the eased container transform (buttery)
+ *   • the active info block's opacity
+ *   • the active thumbnail's highlight
+ * Clicking a thumbnail calls `onSelect(i)` → GSAP scroll-seek to that section.
  */
-export default function ArsenalSection({ arsenalRef }) {
+export default function ArsenalSection({ arsenalRef, onSelect }) {
     return (
         <section
             ref={arsenalRef}
@@ -67,103 +59,88 @@ export default function ArsenalSection({ arsenalRef }) {
             className="arsenal-track relative w-full overflow-hidden"
             style={{ height: "100vh" }}
         >
-            {/* ── STATIC OVERLAYS ─────────────────────────────────── */}
-
-            {/* Section header */}
-            <div className="pointer-events-none absolute left-6 top-24 z-20 md:left-14">
+            {/* ── Eyebrow (top-center) ── */}
+            <div className="pointer-events-none absolute left-1/2 top-24 z-20 -translate-x-1/2 text-center">
                 <span className="font-inter text-xs font-semibold uppercase tracking-[0.4em] text-[#f97316]">
                     /// The Arsenal
                 </span>
-                <h2 className="font-instrument mt-3 text-[clamp(32px,4.5vw,60px)] leading-none text-[#1a1a1a]">
-                    Choose Your
-                    <br />
-                    <span className="text-[#1a1a1a]/35">Weapon.</span>
-                </h2>
             </div>
 
-            {/* Product info cards — absolutely positioned below the header.
-                All three share the same screen position; GSAP toggles opacity. */}
+            {/* ── Centered model info (name + outline button) ──
+                3 versions stacked at the same spot; GSAP toggles opacity. */}
             {PRODUCTS.map((p, i) => (
                 <div
                     key={p.id}
-                    id={`arsenal-card-${i}`}
-                    className="absolute left-6 z-20 flex flex-col items-start gap-3 md:left-14"
+                    id={`arsenal-info-${i}`}
+                    className="absolute left-1/2 bottom-[24%] z-20 flex -translate-x-1/2 flex-col items-center text-center"
                     style={{
-                        top: "clamp(240px, 35vh, 340px)",
                         opacity: i === 0 ? 1 : 0,
                         pointerEvents: i === 0 ? "auto" : "none",
                     }}
                 >
-                    {/* Sub-type badge */}
                     <span
-                        className="font-inter inline-block rounded-full border px-3 py-0.5 text-[9px] font-semibold uppercase tracking-[0.3em]"
+                        className="font-inter mb-3 inline-block rounded-full border px-3 py-0.5 text-[9px] font-semibold uppercase tracking-[0.3em]"
                         style={{ borderColor: p.accent, color: p.accent }}
                     >
                         {p.sub}
                     </span>
 
-                    {/* Product name */}
-                    <h3 className="font-instrument text-[clamp(28px,4vw,56px)] leading-none text-[#1a1a1a]">
+                    {/* Model name — font-instrument text-3xl mb-4 (per spec) */}
+                    <h3 className="font-instrument mb-4 text-3xl leading-none text-[#1a1a1a] md:text-4xl">
                         {p.name}
                     </h3>
 
-                    {/* Tagline */}
-                    <p className="font-inter text-[11px] font-medium uppercase tracking-[0.28em] text-[#1a1a1a]/50">
-                        {p.tagline}
-                    </p>
-
-                    {/* CTA + Price in a single row */}
-                    <div className="mt-1 flex flex-row items-center gap-6">
-                        <Link
-                            to={p.link}
-                            className="group relative inline-flex items-center gap-2 overflow-hidden rounded-full px-7 py-3 font-inter text-[11px] font-semibold uppercase tracking-[0.22em] text-white transition-all hover:brightness-110"
-                            style={{ background: p.accent }}
+                    {/* Clean outline action button */}
+                    <Link
+                        to={p.link}
+                        className="group inline-flex items-center gap-2 rounded-full border border-[#1a1a1a]/30 px-7 py-2.5 font-inter text-[12px] font-semibold uppercase tracking-[0.2em] text-[#1a1a1a] transition-all hover:border-[#1a1a1a] hover:bg-[#1a1a1a] hover:text-white"
+                    >
+                        View Details
+                        <svg
+                            width="13" height="13" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" strokeWidth="2.5"
+                            className="transition-transform group-hover:translate-x-0.5"
                         >
-                            {/* Glint */}
-                            <span
-                                aria-hidden="true"
-                                className="pointer-events-none absolute left-[10%] top-[1px] h-4 w-[80%] rounded-[12px] bg-gradient-to-b from-white/30 to-transparent transition-transform duration-200 group-hover:scale-x-105"
-                            />
-                            <span className="relative">View Details</span>
-                            <svg
-                                width="13" height="13"
-                                viewBox="0 0 24 24" fill="none"
-                                stroke="currentColor" strokeWidth="2.5"
-                                className="relative"
-                            >
-                                <path d="M5 12h14M13 5l7 7-7 7" />
-                            </svg>
-                        </Link>
-
-                        <span className="font-instrument text-[28px] text-[#1a1a1a]">
-                            {p.price}
-                        </span>
-                    </div>
+                            <path d="M5 12h14M13 5l7 7-7 7" />
+                        </svg>
+                    </Link>
                 </div>
             ))}
 
-            {/* Progress dots */}
-            <div className="absolute right-8 top-1/2 z-20 flex -translate-y-1/2 flex-col gap-3">
-                {PRODUCTS.map((_, i) => (
-                    <div
-                        key={i}
-                        id={`arsenal-dot-${i}`}
-                        className="h-1.5 w-1.5 rounded-full transition-all duration-300"
+            {/* ── Bottom thumbnail navigation ── */}
+            <div className="absolute bottom-10 left-1/2 z-30 flex -translate-x-1/2 items-center gap-3 sm:gap-4">
+                {PRODUCTS.map((p, i) => (
+                    <button
+                        key={p.id}
+                        id={`arsenal-thumb-${i}`}
+                        type="button"
+                        onClick={() => onSelect?.(i)}
+                        className="group relative flex h-20 w-28 shrink-0 flex-col justify-between overflow-hidden rounded-xl border-2 bg-white/70 p-2.5 text-left backdrop-blur-md transition-all duration-300 sm:w-32"
                         style={{
-                            background: i === 0 ? "#f97316" : "rgba(0,0,0,0.18)",
+                            opacity: i === 0 ? 1 : 0.4,
+                            borderColor: i === 0 ? p.accent : "rgba(0,0,0,0.10)",
                         }}
-                    />
+                    >
+                        {/* Accent swatch */}
+                        <span
+                            className="h-1.5 w-6 rounded-full"
+                            style={{ background: p.accent }}
+                        />
+                        <div>
+                            <div className="font-instrument text-[15px] leading-tight text-[#1a1a1a]">
+                                {p.name}
+                            </div>
+                            <div className="font-inter text-[8px] font-medium uppercase tracking-[0.15em] text-[#1a1a1a]/45">
+                                {p.sub}
+                            </div>
+                        </div>
+                    </button>
                 ))}
             </div>
 
-            {/* ── SCROLLING STRIP (pure spacers — no text content) ── */}
+            {/* ── SCROLLING STRIP (pure spacers — drive the pin distance) ── */}
             <div className="arsenal-container flex h-screen w-max flex-nowrap">
                 {PRODUCTS.map((p) => (
-                    /* Each panel is exactly 100vw — no extra padding.
-                       Strip total = 3 × 100vw = 300vw.
-                       Translation = -(300vw - 100vw) = -200vw.
-                       Scroll end   = "+=(300vw - 100vw)" = "+=200vw".
-                       Both sides equal, so progress and position are 1-to-1. */
                     <div
                         key={p.id}
                         className="h-screen w-screen shrink-0"

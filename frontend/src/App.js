@@ -1,14 +1,59 @@
 import "@/App.css";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { useEffect } from "react";
+import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
+import gsap from "gsap";
+import { useProgress } from "@react-three/drei";
 
 import LandingPage            from "@/pages/LandingPage";
 import ProductShowcase        from "@/pages/ProductShowcase";       // existing MP5K page
 import M416Showcase           from "@/pages/M416Showcase";
 import CrimsonBlasterShowcase from "@/pages/CrimsonBlasterShowcase";
 
+/* Force every route change to start at the top of the new page.
+   ScrollTrigger pinned sections leave window scroll wherever the
+   user was — without this they enter the next page mid-section.
+   Also re-hides body so the next page also waits for its assets. */
+function ScrollToTop() {
+    const { pathname } = useLocation();
+    useEffect(() => {
+        window.scrollTo(0, 0);
+        // Re-arm the FOUC gate for the incoming page
+        document.body.classList.add("loading");
+        if (typeof window !== "undefined" && window.ScrollTrigger) {
+            requestAnimationFrame(() => window.ScrollTrigger.refresh());
+        }
+    }, [pathname]);
+    return null;
+}
+
+/* Foolproof FOUC reveal: body ships with class="loading" (visibility:
+   hidden + opacity: 0). Once drei's useProgress reports all GLBs as
+   resolved, a single GSAP autoAlpha tween on <body> fades the entire
+   document in. No React state, no per-page wrappers — one source of
+   truth at the document level. */
+function BodyReveal() {
+    const { progress, active } = useProgress();
+    useEffect(() => {
+        if (progress < 100 || active) return;
+        // Double-rAF: wait for the DOM to commit + the next paint so
+        // GSAP timelines that just mounted have set their `from` state.
+        requestAnimationFrame(() => requestAnimationFrame(() => {
+            document.body.classList.remove("loading");
+            gsap.to("body", {
+                autoAlpha: 1,
+                duration: 0.5,
+                ease: "power2.inOut",
+            });
+        }));
+    }, [progress, active]);
+    return null;
+}
+
 function App() {
     return (
         <BrowserRouter>
+            <ScrollToTop />
+            <BodyReveal />
             <Routes>
                 {/* Home — full D2C landing page */}
                 <Route path="/"               element={<LandingPage />} />

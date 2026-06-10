@@ -1,48 +1,57 @@
 import { Suspense, useState } from "react";
 import { Canvas } from "@react-three/fiber";
-import { ContactShadows } from "@react-three/drei";
+import { ContactShadows, Environment } from "@react-three/drei";
 import * as THREE from "three";
 import GenericGunModel from "./GenericGunModel";
 import WaterStream from "./WaterStream";
 
 /**
  * Self-contained Canvas for individual product showcase pages.
- * Mirrors WaterGunScene but accepts a modelUrl prop.
+ * Premium lighting: HDRI environment + grounded contact shadows.
  */
 export default function GenericGunScene({ modelRef, modelUrl, isFiring }) {
     const [nozzle, setNozzle] = useState(new THREE.Vector3(-1.6, 0, 0));
 
     return (
         <Canvas
+            shadows
             camera={{ position: [0, 0.2, 6.2], fov: 35 }}
             dpr={[1, 2]}
             gl={{ antialias: true, alpha: true }}
             style={{ background: "transparent" }}
         >
-            <ambientLight intensity={1.4} />
-            <directionalLight position={[5, 7, 6]} intensity={2.4} color="#ffffff" />
-            <directionalLight position={[-6, 3, -2]} intensity={1.4} color="#cfe5ff" />
-            <directionalLight position={[0, -3, 5]} intensity={0.9} color="#fff2e0" />
-            <hemisphereLight args={["#ffffff", "#1a1a1a", 0.55]} />
+            {/* Soft fill so HDRI reflections aren't the only signal */}
+            <ambientLight intensity={0.35} />
+            <directionalLight
+                position={[5, 7, 6]}
+                intensity={1.6}
+                color="#ffffff"
+                castShadow
+            />
+            <directionalLight position={[-6, 3, -2]} intensity={0.6} color="#cfe5ff" />
 
-            <group ref={modelRef}>
-                <Suspense fallback={null}>
+            <Suspense fallback={null}>
+                {/* Photorealistic HDRI — drives metal/plastic reflections */}
+                <Environment preset="studio" background={false} />
+
+                <group ref={modelRef}>
                     <GenericGunModel
                         url={modelUrl}
                         isFiring={isFiring}
                         onNozzleResolved={setNozzle}
                     />
-                </Suspense>
-                <WaterStream origin={nozzle} active={isFiring} />
-            </group>
+                    <WaterStream origin={nozzle} active={isFiring} />
+                </group>
+            </Suspense>
 
             <ContactShadows
                 position={[0, -1.6, 0]}
-                opacity={0.35}
+                resolution={1024}
                 scale={10}
-                blur={2.6}
-                far={3}
-                color="#0a0a0a"
+                blur={2}
+                opacity={0.5}
+                far={10}
+                color="#000000"
             />
         </Canvas>
     );

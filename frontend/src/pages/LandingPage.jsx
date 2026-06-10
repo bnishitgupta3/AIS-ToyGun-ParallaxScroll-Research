@@ -1,6 +1,7 @@
 import { useEffect, useRef } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { ScrollToPlugin } from "gsap/ScrollToPlugin";
 import { useProgress } from "@react-three/drei";
 
 import LandingCanvas  from "@/components/scene/LandingCanvas";
@@ -11,7 +12,10 @@ import MissionSection from "@/components/landing/MissionSection";
 import FieldTestSection from "@/components/landing/FieldTestSection";
 import LandingFooter  from "@/components/landing/LandingFooter";
 
-gsap.registerPlugin(ScrollTrigger);
+gsap.registerPlugin(ScrollTrigger, ScrollToPlugin);
+
+const ARSENAL_COUNT = 3;       // number of weapons / panels
+const HERO_GUN_X     = 2.4;    // world-X that renders model1 in the hero right column
 
 export default function LandingPage() {
     /* ── 3D model refs – populated inside <Canvas> ── */
@@ -26,6 +30,23 @@ export default function LandingPage() {
     const heroRef    = useRef(null);
     const arsenalRef = useRef(null);
     const missionRef = useRef(null);
+
+    /* ── Arsenal ScrollTrigger handle (for thumbnail click-to-seek) ── */
+    const arsenalST = useRef(null);
+
+    /* Smoothly scroll the page so the Arsenal timeline lands exactly on
+       weapon `index`. Driven by the thumbnail nav. */
+    const seekToWeapon = (index) => {
+        const st = arsenalST.current;
+        if (!st) return;
+        const t = index / (ARSENAL_COUNT - 1);          // 0 → 0.5 → 1
+        const targetY = st.start + (st.end - st.start) * t;
+        gsap.to(window, {
+            scrollTo: { y: targetY, autoKill: true },
+            duration: 1.1,
+            ease: "power2.inOut",
+        });
+    };
 
     /* ── FOUC gate: reveal body only after all .glb assets are loaded ── */
     const { progress, active } = useProgress();
@@ -70,16 +91,36 @@ export default function LandingPage() {
         raf = requestAnimationFrame(setup);
 
         function buildTimelines(g1, g2, g3) {
-            /* ── Initial world positions ── */
-            g1.position.set(0,  0, 0);
-            g2.position.set(12, 0, 0);
-            g3.position.set(24, 0, 0);
+            /* ── Initial world positions ──
+               During the HERO, model1 sits at +HERO_GUN_X so it renders in
+               the right column (no overlap with the left-aligned text).
+               Models 2 & 3 wait further right. The entrance tween below
+               glides them to 0 / 12 / 24 as the Arsenal scrolls into view,
+               so the pin begins with model1 already perfectly centred. */
+            g1.position.set(HERO_GUN_X,      0, 0);
+            g2.position.set(12 + HERO_GUN_X, 0, 0);
+            g3.position.set(24 + HERO_GUN_X, 0, 0);
             g1.scale.setScalar(1);
             g2.scale.setScalar(1);
             g3.scale.setScalar(1);
             g1.rotation.set(0, 0, 0);
 
             ctx = gsap.context(() => {
+
+                /* ── HERO → ARSENAL entrance ──
+                   As the Arsenal section scrolls up into view, slide the
+                   guns from their hero offset to the centred arsenal start.
+                   Ends exactly when the pin begins (top top). */
+                gsap.to([g1.position, g2.position, g3.position], {
+                    x: (i) => [0, 12, 24][i],
+                    ease: "none",
+                    scrollTrigger: {
+                        trigger: arsenalRef.current,
+                        start: "top bottom",
+                        end:   "top top",
+                        scrub: 1.5,
+                    },
+                });
 
                 /* ═══════════════════════════════════════════════════════
                    SECTION 2 — ARSENAL
@@ -97,12 +138,14 @@ export default function LandingPage() {
                  * (scrollWidth − innerWidth) (200vw), making the pin hold
                  * 100vw longer than the animation needed — the "sticky" feel.
                  */
+                const ACCENTS = ["#f97316", "#0871E7", "#ef4444"];
+
                 const getTranslation = () => {
                     const c = document.querySelector(".arsenal-container");
                     return c ? c.scrollWidth - window.innerWidth : 0;
                 };
 
-                gsap.to(".arsenal-container", {
+                const arsenalTween = gsap.to(".arsenal-container", {
                     x: () => -getTranslation(),
                     ease: "none",
                     scrollTrigger: {
@@ -110,50 +153,54 @@ export default function LandingPage() {
                         start:               "top top",
                         end:                 () => "+=" + getTranslation(),
                         pin:                 true,
-                        scrub:               1,
+                        /* scrub: 1.5 → ScrollTrigger eases the strip's X over a
+                           1.5s window, so the WebGL guns (driven off that eased
+                           X below) interpolate at a buttery 60fps instead of
+                           snapping to raw scroll. */
+                        scrub:               1.5,
                         anticipatePin:       1,
                         invalidateOnRefresh: true,
-                        onUpdate(self) {
-                            const p = self.progress;
+                        onUpdate() {
+                            /* ── Drive 3D guns off the EASED container X ──
+                               Reading the live (scrub-eased) transform — not the
+                               raw scroll progress — means the meshes track the
+                               same smoothed curve as the visible strip. Pure ref
+                               mutation; no React state, no re-render. */
+                            const container = document.querySelector(".arsenal-container");
+                            const xNow = Number(gsap.getProperty(container, "x")) || 0;
+                            const translation = getTranslation() || 1;
+                            const eased = Math.min(1, Math.max(0, -xNow / translation));
 
-                            /* ── Sync 3D guns ──
-                               Models start at world x = 0 / 12 / 24.
-                               At p=0: gun1 centred. At p=0.5: gun2. At p=1: gun3. */
-                            const shift = 24 * p;
+                            const shift = 24 * eased;
                             g1.position.x = 0  - shift;
                             g2.position.x = 12 - shift;
                             g3.position.x = 24 - shift;
 
-                            /* ── Left-side product cards ──
-                               Stacked at the same absolute position; only the
-                               active one is visible and pointer-interactive. */
-                            const c0 = document.getElementById("arsenal-card-0");
-                            const c1 = document.getElementById("arsenal-card-1");
-                            const c2 = document.getElementById("arsenal-card-2");
+                            /* ── Active weapon index from eased progress ── */
+                            const activeIdx =
+                                eased < 0.34 ? 0 : eased < 0.67 ? 1 : 2;
 
-                            /* ── Progress dots ── */
-                            const d0 = document.getElementById("arsenal-dot-0");
-                            const d1 = document.getElementById("arsenal-dot-1");
-                            const d2 = document.getElementById("arsenal-dot-2");
+                            /* Centered info block (name + button) */
+                            for (let i = 0; i < ARSENAL_COUNT; i++) {
+                                const info = document.getElementById(`arsenal-info-${i}`);
+                                gsap.set(info, {
+                                    opacity:       i === activeIdx ? 1 : 0,
+                                    pointerEvents: i === activeIdx ? "auto" : "none",
+                                });
 
-                            const dotOn  = (el, c) => gsap.set(el, { scale: 1.8, background: c });
-                            const dotOff = (el)    => gsap.set(el, { scale: 1,   background: "rgba(0,0,0,0.18)" });
-                            const cardOn  = (el) => gsap.set(el, { opacity: 1, pointerEvents: "auto"  });
-                            const cardOff = (el) => gsap.set(el, { opacity: 0, pointerEvents: "none" });
-
-                            if (p < 0.34) {
-                                cardOn(c0);  cardOff(c1); cardOff(c2);
-                                dotOn(d0, "#f97316"); dotOff(d1); dotOff(d2);
-                            } else if (p < 0.67) {
-                                cardOff(c0); cardOn(c1);  cardOff(c2);
-                                dotOff(d0); dotOn(d1, "#0871E7"); dotOff(d2);
-                            } else {
-                                cardOff(c0); cardOff(c1); cardOn(c2);
-                                dotOff(d0); dotOff(d1); dotOn(d2, "#ef4444");
+                                /* Bottom thumbnail highlight */
+                                const thumb = document.getElementById(`arsenal-thumb-${i}`);
+                                gsap.set(thumb, {
+                                    opacity:     i === activeIdx ? 1 : 0.4,
+                                    borderColor: i === activeIdx ? ACCENTS[i] : "rgba(0,0,0,0.10)",
+                                });
                             }
                         },
                     },
                 });
+
+                /* Expose the ScrollTrigger so thumbnail clicks can seek to it. */
+                arsenalST.current = arsenalTween.scrollTrigger;
 
             }); // end gsap.context
 
@@ -195,7 +242,7 @@ export default function LandingPage() {
                 <HeroSection heroRef={heroRef} />
 
                 {/* 2 — ARSENAL (GSAP pins this) */}
-                <ArsenalSection arsenalRef={arsenalRef} />
+                <ArsenalSection arsenalRef={arsenalRef} onSelect={seekToWeapon} />
 
                 {/* 3 — MISSION (dark contrast section) */}
                 <MissionSection missionRef={missionRef} />

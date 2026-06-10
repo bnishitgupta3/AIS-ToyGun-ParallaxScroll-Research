@@ -47,10 +47,10 @@ export default function SpecsPanel({ onFire, isFiring }) {
                             data-testid={s.id}
                             className="spec-row flex items-baseline justify-between py-3.5"
                         >
-                            <span className="font-mono-tactical text-[11px] font-bold uppercase tracking-[0.22em] text-zinc-500">
+                            <span className="telemetry-label text-zinc-500">
                                 {s.label}
                             </span>
-                            <span className="font-display text-lg text-zinc-900">
+                            <span className="telemetry-value text-lg text-zinc-900">
                                 {s.value}
                             </span>
                         </li>

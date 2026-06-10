@@ -37,7 +37,8 @@ body,
     padding: 0;
     background: var(--bg);
     color: var(--ink);
-    font-family: "Satoshi", ui-sans-serif, system-ui, sans-serif;
+    /* SITE-WIDE FONT UNIFICATION — Inter is the global body / UI typeface */
+    font-family: "Inter", ui-sans-serif, system-ui, sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     overflow-x: hidden;
@@ -95,9 +96,9 @@ body.loading {
     opacity: 0;
 }
 
-/* Motorsport-telemetry label treatment */
+/* Motorsport-telemetry label treatment — unified to Inter */
 .telemetry-label {
-    font-family: "JetBrains Mono", ui-monospace, monospace;
+    font-family: "Inter", ui-sans-serif, system-ui, sans-serif;
     text-transform: uppercase;
     letter-spacing: 0.32em;
     font-size: 10px;
@@ -106,7 +107,7 @@ body.loading {
 }
 
 .telemetry-value {
-    font-family: "JetBrains Mono", ui-monospace, monospace;
+    font-family: "Inter", ui-sans-serif, system-ui, sans-serif;
     text-transform: uppercase;
     letter-spacing: 0.06em;
     font-variant-numeric: tabular-nums;
@@ -140,15 +141,22 @@ body.loading {
     font-family: "Inter", ui-sans-serif, system-ui, sans-serif;
 }
 
+/* SITE-WIDE FONT UNIFICATION
+   .font-display  → Instrument Serif  (all display titles / headings)
+   .font-mono-tactical → Inter         (all technical labels / nav / spec rows)
+   These two utilities are used across the homepage AND every product page,
+   so re-pointing them here propagates the unified type system repo-wide
+   without editing each component. */
 .font-display {
-    font-family: "Cabinet Grotesk", "Satoshi", sans-serif;
-    font-weight: 900;
-    letter-spacing: -0.04em;
-    line-height: 0.85;
+    font-family: "Instrument Serif", serif;
+    font-weight: 400;
+    letter-spacing: -0.02em;
+    line-height: 0.92;
 }
 
 .font-mono-tactical {
-    font-family: "JetBrains Mono", ui-monospace, monospace;
+    font-family: "Inter", ui-sans-serif, system-ui, sans-serif;
+    font-weight: 600;
     letter-spacing: 0.04em;
 }
 

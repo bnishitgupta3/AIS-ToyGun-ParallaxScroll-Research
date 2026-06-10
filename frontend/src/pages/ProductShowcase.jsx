@@ -17,6 +17,7 @@ export default function ProductShowcase() {
     const modelRef = useRef(null);
     const fireResetTimerRef = useRef(null);
     const [isFiring, setIsFiring] = useState(false);
+    /* FOUC handled globally via body.loading + <BodyReveal /> in App.js */
 
     useEffect(() => {
         let cancelled = false;
@@ -49,7 +50,6 @@ export default function ProductShowcase() {
 
             ctx = gsap.context(() => {
                 const tl = gsap.timeline({
-                    defaults: { ease: "none" },
                     scrollTrigger: {
                         trigger: sectionRef.current,
                         start: "top top",
@@ -61,52 +61,33 @@ export default function ProductShowcase() {
                     },
                 });
 
-                // PHASE A — gun zooms in to center (0 → 0.28)
-                tl.to(group.scale, { x: 1, y: 1, z: 1, duration: 0.28 }, 0)
-                    .to(group.position, { y: 0, duration: 0.28 }, 0)
-                    .to("#scroll-hint", { opacity: 0, duration: 0.08 }, 0)
-                    .to(
-                        "#hero-eyebrow",
-                        { opacity: 0, y: -20, duration: 0.18 },
-                        0.05,
-                    )
-                    .to(
-                        "#hero-subline",
-                        { opacity: 0, y: -20, duration: 0.18 },
-                        0.08,
-                    );
+                // PHASE A — weighted zoom-in (snap, then settle)
+                tl.to(group.scale,    { x: 1, y: 1, z: 1, duration: 0.28, ease: "expo.out" }, 0)
+                  .to(group.position, { y: 0,            duration: 0.28, ease: "expo.out" }, 0)
+                  .to("#scroll-hint", { opacity: 0,       duration: 0.08, ease: "power2.out" }, 0)
+                  .to("#hero-eyebrow",{ opacity: 0, y: -20, duration: 0.18, ease: "power3.in" }, 0.05)
+                  .to("#hero-subline",{ opacity: 0, y: -20, duration: 0.18, ease: "power3.in" }, 0.08);
 
-                // PHASE B — hero wordmark fades & lifts (0.12 → 0.3)
-                tl.to(
-                    "#hero-wordmark",
-                    { opacity: 0, y: -160, scale: 0.86, duration: 0.18 },
-                    0.12,
-                );
+                // PHASE B — wordmark fades & lifts
+                tl.to("#hero-wordmark",
+                    { opacity: 0, y: -160, scale: 0.86, duration: 0.18, ease: "power4.in" },
+                    0.12);
 
-                // PHASE C — 360 spin (0.32 → 0.72)
-                tl.to(
-                    group.rotation,
-                    { y: Math.PI * 2, duration: 0.4 },
-                    0.32,
-                );
+                // PHASE C — 360° spin (mechanical inOut)
+                tl.to(group.rotation,
+                    { y: Math.PI * 2, duration: 0.4, ease: "power4.inOut" },
+                    0.32);
 
-                // PHASE D — settle to the right (0.55 → 0.85)
-                tl.to(
-                    group.position,
-                    { x: 1.55, duration: 0.3 },
-                    0.55,
-                ).to(
-                    group.scale,
-                    { x: 0.95, y: 0.95, z: 0.95, duration: 0.3 },
-                    0.55,
-                );
+                // PHASE D — settle to the right (precise, weighted)
+                tl.to(group.position,
+                    { x: 1.55, duration: 0.3, ease: "expo.inOut" }, 0.55)
+                  .to(group.scale,
+                    { x: 0.95, y: 0.95, z: 0.95, duration: 0.3, ease: "expo.inOut" }, 0.55);
 
-                // PHASE E — specs panel reveal (0.78 → 1.0)
-                tl.to(
-                    "#specs-panel",
-                    { opacity: 1, x: 0, duration: 0.22 },
-                    0.78,
-                );
+                // PHASE E — specs panel snaps in
+                tl.to("#specs-panel",
+                    { opacity: 1, x: 0, duration: 0.22, ease: "expo.out" },
+                    0.78);
 
                 // PARALLAX shapes — scroll-tied tweens with per-element depth
                 gsap.utils.toArray(".parallax-shape").forEach((el) => {
@@ -166,6 +147,7 @@ export default function ProductShowcase() {
             data-testid="product-showcase"
             className="relative w-full bg-[color:var(--bg)] text-[color:var(--ink)]"
         >
+            <div>
             {/* Top nav bar */}
             <header
                 data-testid="top-nav"
@@ -235,6 +217,7 @@ export default function ProductShowcase() {
             <FireEffects active={isFiring} />
 
             <FooterCTA />
+            </div>
         </main>
     );
 }
