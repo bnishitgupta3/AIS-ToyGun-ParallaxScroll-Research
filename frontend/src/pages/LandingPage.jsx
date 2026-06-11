@@ -154,17 +154,22 @@ export default function LandingPage() {
             ctx = gsap.context(() => {
                 const ACCENTS = ["#f97316", "#0871E7", "#ef4444"];
 
-                /* Toggle the centred info block + bottom thumbnail highlight.
-                   idx is rounded so each weapon's "active" band is centred on
-                   its gun-centred scroll point (0, 0.5, 1) — text and model
-                   are therefore always in sync. */
+                /* Toggle the active weapon's heading (above the gun), its
+                   button (below the gun) and the thumbnail highlight. idx is
+                   rounded so each weapon's "active" band is centred on its
+                   gun-centred scroll point (0, 0.5, 1) — heading, button and
+                   model stay in sync. */
                 const updateActive = (idx) => {
                     for (let i = 0; i < ARSENAL_COUNT; i++) {
-                        const info = document.getElementById(`arsenal-info-${i}`);
-                        if (info) gsap.set(info, {
+                        const name = document.getElementById(`arsenal-name-${i}`);
+                        if (name) gsap.set(name, { opacity: i === idx ? 1 : 0 });
+
+                        const btn = document.getElementById(`arsenal-btn-${i}`);
+                        if (btn) gsap.set(btn, {
                             opacity:       i === idx ? 1 : 0,
                             pointerEvents: i === idx ? "auto" : "none",
                         });
+
                         const thumb = document.getElementById(`arsenal-thumb-${i}`);
                         if (thumb) gsap.set(thumb, {
                             opacity:     i === idx ? 1 : 0.4,

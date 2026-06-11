@@ -31,23 +31,20 @@ export const PRODUCTS = [
 ];
 
 /**
- * Arsenal — Jetour UI paradigm.
+ * Arsenal — Jetour UI paradigm (heading ABOVE the gun, button BELOW it).
  *
  *   ┌──────────────────────────────────────────────┐
- *   │  /// The Arsenal              (eyebrow, top)   │
+ *   │  /// The Arsenal              (eyebrow)        │
+ *   │  [badge]  M416 Water X  tagline   (heading)   │  ← ABOVE gun
  *   │                                                │
  *   │            [ centered 3D gun ]                 │  ← fixed canvas
  *   │                                                │
- *   │              M416 Water X      (name)          │  ← info block
- *   │              [ View Details ]  (outline btn)   │
- *   │                                                │
+ *   │              [ View Details ]   (button only)  │  ← BELOW gun
  *   │     [thumb0]  [thumb1]  [thumb2]   (nav row)   │  ← bottom thumbs
  *   └──────────────────────────────────────────────┘
  *
  * The section is pinned by GSAP (LandingPage) for a fixed scroll distance.
- * GSAP writes scroll progress into a shared ref; the 3D Canvas reads it in
- * useFrame and damps the guns toward centre (buttery, frame-rate independent).
- * GSAP's onUpdate also toggles the active info block + thumbnail highlight.
+ * GSAP's onUpdate toggles the active name + button + thumbnail by opacity.
  * Clicking a thumbnail calls `onSelect(i)` → GSAP scroll-seek to that section.
  */
 export default function ArsenalSection({ arsenalRef, onSelect }) {
@@ -58,53 +55,66 @@ export default function ArsenalSection({ arsenalRef, onSelect }) {
             className="arsenal-track relative w-full overflow-hidden"
             style={{ height: "100vh" }}
         >
-            {/* ── Eyebrow (top-center) ── */}
-            <div className="pointer-events-none absolute left-1/2 top-24 z-20 -translate-x-1/2 text-center">
+            {/* ── TOP heading area — eyebrow + product name (ABOVE the gun) ── */}
+            <div className="pointer-events-none absolute left-1/2 top-20 z-20 flex -translate-x-1/2 flex-col items-center text-center md:top-24">
                 <span className="font-inter text-xs font-semibold uppercase tracking-[0.4em] text-[#f97316]">
                     /// The Arsenal
                 </span>
+
+                {/* Stacked product names — GSAP toggles opacity */}
+                <div className="relative mt-5 h-[120px] w-[320px]">
+                    {PRODUCTS.map((p, i) => (
+                        <div
+                            key={p.id}
+                            id={`arsenal-name-${i}`}
+                            className="absolute inset-x-0 top-0 flex flex-col items-center"
+                            style={{ opacity: i === 0 ? 1 : 0 }}
+                        >
+                            <span
+                                className="font-inter mb-3 inline-block rounded-full border px-3 py-0.5 text-[9px] font-semibold uppercase tracking-[0.3em]"
+                                style={{ borderColor: p.accent, color: p.accent }}
+                            >
+                                {p.sub}
+                            </span>
+                            <h3 className="font-instrument text-[clamp(28px,5vw,44px)] leading-none text-[#1a1a1a]">
+                                {p.name}
+                            </h3>
+                            <p className="mt-2 font-inter text-[11px] font-medium uppercase tracking-[0.28em] text-[#1a1a1a]/50">
+                                {p.tagline}
+                            </p>
+                        </div>
+                    ))}
+                </div>
             </div>
 
-            {/* ── Centered model info (name + outline button) ──
-                3 versions stacked at the same spot; GSAP toggles opacity. */}
-            {PRODUCTS.map((p, i) => (
-                <div
-                    key={p.id}
-                    id={`arsenal-info-${i}`}
-                    className="absolute left-1/2 bottom-[24%] z-20 flex -translate-x-1/2 flex-col items-center text-center"
-                    style={{
-                        opacity: i === 0 ? 1 : 0,
-                        pointerEvents: i === 0 ? "auto" : "none",
-                    }}
-                >
-                    <span
-                        className="font-inter mb-3 inline-block rounded-full border px-3 py-0.5 text-[9px] font-semibold uppercase tracking-[0.3em]"
-                        style={{ borderColor: p.accent, color: p.accent }}
+            {/* ── BELOW the gun — button only (stacked; GSAP toggles opacity) ── */}
+            <div className="absolute bottom-[26%] left-1/2 z-20 h-12 w-[260px] -translate-x-1/2">
+                {PRODUCTS.map((p, i) => (
+                    <div
+                        key={p.id}
+                        id={`arsenal-btn-${i}`}
+                        className="absolute inset-x-0 top-0 flex justify-center"
+                        style={{
+                            opacity: i === 0 ? 1 : 0,
+                            pointerEvents: i === 0 ? "auto" : "none",
+                        }}
                     >
-                        {p.sub}
-                    </span>
-
-                    {/* Model name — font-instrument text-3xl mb-4 (per spec) */}
-                    <h3 className="font-instrument mb-4 text-3xl leading-none text-[#1a1a1a] md:text-4xl">
-                        {p.name}
-                    </h3>
-
-                    {/* Clean outline action button */}
-                    <Link
-                        to={p.link}
-                        className="group inline-flex items-center gap-2 rounded-full border border-[#1a1a1a]/30 px-7 py-2.5 font-inter text-[12px] font-semibold uppercase tracking-[0.2em] text-[#1a1a1a] transition-all hover:border-[#1a1a1a] hover:bg-[#1a1a1a] hover:text-white"
-                    >
-                        View Details
-                        <svg
-                            width="13" height="13" viewBox="0 0 24 24" fill="none"
-                            stroke="currentColor" strokeWidth="2.5"
-                            className="transition-transform group-hover:translate-x-0.5"
+                        <Link
+                            to={p.link}
+                            className="group inline-flex items-center gap-2 rounded-full border border-[#1a1a1a]/30 px-7 py-2.5 font-inter text-[12px] font-semibold uppercase tracking-[0.2em] text-[#1a1a1a] transition-all hover:border-[#1a1a1a] hover:bg-[#1a1a1a] hover:text-white"
                         >
-                            <path d="M5 12h14M13 5l7 7-7 7" />
-                        </svg>
-                    </Link>
-                </div>
-            ))}
+                            View Details
+                            <svg
+                                width="13" height="13" viewBox="0 0 24 24" fill="none"
+                                stroke="currentColor" strokeWidth="2.5"
+                                className="transition-transform group-hover:translate-x-0.5"
+                            >
+                                <path d="M5 12h14M13 5l7 7-7 7" />
+                            </svg>
+                        </Link>
+                    </div>
+                ))}
+            </div>
 
             {/* ── Bottom thumbnail navigation ── */}
             <div className="absolute bottom-10 left-1/2 z-30 flex -translate-x-1/2 items-center gap-3 sm:gap-4">
