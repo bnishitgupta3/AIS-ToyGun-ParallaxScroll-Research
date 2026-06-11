@@ -16,6 +16,33 @@ gsap.registerPlugin(ScrollTrigger, ScrollToPlugin);
 
 const ARSENAL_COUNT = 3;   // number of weapons
 
+/* ── Scroll mapping with a DWELL on each weapon ──
+   Raw scroll progress (0..1) is remapped to a carousel position (0..N-1)
+   that REST (holds) on each gun before easing to the next. This makes the
+   carousel "snap and wait" on every weapon — including the last one, so the
+   pin doesn't release the instant you reach it. */
+const HOLD_FRAC  = 0.16;   // fraction of the pin scroll spent resting on each gun
+const TRANS_FRAC = (1 - ARSENAL_COUNT * HOLD_FRAC) / (ARSENAL_COUNT - 1);
+const smoothstep = (t) => t * t * (3 - 2 * t);
+
+const remapArsenal = (p) => {
+    let acc = 0;
+    for (let k = 0; k < ARSENAL_COUNT; k++) {
+        if (p <= acc + HOLD_FRAC) return k;              // resting on weapon k
+        acc += HOLD_FRAC;
+        if (k < ARSENAL_COUNT - 1) {
+            if (p <= acc + TRANS_FRAC) {                 // easing k → k+1
+                return k + smoothstep((p - acc) / TRANS_FRAC);
+            }
+            acc += TRANS_FRAC;
+        }
+    }
+    return ARSENAL_COUNT - 1;
+};
+
+/* Raw progress that centres weapon i (middle of its hold band) — for seek. */
+const holdCenter = (i) => i * (HOLD_FRAC + TRANS_FRAC) + HOLD_FRAC / 2;
+
 export default function LandingPage() {
     /* ── 3D model refs – populated inside <Canvas> ── */
     const model1Ref = useRef();  // MP5K-UTG
@@ -44,8 +71,7 @@ export default function LandingPage() {
     const seekToWeapon = (index) => {
         const st = arsenalST.current;
         if (!st) return;
-        const t = index / (ARSENAL_COUNT - 1);          // 0 → 0.5 → 1
-        const targetY = st.start + (st.end - st.start) * t;
+        const targetY = st.start + (st.end - st.start) * holdCenter(index);
         gsap.to(window, {
             scrollTo: { y: targetY, autoKill: false },
             duration: 1,
@@ -115,8 +141,7 @@ export default function LandingPage() {
                    idx is rounded so each weapon's "active" band is centred on
                    its gun-centred scroll point (0, 0.5, 1) — text and model
                    are therefore always in sync. */
-                const updateActive = (p) => {
-                    const idx = Math.round(p * (ARSENAL_COUNT - 1)); // 0 / 1 / 2
+                const updateActive = (idx) => {
                     for (let i = 0; i < ARSENAL_COUNT; i++) {
                         const info = document.getElementById(`arsenal-info-${i}`);
                         if (info) gsap.set(info, {
@@ -152,16 +177,22 @@ export default function LandingPage() {
                 const st = ScrollTrigger.create({
                     trigger:             arsenalRef.current,
                     start:               "top top",
-                    end:                 () => "+=" + Math.round(window.innerHeight * 2.4),
+                    /* Longer pin so the per-weapon dwells have room to breathe. */
+                    end:                 () => "+=" + Math.round(window.innerHeight * 3.4),
                     pin:                 true,
                     pinSpacing:          true,
                     anticipatePin:       1,
                     invalidateOnRefresh: true,
                     onUpdate: (self) => {
-                        scrollRef.current.arsenal = self.progress;
-                        updateActive(self.progress);
+                        /* Remap raw scroll → carousel position with dwells. */
+                        const pos = remapArsenal(self.progress);  // 0 .. N-1
+                        scrollRef.current.arsenal = pos / (ARSENAL_COUNT - 1);
+                        updateActive(Math.round(pos));
                     },
-                    onRefresh: () => updateActive(scrollRef.current.arsenal || 0),
+                    onRefresh: () =>
+                        updateActive(
+                            Math.round((scrollRef.current.arsenal || 0) * (ARSENAL_COUNT - 1)),
+                        ),
                 });
 
                 arsenalST.current = st;

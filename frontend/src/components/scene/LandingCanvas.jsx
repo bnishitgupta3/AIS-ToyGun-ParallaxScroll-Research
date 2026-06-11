@@ -17,6 +17,7 @@ useGLTF.preload("/assets/crimson-blaster.glb");
 /* World-space layout constants — MUST match LandingPage. */
 export const HERO_GUN_X = 2.4;   // model1's X during the hero (renders in right column)
 export const GUN_SPACING = 12;   // hero parking distance between guns (off-screen)
+const OFFSCREEN_PUSH = 11;       // how far past its arc slot a side gun parks off-screen
 const DAMP_LAMBDA = 6.5;         // higher = snappier, lower = floatier (buttery sweet-spot)
 
 /* ── Circular turntable geometry ──
@@ -26,8 +27,8 @@ const DAMP_LAMBDA = 6.5;         // higher = snappier, lower = floatier (buttery
    the carousel rotates. Scrolling spins the ring so each gun loops to front. */
 const N            = 3;                    // weapons
 const SLOT_ANGLE   = (2 * Math.PI) / N;    // 120° — even spacing on a full circle
-const ARC_RADIUS   = 3.0;                  // X spread of the orbit
-const ARC_DEPTH    = 2.2;                  // Z depth (shallower than radius → ellipse)
+const ARC_RADIUS   = 3.8;                  // X spread of the orbit (bigger circle)
+const ARC_DEPTH    = 2.8;                  // Z depth (shallower than radius → ellipse)
 const SIDE_TURN    = 0.3;                  // gentle tangential turn as guns orbit
 const lerp = THREE.MathUtils.lerp;
 const damp = THREE.MathUtils.damp;
@@ -89,8 +90,15 @@ function LandingScene({ model1Ref, model2Ref, model3Ref, mouseRef, scrollRef }) 
             const wphi = Math.atan2(Math.sin(phi), cphi);
             const cRotY = wphi * SIDE_TURN;                // the "spin"
 
-            /* — Hero pose (off to the right; only gun1 visible) — */
-            const hX = i * GUN_SPACING + HERO_GUN_X;
+            /* — Hero pose — only gun0 is visible (parked in the right column).
+               The side guns park OFF-SCREEN ON THE SIDE THEY BELONG TO at the
+               arsenal-0 layout (cX is the arsenal-0 slot x during entry), so
+               on scroll-in they glide symmetrically inward — gun1 from the
+               right, gun2 from the left — instead of all sweeping in from one
+               side. */
+            const hX = i === 0
+                ? HERO_GUN_X
+                : cX + Math.sign(cX) * OFFSCREEN_PUSH;
 
             /* — Blend hero → carousel by entry — */
             const tX = lerp(hX, cX, entry);
