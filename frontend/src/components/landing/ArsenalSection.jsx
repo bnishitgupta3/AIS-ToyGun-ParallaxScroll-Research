@@ -44,11 +44,10 @@ export const PRODUCTS = [
  *   │     [thumb0]  [thumb1]  [thumb2]   (nav row)   │  ← bottom thumbs
  *   └──────────────────────────────────────────────┘
  *
- * The pinned-scroll mechanism still lives in `.arsenal-container` (3 spacer
- * panels). GSAP (in LandingPage) drives:
- *   • the 3D models' world-X off the eased container transform (buttery)
- *   • the active info block's opacity
- *   • the active thumbnail's highlight
+ * The section is pinned by GSAP (LandingPage) for a fixed scroll distance.
+ * GSAP writes scroll progress into a shared ref; the 3D Canvas reads it in
+ * useFrame and damps the guns toward centre (buttery, frame-rate independent).
+ * GSAP's onUpdate also toggles the active info block + thumbnail highlight.
  * Clicking a thumbnail calls `onSelect(i)` → GSAP scroll-seek to that section.
  */
 export default function ArsenalSection({ arsenalRef, onSelect }) {
@@ -135,17 +134,6 @@ export default function ArsenalSection({ arsenalRef, onSelect }) {
                             </div>
                         </div>
                     </button>
-                ))}
-            </div>
-
-            {/* ── SCROLLING STRIP (pure spacers — drive the pin distance) ── */}
-            <div className="arsenal-container flex h-screen w-max flex-nowrap">
-                {PRODUCTS.map((p) => (
-                    <div
-                        key={p.id}
-                        className="h-screen w-screen shrink-0"
-                        aria-hidden="true"
-                    />
                 ))}
             </div>
 
