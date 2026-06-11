@@ -47,7 +47,7 @@ export const PRODUCTS = [
  * GSAP's onUpdate toggles the active name + button + thumbnail by opacity.
  * Clicking a thumbnail calls `onSelect(i)` → GSAP scroll-seek to that section.
  */
-export default function ArsenalSection({ arsenalRef, onSelect }) {
+export default function ArsenalSection({ arsenalRef, onSelect, activeIndex = 0 }) {
     return (
         <section
             ref={arsenalRef}
@@ -67,8 +67,8 @@ export default function ArsenalSection({ arsenalRef, onSelect }) {
                         <div
                             key={p.id}
                             id={`arsenal-name-${i}`}
-                            className="absolute inset-x-0 top-0 flex flex-col items-center"
-                            style={{ opacity: i === 0 ? 1 : 0 }}
+                            className="absolute inset-x-0 top-0 flex flex-col items-center transition-opacity duration-500"
+                            style={{ opacity: i === activeIndex ? 1 : 0 }}
                         >
                             <span
                                 className="font-inter mb-3 inline-block rounded-full border px-3 py-0.5 text-[9px] font-semibold uppercase tracking-[0.3em]"
@@ -93,10 +93,10 @@ export default function ArsenalSection({ arsenalRef, onSelect }) {
                     <div
                         key={p.id}
                         id={`arsenal-btn-${i}`}
-                        className="absolute inset-x-0 top-0 flex justify-center"
+                        className="absolute inset-x-0 top-0 flex justify-center transition-opacity duration-500"
                         style={{
-                            opacity: i === 0 ? 1 : 0,
-                            pointerEvents: i === 0 ? "auto" : "none",
+                            opacity: i === activeIndex ? 1 : 0,
+                            pointerEvents: i === activeIndex ? "auto" : "none",
                         }}
                     >
                         <Link
@@ -126,8 +126,8 @@ export default function ArsenalSection({ arsenalRef, onSelect }) {
                         onClick={() => onSelect?.(i)}
                         className="group relative flex h-20 w-28 shrink-0 flex-col justify-between overflow-hidden rounded-xl border-2 bg-white/70 p-2.5 text-left backdrop-blur-md transition-all duration-300 sm:w-32"
                         style={{
-                            opacity: i === 0 ? 1 : 0.4,
-                            borderColor: i === 0 ? p.accent : "rgba(0,0,0,0.10)",
+                            opacity: i === activeIndex ? 1 : 0.4,
+                            borderColor: i === activeIndex ? p.accent : "rgba(0,0,0,0.10)",
                         }}
                     >
                         {/* Accent swatch */}

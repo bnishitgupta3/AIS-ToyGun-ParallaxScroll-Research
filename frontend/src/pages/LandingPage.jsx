@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useLocation } from "react-router-dom";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -60,6 +60,18 @@ export default function LandingPage() {
 
     /* ── Arsenal ScrollTrigger handle (for thumbnail click-to-seek) ── */
     const arsenalST = useRef(null);
+
+    /* ── Active weapon index (drives the heading / button / thumbnail) ──
+       Held in React state so the UI is reliably in sync with the centred gun.
+       Updated ONLY when the index actually changes (2–3× per scroll), so it
+       never interferes with the per-frame gun animation in the Canvas. */
+    const [activeIdx, setActiveIdx] = useState(0);
+    const activeIdxRef = useRef(0);
+    const setActive = (idx) => {
+        if (idx === activeIdxRef.current) return;
+        activeIdxRef.current = idx;
+        setActiveIdx(idx);
+    };
 
     /* ── Scroll progress shared with the 3D canvas ──
        GSAP writes here every scroll tick; the Canvas's useFrame reads it
@@ -152,31 +164,6 @@ export default function LandingPage() {
             g1.rotation.set(0, 0, 0);
 
             ctx = gsap.context(() => {
-                const ACCENTS = ["#f97316", "#0871E7", "#ef4444"];
-
-                /* Toggle the active weapon's heading (above the gun), its
-                   button (below the gun) and the thumbnail highlight. idx is
-                   rounded so each weapon's "active" band is centred on its
-                   gun-centred scroll point (0, 0.5, 1) — heading, button and
-                   model stay in sync. */
-                const updateActive = (idx) => {
-                    for (let i = 0; i < ARSENAL_COUNT; i++) {
-                        const name = document.getElementById(`arsenal-name-${i}`);
-                        if (name) gsap.set(name, { opacity: i === idx ? 1 : 0 });
-
-                        const btn = document.getElementById(`arsenal-btn-${i}`);
-                        if (btn) gsap.set(btn, {
-                            opacity:       i === idx ? 1 : 0,
-                            pointerEvents: i === idx ? "auto" : "none",
-                        });
-
-                        const thumb = document.getElementById(`arsenal-thumb-${i}`);
-                        if (thumb) gsap.set(thumb, {
-                            opacity:     i === idx ? 1 : 0.4,
-                            borderColor: i === idx ? ACCENTS[i] : "rgba(0,0,0,0.10)",
-                        });
-                    }
-                };
 
                 /* ── HERO → ARSENAL entrance ──
                    Writes `entry` 0→1 as the section scrolls into view. No
@@ -209,10 +196,10 @@ export default function LandingPage() {
                         /* Remap raw scroll → carousel position with dwells. */
                         const pos = remapArsenal(self.progress);  // 0 .. N-1
                         scrollRef.current.arsenal = pos / (ARSENAL_COUNT - 1);
-                        updateActive(Math.round(pos));
+                        setActive(Math.round(pos));
                     },
                     onRefresh: () =>
-                        updateActive(
+                        setActive(
                             Math.round((scrollRef.current.arsenal || 0) * (ARSENAL_COUNT - 1)),
                         ),
                 });
@@ -259,7 +246,7 @@ export default function LandingPage() {
                 <HeroSection heroRef={heroRef} />
 
                 {/* 2 — ARSENAL (GSAP pins this) */}
-                <ArsenalSection arsenalRef={arsenalRef} onSelect={seekToWeapon} />
+                <ArsenalSection arsenalRef={arsenalRef} onSelect={seekToWeapon} activeIndex={activeIdx} />
 
                 {/* 3 — MISSION (dark contrast section) */}
                 <MissionSection missionRef={missionRef} />
