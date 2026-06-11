@@ -16,40 +16,52 @@ useGLTF.preload("/assets/crimson-blaster.glb");
 
 /* World-space layout constants — MUST match LandingPage. */
 export const HERO_GUN_X = 2.4;   // model1's X during the hero (renders in right column)
-export const GUN_SPACING = 12;   // X distance between adjacent guns
+export const GUN_SPACING = 12;   // hero parking distance between guns (off-screen)
 const DAMP_LAMBDA = 6.5;         // higher = snappier, lower = floatier (buttery sweet-spot)
+
+/* ── Semicircular carousel geometry ──
+   Guns orbit a circle in the X-Z plane. The slot at angle 0 is front-and-
+   centre (highlighted, full size); neighbours sit on the arc — smaller,
+   rotated, and pushed back. Scrolling sweeps every gun through the centre. */
+const N            = 3;      // weapons
+const SLOT_ANGLE   = 0.95;   // radians between adjacent slots (~54°)
+const ARC_RADIUS   = 2.6;    // orbit radius (controls side-gun spread)
+const ARC_DEPTH    = 2.6;    // how far side guns recede in Z
+const SIDE_TURN    = 0.6;    // how much side guns rotate (the "spin")
+const lerp = THREE.MathUtils.lerp;
+const damp = THREE.MathUtils.damp;
+const clamp01 = (v) => (v < 0 ? 0 : v > 1 ? 1 : v);
 
 /* ── Scene graph — must live inside <Canvas> ── */
 function LandingScene({ model1Ref, model2Ref, model3Ref, mouseRef, scrollRef }) {
     /*
-     * BUTTERY MOTION CORE
-     * ───────────────────
-     * GSAP no longer sets gun positions directly. Instead it writes two
-     * normalized scalars into scrollRef every scroll tick:
+     * BUTTERY CAROUSEL CORE
+     * ─────────────────────
+     * GSAP writes two scalars into scrollRef every scroll tick:
      *   • entry   0→1  hero → arsenal entrance
-     *   • arsenal 0→1  carousel progress while pinned
+     *   • arsenal 0→1  carousel rotation while pinned
      *
-     * Here, EVERY render frame (60fps), we compute each gun's target X and
-     * damp toward it. THREE.MathUtils.damp is frame-rate independent, so the
-     * guns glide on a smooth exponential curve regardless of how choppily
-     * scroll events fire — no stutter, and they always converge EXACTLY on
-     * centre (x = 0) when the scroll settles on a weapon.
+     * Every render frame we compute each gun's carousel pose and DAMP toward
+     * it (frame-rate independent → buttery, no stutter, exact settling).
      *
-     * Target for gun i:
-     *   x = i*SPACING  +  HERO_GUN_X*(1 - entry)  −  2*SPACING*arsenal
-     *   ├─ hero (entry 0, arsenal 0): 0/12/24 shifted +2.4  → gun1 in right col
-     *   ├─ arsenal start (entry 1, arsenal 0): 0/12/24       → gun1 centred
-     *   ├─ arsenal mid   (arsenal 0.5): −12/0/12             → gun2 centred
-     *   └─ arsenal end   (arsenal 1):   −24/−12/0            → gun3 centred
+     * Carousel: activePos = arsenal·(N−1) is the slot currently centred.
+     * Gun i's angle φ = (i − activePos)·SLOT_ANGLE.
+     *   φ = 0  → front centre, full scale, no turn (HIGHLIGHTED)
+     *   φ ≠ 0  → swung onto the arc: smaller, pushed back, rotated
+     * As `arsenal` grows, every gun sweeps through φ = 0 in turn.
+     *
+     * The hero pose (gun1 parked in the right column, others off-screen)
+     * is blended into the carousel by `entry`.
      */
     useFrame((_, dt) => {
         const guns = [model1Ref.current, model2Ref.current, model3Ref.current];
         if (!guns[0]) return;
 
-        const s = scrollRef.current || { entry: 0, arsenal: 0 };
-        const entry   = s.entry   || 0;
-        const arsenal = s.arsenal || 0;
-        const heroX   = HERO_GUN_X * (1 - entry);
+        const s       = scrollRef.current || { entry: 0, arsenal: 0 };
+        const entry   = clamp01(s.entry || 0);
+        const arsenal = clamp01(s.arsenal || 0);
+        const activePos = arsenal * (N - 1);
+        const m = mouseRef.current;
 
         // clamp dt so a tab-switch frame-spike can't teleport the guns
         const d = Math.min(dt, 1 / 30);
@@ -57,19 +69,39 @@ function LandingScene({ model1Ref, model2Ref, model3Ref, mouseRef, scrollRef }) 
         for (let i = 0; i < guns.length; i++) {
             const g = guns[i];
             if (!g) continue;
-            const target = i * GUN_SPACING + heroX - 2 * GUN_SPACING * arsenal;
-            g.position.x = THREE.MathUtils.damp(g.position.x, target, DAMP_LAMBDA, d);
-        }
 
-        /* Mouse-tilt only during the hero (model1 near centre, entry low) */
-        const g1 = guns[0];
-        if (entry < 0.4) {
-            const m = mouseRef.current;
-            g1.rotation.y = THREE.MathUtils.damp(g1.rotation.y,  m.x * 0.28, 4, d);
-            g1.rotation.x = THREE.MathUtils.damp(g1.rotation.x, -m.y * 0.14, 4, d);
-        } else {
-            g1.rotation.y = THREE.MathUtils.damp(g1.rotation.y, 0, 4, d);
-            g1.rotation.x = THREE.MathUtils.damp(g1.rotation.x, 0, 4, d);
+            /* — Carousel pose for slot i — */
+            const phi  = (i - activePos) * SLOT_ANGLE;
+            const cphi = Math.cos(phi);
+            const cX   = Math.sin(phi) * ARC_RADIUS;
+            const cZ   = (cphi - 1) * ARC_DEPTH;            // 0 at front, negative on sides
+            const cS   = 0.45 + 0.55 * Math.max(cphi, 0);  // 1.0 front → ~0.45 far side
+            const cRotY = phi * SIDE_TURN;                 // the "spin"
+
+            /* — Hero pose (off to the right; only gun1 visible) — */
+            const hX = i * GUN_SPACING + HERO_GUN_X;
+            const hS = 1;
+
+            /* — Blend hero → carousel by entry — */
+            const tX = lerp(hX, cX, entry);
+            const tZ = lerp(0,  cZ, entry);
+            const tS = lerp(hS, cS, entry);
+            let   tRotY = lerp(0, cRotY, entry);
+            let   tRotX = 0;
+
+            /* Hero mouse-tilt on the focused gun1, fading out as we enter */
+            if (i === 0) {
+                tRotY += (1 - entry) * (m.x * 0.28);
+                tRotX  = (1 - entry) * (-m.y * 0.14);
+            }
+
+            /* — Damp every channel for buttery motion — */
+            g.position.x = damp(g.position.x, tX, DAMP_LAMBDA, d);
+            g.position.z = damp(g.position.z, tZ, DAMP_LAMBDA, d);
+            g.rotation.y = damp(g.rotation.y, tRotY, DAMP_LAMBDA, d);
+            g.rotation.x = damp(g.rotation.x, tRotX, DAMP_LAMBDA, d);
+            const ns = damp(g.scale.x, tS, DAMP_LAMBDA, d);
+            g.scale.setScalar(ns);
         }
     });
 
