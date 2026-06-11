@@ -37,13 +37,28 @@ export default function GenericGunModel({
         );
 
         c.traverse((o) => {
-            if (o.isMesh) {
+            if (o.isMesh && o.material) {
                 o.castShadow = false;
                 o.receiveShadow = false;
-                if (o.material) {
-                    o.material.envMapIntensity = 0.9;
-                    o.material.needsUpdate = true;
-                }
+                /* Clone materials so per-instance opacity (carousel focus
+                   fade on the landing page) can't leak into the shared
+                   useGLTF cache used by the product pages. Mark transparent
+                   once so we can vary opacity per frame without recompiles. */
+                o.material = Array.isArray(o.material)
+                    ? o.material.map((mat) => {
+                          const m = mat.clone();
+                          m.transparent = true;
+                          m.envMapIntensity = 0.9;
+                          m.needsUpdate = true;
+                          return m;
+                      })
+                    : (() => {
+                          const m = o.material.clone();
+                          m.transparent = true;
+                          m.envMapIntensity = 0.9;
+                          m.needsUpdate = true;
+                          return m;
+                      })();
             }
         });
         return c;

@@ -24,13 +24,18 @@ const DAMP_LAMBDA = 6.5;         // higher = snappier, lower = floatier (buttery
    centre (highlighted, full size); neighbours sit on the arc — smaller,
    rotated, and pushed back. Scrolling sweeps every gun through the centre. */
 const N            = 3;      // weapons
-const SLOT_ANGLE   = 0.95;   // radians between adjacent slots (~54°)
-const ARC_RADIUS   = 2.6;    // orbit radius (controls side-gun spread)
-const ARC_DEPTH    = 2.6;    // how far side guns recede in Z
-const SIDE_TURN    = 0.6;    // how much side guns rotate (the "spin")
+const SLOT_ANGLE   = 1.0;    // radians between adjacent slots (~57°)
+const ARC_RADIUS   = 3.5;    // orbit radius (bigger = sparser side guns)
+const ARC_DEPTH    = 3.4;    // how far side guns recede in Z
+const SIDE_TURN    = 0.7;    // how much side guns rotate (narrows their silhouette)
 const lerp = THREE.MathUtils.lerp;
 const damp = THREE.MathUtils.damp;
 const clamp01 = (v) => (v < 0 ? 0 : v > 1 ? 1 : v);
+
+/* Per-gun focus → scale / opacity.
+   f = max(cos φ, 0): 1 at front, 0 once a gun is ≥90° around the arc. */
+const focusScale   = (f) => 0.3  + 0.7  * Math.pow(f, 1.4);  // 1.0 centre → 0.30 far side
+const focusOpacity = (f) => 0.25 + 0.75 * Math.pow(f, 2.2);  // 1.0 centre → 0.25 far side
 
 /* ── Scene graph — must live inside <Canvas> ── */
 function LandingScene({ model1Ref, model2Ref, model3Ref, mouseRef, scrollRef }) {
@@ -73,19 +78,21 @@ function LandingScene({ model1Ref, model2Ref, model3Ref, mouseRef, scrollRef }) 
             /* — Carousel pose for slot i — */
             const phi  = (i - activePos) * SLOT_ANGLE;
             const cphi = Math.cos(phi);
+            const focus = Math.max(cphi, 0);               // 1 front → 0 far side
             const cX   = Math.sin(phi) * ARC_RADIUS;
-            const cZ   = (cphi - 1) * ARC_DEPTH;            // 0 at front, negative on sides
-            const cS   = 0.45 + 0.55 * Math.max(cphi, 0);  // 1.0 front → ~0.45 far side
+            const cZ   = (cphi - 1) * ARC_DEPTH;           // 0 at front, negative on sides
+            const cS   = focusScale(focus);                // 1.0 front → 0.30 far side
+            const cO   = focusOpacity(focus);              // 1.0 front → 0.25 far side
             const cRotY = phi * SIDE_TURN;                 // the "spin"
 
             /* — Hero pose (off to the right; only gun1 visible) — */
             const hX = i * GUN_SPACING + HERO_GUN_X;
-            const hS = 1;
 
             /* — Blend hero → carousel by entry — */
             const tX = lerp(hX, cX, entry);
             const tZ = lerp(0,  cZ, entry);
-            const tS = lerp(hS, cS, entry);
+            const tS = lerp(1,  cS, entry);
+            const tO = lerp(1,  cO, entry);  // fully opaque in hero, fades on the arc
             let   tRotY = lerp(0, cRotY, entry);
             let   tRotX = 0;
 
@@ -102,6 +109,16 @@ function LandingScene({ model1Ref, model2Ref, model3Ref, mouseRef, scrollRef }) 
             g.rotation.x = damp(g.rotation.x, tRotX, DAMP_LAMBDA, d);
             const ns = damp(g.scale.x, tS, DAMP_LAMBDA, d);
             g.scale.setScalar(ns);
+
+            /* — Fade the non-focused guns (like the 40% thumbnails) — */
+            const op = damp(g.userData.op ?? 1, tO, DAMP_LAMBDA, d);
+            g.userData.op = op;
+            g.traverse((o) => {
+                if (o.isMesh && o.material) {
+                    const mats = Array.isArray(o.material) ? o.material : [o.material];
+                    for (let k = 0; k < mats.length; k++) mats[k].opacity = op;
+                }
+            });
         }
     });
 
