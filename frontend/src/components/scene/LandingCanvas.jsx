@@ -19,23 +19,25 @@ export const HERO_GUN_X = 2.4;   // model1's X during the hero (renders in right
 export const GUN_SPACING = 12;   // hero parking distance between guns (off-screen)
 const DAMP_LAMBDA = 6.5;         // higher = snappier, lower = floatier (buttery sweet-spot)
 
-/* ── Semicircular carousel geometry ──
-   Guns orbit a circle in the X-Z plane. The slot at angle 0 is front-and-
-   centre (highlighted, full size); neighbours sit on the arc — smaller,
-   rotated, and pushed back. Scrolling sweeps every gun through the centre. */
-const N            = 3;      // weapons
-const SLOT_ANGLE   = 1.0;    // radians between adjacent slots (~57°)
-const ARC_RADIUS   = 3.5;    // orbit radius (bigger = sparser side guns)
-const ARC_DEPTH    = 3.4;    // how far side guns recede in Z
-const SIDE_TURN    = 0.7;    // how much side guns rotate (narrows their silhouette)
+/* ── Circular turntable geometry ──
+   Guns are evenly spaced around a FULL circle (360° / N apart) in the X-Z
+   plane. The slot at angle 0 is front-and-centre (highlighted, full size);
+   the others orbit symmetrically on both sides and wrap around the back as
+   the carousel rotates. Scrolling spins the ring so each gun loops to front. */
+const N            = 3;                    // weapons
+const SLOT_ANGLE   = (2 * Math.PI) / N;    // 120° — even spacing on a full circle
+const ARC_RADIUS   = 3.0;                  // X spread of the orbit
+const ARC_DEPTH    = 2.2;                  // Z depth (shallower than radius → ellipse)
+const SIDE_TURN    = 0.3;                  // gentle tangential turn as guns orbit
 const lerp = THREE.MathUtils.lerp;
 const damp = THREE.MathUtils.damp;
 const clamp01 = (v) => (v < 0 ? 0 : v > 1 ? 1 : v);
 
 /* Per-gun focus → scale / opacity.
-   f = max(cos φ, 0): 1 at front, 0 once a gun is ≥90° around the arc. */
-const focusScale   = (f) => 0.3  + 0.7  * Math.pow(f, 1.4);  // 1.0 centre → 0.30 far side
-const focusOpacity = (f) => 0.25 + 0.75 * Math.pow(f, 2.2);  // 1.0 centre → 0.25 far side
+   f = (cos φ + 1) / 2 across the FULL circle: 1 at front, 0.25 at the ±120°
+   side slots, 0 directly behind. Keeps the orbiting guns visible-but-dim. */
+const focusScale   = (f) => 0.32 + 0.68 * Math.pow(f, 1.3);  // 1.0 front → ~0.43 sides
+const focusOpacity = (f) => 0.28 + 0.72 * Math.pow(f, 1.8);  // 1.0 front → ~0.34 sides
 
 /* ── Scene graph — must live inside <Canvas> ── */
 function LandingScene({ model1Ref, model2Ref, model3Ref, mouseRef, scrollRef }) {
@@ -78,12 +80,14 @@ function LandingScene({ model1Ref, model2Ref, model3Ref, mouseRef, scrollRef }) 
             /* — Carousel pose for slot i — */
             const phi  = (i - activePos) * SLOT_ANGLE;
             const cphi = Math.cos(phi);
-            const focus = Math.max(cphi, 0);               // 1 front → 0 far side
+            const focus = (cphi + 1) / 2;                  // 1 front → 0.25 sides → 0 behind
             const cX   = Math.sin(phi) * ARC_RADIUS;
             const cZ   = (cphi - 1) * ARC_DEPTH;           // 0 at front, negative on sides
-            const cS   = focusScale(focus);                // 1.0 front → 0.30 far side
-            const cO   = focusOpacity(focus);              // 1.0 front → 0.25 far side
-            const cRotY = phi * SIDE_TURN;                 // the "spin"
+            const cS   = focusScale(focus);                // 1.0 front → ~0.43 sides
+            const cO   = focusOpacity(focus);              // 1.0 front → ~0.34 sides
+            /* wrap φ to ±π so both flanks turn symmetrically across the loop */
+            const wphi = Math.atan2(Math.sin(phi), cphi);
+            const cRotY = wphi * SIDE_TURN;                // the "spin"
 
             /* — Hero pose (off to the right; only gun1 visible) — */
             const hX = i * GUN_SPACING + HERO_GUN_X;
