@@ -1,5 +1,4 @@
 import { motion } from "framer-motion";
-import TelemetryTyping from "./TelemetryTyping";
 
 const EASE_SPRING = [0.16, 1, 0.3, 1];
 
@@ -85,11 +84,6 @@ export default function HeroSection({ heroRef }) {
                         className="absolute inset-0 h-full w-full rounded-2xl object-cover opacity-0 [&[src]]:opacity-100"
                         src="/assets/hero-video.mp4"
                     />
-
-                    {/* TelemetrySpecs — bottom-left of the 3D viewport, font-nokia */}
-                    <div className="absolute bottom-4 left-2 z-10 min-h-[1.8em] min-w-[120px] sm:bottom-8 sm:left-4">
-                        <TelemetryTyping />
-                    </div>
                 </div>
             </div>
 

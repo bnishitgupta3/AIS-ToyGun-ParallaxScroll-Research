@@ -5,6 +5,7 @@ import gsap from "gsap";
 import { useProgress } from "@react-three/drei";
 
 import LandingPage            from "@/pages/LandingPage";
+import AboutPage              from "@/pages/AboutPage";
 import ProductShowcase        from "@/pages/ProductShowcase";       // existing MP5K page
 import M416Showcase           from "@/pages/M416Showcase";
 import CrimsonBlasterShowcase from "@/pages/CrimsonBlasterShowcase";
@@ -71,6 +72,9 @@ function App() {
             <Routes>
                 {/* Home — full D2C landing page */}
                 <Route path="/"               element={<LandingPage />} />
+
+                {/* About */}
+                <Route path="/about"          element={<AboutPage />} />
 
                 {/* Product detail pages */}
                 <Route path="/product/mp5k"   element={<ProductShowcase />} />

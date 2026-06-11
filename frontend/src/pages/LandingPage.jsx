@@ -1,4 +1,5 @@
 import { useEffect, useRef } from "react";
+import { useLocation } from "react-router-dom";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { ScrollToPlugin } from "gsap/ScrollToPlugin";
@@ -101,6 +102,22 @@ export default function LandingPage() {
         window.addEventListener("mousemove", onMove, { passive: true });
         return () => window.removeEventListener("mousemove", onMove);
     }, []);
+
+    /* ── Cross-page section nav ──
+       When the global navbar sends us here from another route (e.g. /about →
+       "Mission"), it passes the target anchor via router state. Scroll to it
+       once the layout / ScrollTrigger have settled (and after ScrollToTop has
+       reset to the top). */
+    const location = useLocation();
+    useEffect(() => {
+        const target = location.state?.scrollTo;
+        if (!target) return;
+        const id = setTimeout(() => {
+            document.querySelector(target)?.scrollIntoView({ behavior: "smooth" });
+            window.history.replaceState({}, ""); // don't re-scroll on back/refresh
+        }, 700);
+        return () => clearTimeout(id);
+    }, [location.state]);
 
     /* ── GSAP scroll orchestration ── */
     useEffect(() => {

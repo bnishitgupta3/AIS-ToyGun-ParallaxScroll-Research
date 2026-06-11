@@ -9,10 +9,10 @@
  */
 
 import { useEffect, useRef, useState } from "react";
-import { Link } from "react-router-dom";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
+import LandingNav from "@/components/landing/LandingNav";
 import GenericGunScene from "@/components/scene/GenericGunScene";
 import ParallaxBackground from "@/components/showcase/ParallaxBackground";
 import FireEffects from "@/components/showcase/FireEffects";
@@ -176,37 +176,8 @@ export default function ProductShowcaseTemplate({ product: rawProduct }) {
             style={cssVars}
         >
             <div>
-                {/* ── Top nav ── */}
-                <header className="fixed left-0 right-0 top-0 z-50 flex items-center justify-between px-6 py-5 md:px-12">
-                    <Link to={product.homeLink || "/"} className="flex items-center gap-3">
-                        <div
-                            className="h-2.5 w-2.5 rounded-full"
-                            style={{ background: product.accentColor }}
-                        />
-                        <span className="telemetry-label text-zinc-700" style={{ opacity: 1 }}>
-                            UTG · Tactical
-                        </span>
-                    </Link>
-                    <nav className="hidden items-center gap-8 md:flex">
-                        {["Models", "Specs", "Loadout", "Dealers"].map((n) => (
-                            <a
-                                key={n}
-                                href={`#${n.toLowerCase()}`}
-                                className="telemetry-label text-zinc-600 transition-colors hover:text-[color:var(--accent)]"
-                                style={{ opacity: 1 }}
-                            >
-                                {n}
-                            </a>
-                        ))}
-                    </nav>
-                    <Link
-                        to="/"
-                        className="hidden rounded-full border border-zinc-900/80 px-5 py-2 telemetry-label text-zinc-900 transition-all hover:bg-zinc-900 hover:text-white md:inline-block"
-                        style={{ opacity: 1 }}
-                    >
-                        ← Arsenal
-                    </Link>
-                </header>
+                {/* ── Global navbar ── */}
+                <LandingNav />
 
                 {/* ── Pinned scroll section ── */}
                 <section

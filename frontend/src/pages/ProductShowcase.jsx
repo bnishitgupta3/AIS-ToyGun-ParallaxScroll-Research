@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
-import { Link } from "react-router-dom";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import LandingNav from "@/components/landing/LandingNav";
 import WaterGunScene from "@/components/scene/WaterGunScene";
 import HeroOverlay from "@/components/showcase/HeroOverlay";
 import SpecsPanel from "@/components/showcase/SpecsPanel";
@@ -148,37 +148,8 @@ export default function ProductShowcase() {
             className="relative w-full bg-[color:var(--bg)] text-[color:var(--ink)]"
         >
             <div>
-            {/* Top nav bar */}
-            <header
-                data-testid="top-nav"
-                className="fixed left-0 right-0 top-0 z-50 flex items-center justify-between px-6 py-5 md:px-12"
-            >
-                <Link to="/" className="flex items-center gap-3">
-                    <div className="h-2.5 w-2.5 rounded-full bg-[color:var(--accent)]" />
-                    <span className="font-mono-tactical text-[11px] font-bold uppercase tracking-[0.32em] text-zinc-700">
-                        UTG · Tactical
-                    </span>
-                </Link>
-                <nav className="hidden items-center gap-8 md:flex">
-                    {["Models", "Specs", "Loadout", "Dealers"].map((n) => (
-                        <a
-                            key={n}
-                            href={`#${n.toLowerCase()}`}
-                            data-testid={`nav-${n.toLowerCase()}`}
-                            className="font-mono-tactical text-[11px] font-bold uppercase tracking-[0.32em] text-zinc-600 transition-colors hover:text-[color:var(--accent)]"
-                        >
-                            {n}
-                        </a>
-                    ))}
-                </nav>
-                <Link
-                    to="/"
-                    data-testid="nav-cta"
-                    className="hidden rounded-full border border-zinc-900/80 px-5 py-2 font-mono-tactical text-[11px] font-bold uppercase tracking-[0.22em] text-zinc-900 transition-all hover:bg-[color:var(--ink)] hover:text-white md:inline-block"
-                >
-                    ← Arsenal
-                </Link>
-            </header>
+            {/* Global navbar */}
+            <LandingNav />
 
             {/* PINNED SCROLL SECTION */}
             <section
