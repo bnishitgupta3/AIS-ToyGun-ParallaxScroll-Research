@@ -1,5 +1,5 @@
 import { Suspense } from "react";
-import { Canvas, useFrame } from "@react-three/fiber";
+import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import {
     useGLTF,
     Environment,
@@ -40,8 +40,27 @@ const clamp01 = (v) => (v < 0 ? 0 : v > 1 ? 1 : v);
 const focusScale   = (f) => 0.32 + 0.68 * Math.pow(f, 1.3);  // 1.0 front → ~0.43 sides
 const focusOpacity = (f) => 0.28 + 0.72 * Math.pow(f, 1.8);  // 1.0 front → ~0.34 sides
 
+const clamp = (v, a, b) => (v < a ? a : v > b ? b : v);
+
+/* ── Responsive layout from viewport aspect ──
+   Narrow / portrait screens shrink the ring + the guns and bring the hero
+   gun toward centre & lower, so the carousel always fits and the hero gun
+   doesn't collide with the stacked mobile text. Wide desktops get the full
+   ARC_RADIUS / full-size guns / right-column hero gun. */
+function responsiveLayout(width, height) {
+    const aspect = (width || 1) / (height || 1);
+    return {
+        radius: clamp(aspect * 2.6, 1.7, ARC_RADIUS),
+        depth:  clamp(aspect * 1.9, 1.4, ARC_DEPTH),
+        scale:  clamp(aspect * 0.78, 0.52, 1.0),
+        heroX:  clamp((aspect - 0.78) * 3.2, 0, 1) * HERO_GUN_X,
+        heroY:  -clamp((0.95 - aspect) * 2.2, 0, 1) * 1.15,  // gun lower on mobile hero
+    };
+}
+
 /* ── Scene graph — must live inside <Canvas> ── */
 function LandingScene({ model1Ref, model2Ref, model3Ref, mouseRef, scrollRef }) {
+    const { size } = useThree();
     /*
      * BUTTERY CAROUSEL CORE
      * ─────────────────────
@@ -71,6 +90,9 @@ function LandingScene({ model1Ref, model2Ref, model3Ref, mouseRef, scrollRef }) 
         const activePos = arsenal * (N - 1);
         const m = mouseRef.current;
 
+        /* Responsive ring / scale / hero offset for this viewport */
+        const R = responsiveLayout(size.width, size.height);
+
         // clamp dt so a tab-switch frame-spike can't teleport the guns
         const d = Math.min(dt, 1 / 30);
 
@@ -82,28 +104,28 @@ function LandingScene({ model1Ref, model2Ref, model3Ref, mouseRef, scrollRef }) 
             const phi  = (i - activePos) * SLOT_ANGLE;
             const cphi = Math.cos(phi);
             const focus = (cphi + 1) / 2;                  // 1 front → 0.25 sides → 0 behind
-            const cX   = Math.sin(phi) * ARC_RADIUS;
-            const cZ   = (cphi - 1) * ARC_DEPTH;           // 0 at front, negative on sides
+            const cX   = Math.sin(phi) * R.radius;
+            const cZ   = (cphi - 1) * R.depth;             // 0 at front, negative on sides
             const cS   = focusScale(focus);                // 1.0 front → ~0.43 sides
             const cO   = focusOpacity(focus);              // 1.0 front → ~0.34 sides
             /* wrap φ to ±π so both flanks turn symmetrically across the loop */
             const wphi = Math.atan2(Math.sin(phi), cphi);
             const cRotY = wphi * SIDE_TURN;                // the "spin"
 
-            /* — Hero pose — only gun0 is visible (parked in the right column).
-               The side guns park OFF-SCREEN ON THE SIDE THEY BELONG TO at the
-               arsenal-0 layout (cX is the arsenal-0 slot x during entry), so
-               on scroll-in they glide symmetrically inward — gun1 from the
-               right, gun2 from the left — instead of all sweeping in from one
-               side. */
+            /* — Hero pose — only gun0 is visible (parked in the right column
+               on desktop, centred-and-lower on mobile). Side guns park
+               OFF-SCREEN ON THE SIDE THEY BELONG TO so on scroll-in they glide
+               symmetrically inward — gun1 from the right, gun2 from the left. */
             const hX = i === 0
-                ? HERO_GUN_X
-                : cX + Math.sign(cX) * OFFSCREEN_PUSH;
+                ? R.heroX
+                : cX + Math.sign(cX || 1) * OFFSCREEN_PUSH;
+            const hY = i === 0 ? R.heroY : 0;
 
             /* — Blend hero → carousel by entry — */
             const tX = lerp(hX, cX, entry);
+            const tY = lerp(hY, 0,  entry);
             const tZ = lerp(0,  cZ, entry);
-            const tS = lerp(1,  cS, entry);
+            const tS = lerp(1,  cS, entry) * R.scale;      // shrink whole rig on small screens
             const tO = lerp(1,  cO, entry);  // fully opaque in hero, fades on the arc
             let   tRotY = lerp(0, cRotY, entry);
             let   tRotX = 0;
@@ -116,6 +138,7 @@ function LandingScene({ model1Ref, model2Ref, model3Ref, mouseRef, scrollRef }) 
 
             /* — Damp every channel for buttery motion — */
             g.position.x = damp(g.position.x, tX, DAMP_LAMBDA, d);
+            g.position.y = damp(g.position.y, tY, DAMP_LAMBDA, d);
             g.position.z = damp(g.position.z, tZ, DAMP_LAMBDA, d);
             g.rotation.y = damp(g.rotation.y, tRotY, DAMP_LAMBDA, d);
             g.rotation.x = damp(g.rotation.x, tRotX, DAMP_LAMBDA, d);

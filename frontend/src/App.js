@@ -1,5 +1,5 @@
 import "@/App.css";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import gsap from "gsap";
 import { useProgress } from "@react-three/drei";
@@ -33,19 +33,33 @@ function ScrollToTop() {
    truth at the document level. */
 function BodyReveal() {
     const { progress, active } = useProgress();
+    const revealed = useRef(false);
+
+    const reveal = () => {
+        if (revealed.current) return;
+        revealed.current = true;
+        document.body.classList.remove("loading");
+        gsap.to("body", { autoAlpha: 1, duration: 0.45, ease: "power2.inOut" });
+    };
+
+    /* Fallback: never blank the page for more than ~900ms waiting on the
+       heavy .glb downloads. The HTML, fonts and GSAP animations show
+       immediately; the 3-D guns stream in afterwards via Suspense. This is
+       what keeps the site feeling instant on slow / mobile connections. */
     useEffect(() => {
-        if (progress < 100 || active) return;
-        // Double-rAF: wait for the DOM to commit + the next paint so
-        // GSAP timelines that just mounted have set their `from` state.
-        requestAnimationFrame(() => requestAnimationFrame(() => {
-            document.body.classList.remove("loading");
-            gsap.to("body", {
-                autoAlpha: 1,
-                duration: 0.5,
-                ease: "power2.inOut",
-            });
-        }));
+        const t = setTimeout(reveal, 900);
+        return () => clearTimeout(t);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
+
+    /* Reveal sooner if the models actually finish first. */
+    useEffect(() => {
+        if (progress >= 100 && !active) {
+            requestAnimationFrame(() => requestAnimationFrame(reveal));
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [progress, active]);
+
     return null;
 }
 

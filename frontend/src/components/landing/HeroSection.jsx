@@ -4,17 +4,12 @@ import TelemetryTyping from "./TelemetryTyping";
 const EASE_SPRING = [0.16, 1, 0.3, 1];
 
 /**
- * Hero — strict 2-column split (Jetour paradigm).
+ * Hero — responsive 2-column split.
+ *   • Desktop: text left, 3D gun right, scroll cue pinned bottom-centre.
+ *   • Mobile : text stacks on top, gun renders lower (handled responsively
+ *     in LandingCanvas), scroll cue still bottom-centre.
  *
- *   ┌───────────────────────────┬───────────────────────────┐
- *   │ LEFT  (text, left-align)   │ RIGHT (3D viewport)        │
- *   │  headline + sub-headline   │  gun model lives here      │
- *   │                            │  TelemetrySpecs bottom-left │
- *   └───────────────────────────┴───────────────────────────┘
- *
- * The gun model is the fixed full-screen <LandingCanvas> behind the page.
- * In LandingPage the hero positions model1 at world x ≈ +2.4 so it renders
- * inside THIS right column — never under the left text.
+ * The gun is the fixed full-screen <LandingCanvas> behind the page.
  */
 export default function HeroSection({ heroRef }) {
     return (
@@ -23,7 +18,7 @@ export default function HeroSection({ heroRef }) {
             id="hero"
             className="relative w-full overflow-hidden"
         >
-            <div className="mx-auto grid min-h-screen w-full max-w-7xl grid-cols-1 items-center px-8 md:grid-cols-2">
+            <div className="mx-auto grid min-h-[100svh] w-full max-w-7xl grid-cols-1 items-center px-6 sm:px-8 md:grid-cols-2">
 
                 {/* ── LEFT COLUMN — text, strictly left-aligned ── */}
                 <div className="relative z-20 pt-28 text-left md:pt-0">
@@ -31,7 +26,7 @@ export default function HeroSection({ heroRef }) {
                         initial={{ opacity: 0, y: 12 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.8, ease: EASE_SPRING }}
-                        className="mb-4 font-inter text-[11px] font-semibold uppercase tracking-[0.4em] text-[#f97316]"
+                        className="mb-4 font-inter text-[10px] font-semibold uppercase tracking-[0.35em] text-[#f97316] sm:text-[11px] sm:tracking-[0.4em]"
                     >
                         /// UTG · Tactical Division · 2026
                     </motion.p>
@@ -40,7 +35,7 @@ export default function HeroSection({ heroRef }) {
                         initial={{ opacity: 0, scale: 0.95 }}
                         animate={{ opacity: 1, scale: 1 }}
                         transition={{ duration: 1.5, ease: EASE_SPRING }}
-                        className="font-instrument text-[clamp(40px,5.5vw,76px)] leading-[0.95] tracking-tight text-[#1a1a1a]"
+                        className="font-instrument text-[clamp(38px,9vw,76px)] leading-[0.95] tracking-tight text-[#1a1a1a]"
                     >
                         Zero compromises.
                         <br />
@@ -51,7 +46,7 @@ export default function HeroSection({ heroRef }) {
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 1.2, delay: 0.3, ease: EASE_SPRING }}
-                        className="mt-6 max-w-[44ch] font-inter text-[15px] leading-relaxed text-[#1a1a1a]/60 md:text-[17px]"
+                        className="mt-5 max-w-[44ch] font-inter text-[14px] leading-relaxed text-[#1a1a1a]/60 sm:mt-6 sm:text-[16px] md:text-[17px]"
                     >
                         Engineered for backyard domination. Three precision
                         weapons — zero compromises on range, capacity, or fire rate.
@@ -61,11 +56,11 @@ export default function HeroSection({ heroRef }) {
                         initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.7, duration: 0.8, ease: EASE_SPRING }}
-                        className="mt-10 flex items-center gap-6"
+                        className="mt-8 sm:mt-10"
                     >
                         <a
                             href="#arsenal"
-                            className="group relative inline-flex items-center gap-2 overflow-hidden rounded-full bg-[#0871E7] px-7 py-3 font-inter text-[13px] font-semibold text-white shadow-[inset_0_-4px_4px_rgba(255,255,255,0.39)] transition-all hover:brightness-110"
+                            className="group relative inline-flex items-center gap-2 overflow-hidden rounded-full bg-[#0871E7] px-6 py-3 font-inter text-[13px] font-semibold text-white shadow-[inset_0_-4px_4px_rgba(255,255,255,0.39)] transition-all hover:brightness-110 sm:px-7"
                         >
                             <span
                                 aria-hidden="true"
@@ -76,23 +71,12 @@ export default function HeroSection({ heroRef }) {
                                 <path d="M12 5v14M5 12l7 7 7-7" />
                             </svg>
                         </a>
-
-                        <div className="flex flex-col items-center gap-1">
-                            <span className="font-inter text-[11px] uppercase tracking-[0.15em] text-[#1a1a1a]/40">
-                                Scroll
-                            </span>
-                            <div className="relative h-8 w-4 rounded-full border border-black/20">
-                                <div className="scroll-nub absolute left-1/2 top-1.5 h-1.5 w-0.5 -translate-x-1/2 rounded-full bg-[#1a1a1a]/40" />
-                            </div>
-                        </div>
                     </motion.div>
                 </div>
 
                 {/* ── RIGHT COLUMN — 3D viewport (gun renders here) ── */}
-                <div className="relative h-[50vh] w-full md:h-[80vh]">
-                    {/* Optional video overlay — shows only if the file exists.
-                        With no file the transparent area lets the fixed 3D
-                        canvas (the gun) shine through. */}
+                <div className="relative h-[42vh] w-full md:h-[80vh]">
+                    {/* Optional video overlay — shows only if the file exists. */}
                     <video
                         autoPlay
                         loop
@@ -103,14 +87,24 @@ export default function HeroSection({ heroRef }) {
                     />
 
                     {/* TelemetrySpecs — bottom-left of the 3D viewport, font-nokia */}
-                    <div className="absolute bottom-8 left-4 z-10 min-h-[1.8em] min-w-[120px]">
+                    <div className="absolute bottom-4 left-2 z-10 min-h-[1.8em] min-w-[120px] sm:bottom-8 sm:left-4">
                         <TelemetryTyping />
                     </div>
                 </div>
             </div>
 
-            {/* Corner telemetry label */}
-            <div className="pointer-events-none absolute bottom-6 right-8 font-nokia text-[10px] uppercase tracking-[0.32em] text-[#1a1a1a]/25">
+            {/* Scroll cue — pinned BOTTOM-CENTRE of the hero */}
+            <div className="pointer-events-none absolute bottom-7 left-1/2 z-20 flex -translate-x-1/2 flex-col items-center gap-1.5">
+                <span className="font-inter text-[10px] uppercase tracking-[0.3em] text-[#1a1a1a]/40">
+                    Scroll to explore
+                </span>
+                <div className="relative h-8 w-4 rounded-full border border-black/20">
+                    <div className="scroll-nub absolute left-1/2 top-1.5 h-1.5 w-0.5 -translate-x-1/2 rounded-full bg-[#1a1a1a]/40" />
+                </div>
+            </div>
+
+            {/* Corner telemetry label — hidden on small screens to avoid clutter */}
+            <div className="pointer-events-none absolute bottom-6 right-6 hidden font-nokia text-[10px] uppercase tracking-[0.32em] text-[#1a1a1a]/25 sm:block">
                 Sec · 01 / 05 — Hero
             </div>
         </section>
