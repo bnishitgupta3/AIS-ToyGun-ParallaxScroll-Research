@@ -1,4 +1,27 @@
+import { useState } from "react";
 import { Link } from "react-router-dom";
+
+/* Themed "Add to Cart" — brand orange with a glossy glint + tap feedback.
+   (No cart backend yet — shows an "Added ✓" confirmation for 1.6s.) */
+function AddToCartButton() {
+    const [added, setAdded] = useState(false);
+    return (
+        <button
+            type="button"
+            onClick={() => {
+                setAdded(true);
+                setTimeout(() => setAdded(false), 1600);
+            }}
+            className="group relative inline-flex items-center gap-2 overflow-hidden rounded-full bg-[#f97316] px-7 py-2.5 font-inter text-[12px] font-semibold uppercase tracking-[0.2em] text-white shadow-[inset_0_-4px_4px_rgba(255,255,255,0.35)] transition-all hover:brightness-110"
+        >
+            <span
+                aria-hidden="true"
+                className="pointer-events-none absolute left-[10%] top-[1px] h-4 w-[80%] rounded-[12px] bg-gradient-to-b from-[#FFD9B8] to-transparent transition-transform duration-200 group-hover:scale-x-105"
+            />
+            <span className="relative">{added ? "Added ✓" : "Add to Cart"}</span>
+        </button>
+    );
+}
 
 export const PRODUCTS = [
     {
@@ -87,18 +110,19 @@ export default function ArsenalSection({ arsenalRef, onSelect, activeIndex = 0 }
                 </div>
             </div>
 
-            {/* ── BELOW the gun — button only (stacked; GSAP toggles opacity) ── */}
-            <div className="absolute bottom-[26%] left-1/2 z-20 h-12 w-[260px] -translate-x-1/2">
+            {/* ── BELOW the gun — View Details + Add to Cart (stacked per weapon) ── */}
+            <div className="absolute bottom-[24%] left-1/2 z-20 h-12 -translate-x-1/2">
                 {PRODUCTS.map((p, i) => (
                     <div
                         key={p.id}
                         id={`arsenal-btn-${i}`}
-                        className="absolute inset-x-0 top-0 flex justify-center transition-opacity duration-500"
+                        className="absolute left-1/2 top-0 flex -translate-x-1/2 items-center gap-3 whitespace-nowrap transition-opacity duration-500"
                         style={{
                             opacity: i === activeIndex ? 1 : 0,
                             pointerEvents: i === activeIndex ? "auto" : "none",
                         }}
                     >
+                        {/* View Details — clean dark outline */}
                         <Link
                             to={p.link}
                             className="group inline-flex items-center gap-2 rounded-full border border-[#1a1a1a]/30 px-7 py-2.5 font-inter text-[12px] font-semibold uppercase tracking-[0.2em] text-[#1a1a1a] transition-all hover:border-[#1a1a1a] hover:bg-[#1a1a1a] hover:text-white"
@@ -112,6 +136,9 @@ export default function ArsenalSection({ arsenalRef, onSelect, activeIndex = 0 }
                                 <path d="M5 12h14M13 5l7 7-7 7" />
                             </svg>
                         </Link>
+
+                        {/* Add to Cart — themed orange */}
+                        <AddToCartButton />
                     </div>
                 ))}
             </div>

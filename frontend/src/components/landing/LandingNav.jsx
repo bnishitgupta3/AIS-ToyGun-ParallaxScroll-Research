@@ -68,11 +68,11 @@ export default function LandingNav() {
                 <a
                     href="#arsenal"
                     onClick={(e) => goSection(e, "#arsenal")}
-                    className="group relative cursor-pointer overflow-hidden rounded-full bg-[#0871E7] px-5 py-2 text-white shadow-[inset_0_-4px_4px_rgba(255,255,255,0.39)] outline outline-1 outline-[#0871E7] -outline-offset-1 transition-all duration-200 hover:brightness-110"
+                    className="group relative cursor-pointer overflow-hidden rounded-full bg-[#f97316] px-5 py-2 text-white shadow-[inset_0_-4px_4px_rgba(255,255,255,0.39)] outline outline-1 outline-[#f97316] -outline-offset-1 transition-all duration-200 hover:brightness-110"
                 >
                     <span
                         aria-hidden="true"
-                        className="pointer-events-none absolute left-[10%] top-[1px] h-4 w-[80%] rounded-[12px] bg-gradient-to-b from-[#DEF0FC] to-transparent transition-transform duration-200 group-hover:scale-x-105"
+                        className="pointer-events-none absolute left-[10%] top-[1px] h-4 w-[80%] rounded-[12px] bg-gradient-to-b from-[#FFD9B8] to-transparent transition-transform duration-200 group-hover:scale-x-105"
                     />
                     <span className="relative font-inter text-[14px] font-medium">
                         Explore

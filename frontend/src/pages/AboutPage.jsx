@@ -107,7 +107,7 @@ export default function AboutPage() {
                                 transition={{ duration: 0.7, delay: i * 0.1, ease: EASE }}
                                 className="rounded-2xl border border-black/10 bg-white/50 p-7 backdrop-blur-sm"
                             >
-                                <span className="font-inter text-[11px] font-semibold uppercase tracking-[0.25em] text-[#0871E7]">
+                                <span className="font-inter text-[11px] font-semibold uppercase tracking-[0.25em] text-[#f97316]">
                                     0{i + 1}
                                 </span>
                                 <h3 className="font-instrument mt-3 text-2xl text-[#1a1a1a]">
@@ -133,11 +133,11 @@ export default function AboutPage() {
                     </div>
                     <Link
                         to="/"
-                        className="group relative inline-flex items-center gap-2 overflow-hidden rounded-full bg-[#0871E7] px-7 py-3 font-inter text-[13px] font-semibold text-white shadow-[inset_0_-4px_4px_rgba(255,255,255,0.39)] transition-all hover:brightness-110"
+                        className="group relative inline-flex items-center gap-2 overflow-hidden rounded-full bg-[#f97316] px-7 py-3 font-inter text-[13px] font-semibold text-white shadow-[inset_0_-4px_4px_rgba(255,255,255,0.39)] transition-all hover:brightness-110"
                     >
                         <span
                             aria-hidden="true"
-                            className="pointer-events-none absolute left-[10%] top-[1px] h-4 w-[80%] rounded-[12px] bg-gradient-to-b from-[#DEF0FC] to-transparent transition-transform duration-200 group-hover:scale-x-105"
+                            className="pointer-events-none absolute left-[10%] top-[1px] h-4 w-[80%] rounded-[12px] bg-gradient-to-b from-[#FFD9B8] to-transparent transition-transform duration-200 group-hover:scale-x-105"
                         />
                         <span className="relative">Explore the Arsenal</span>
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="relative">
