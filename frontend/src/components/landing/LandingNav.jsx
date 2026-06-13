@@ -8,7 +8,10 @@ const SECTION_LINKS = [
 ];
 
 /* Real page routes */
-const PAGE_LINKS = [{ label: "About", to: "/about" }];
+const PAGE_LINKS = [
+    { label: "About", to: "/about" },
+    { label: "Coming Soon", to: "/coming-soon" },
+];
 
 /**
  * Global pill navbar — used on EVERY page (home, product pages, about).

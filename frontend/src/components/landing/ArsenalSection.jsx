@@ -1,25 +1,55 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 
-/* Themed "Add to Cart" — brand orange with a glossy glint + tap feedback.
-   (No cart backend yet — shows an "Added ✓" confirmation for 1.6s.) */
+/* Themed "Add to Cart" with a quantity counter.
+   First click adds 1 and turns into a −  N  + stepper so the user can pick
+   how many of that gun to buy. Decrementing back to 0 reverts to the button.
+   (No cart backend yet — local quantity state only.) */
 function AddToCartButton() {
-    const [added, setAdded] = useState(false);
+    const [qty, setQty] = useState(0);
+
+    if (qty === 0) {
+        return (
+            <button
+                type="button"
+                onClick={() => setQty(1)}
+                className="group relative inline-flex items-center gap-2 overflow-hidden rounded-full bg-[#f97316] px-7 py-2.5 font-inter text-[12px] font-semibold uppercase tracking-[0.2em] text-white shadow-[inset_0_-4px_4px_rgba(255,255,255,0.35)] transition-all hover:brightness-110"
+            >
+                <span
+                    aria-hidden="true"
+                    className="pointer-events-none absolute left-[10%] top-[1px] h-4 w-[80%] rounded-[12px] bg-gradient-to-b from-[#FFD9B8] to-transparent transition-transform duration-200 group-hover:scale-x-105"
+                />
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" className="relative">
+                    <circle cx="9" cy="20" r="1.4" /><circle cx="18" cy="20" r="1.4" />
+                    <path d="M2 3h2.5l2.2 12.2a1.5 1.5 0 0 0 1.5 1.3h8.4a1.5 1.5 0 0 0 1.5-1.2L21 7H6" />
+                </svg>
+                <span className="relative">Add to Cart</span>
+            </button>
+        );
+    }
+
     return (
-        <button
-            type="button"
-            onClick={() => {
-                setAdded(true);
-                setTimeout(() => setAdded(false), 1600);
-            }}
-            className="group relative inline-flex items-center gap-2 overflow-hidden rounded-full bg-[#f97316] px-7 py-2.5 font-inter text-[12px] font-semibold uppercase tracking-[0.2em] text-white shadow-[inset_0_-4px_4px_rgba(255,255,255,0.35)] transition-all hover:brightness-110"
-        >
-            <span
-                aria-hidden="true"
-                className="pointer-events-none absolute left-[10%] top-[1px] h-4 w-[80%] rounded-[12px] bg-gradient-to-b from-[#FFD9B8] to-transparent transition-transform duration-200 group-hover:scale-x-105"
-            />
-            <span className="relative">{added ? "Added ✓" : "Add to Cart"}</span>
-        </button>
+        <div className="inline-flex items-center gap-1 rounded-full bg-[#f97316] py-1.5 pl-1.5 pr-1.5 text-white shadow-[inset_0_-4px_4px_rgba(255,255,255,0.35)]">
+            <button
+                type="button"
+                aria-label="Remove one"
+                onClick={() => setQty((q) => Math.max(0, q - 1))}
+                className="grid h-8 w-8 place-items-center rounded-full text-2xl leading-none transition hover:bg-white/20"
+            >
+                −
+            </button>
+            <span className="min-w-[2ch] text-center font-inter text-[15px] font-bold tabular-nums">
+                {qty}
+            </span>
+            <button
+                type="button"
+                aria-label="Add one"
+                onClick={() => setQty((q) => q + 1)}
+                className="grid h-8 w-8 place-items-center rounded-full text-2xl leading-none transition hover:bg-white/20"
+            >
+                +
+            </button>
+        </div>
     );
 }
 

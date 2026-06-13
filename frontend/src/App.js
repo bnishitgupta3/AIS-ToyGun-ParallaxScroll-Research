@@ -6,6 +6,7 @@ import { useProgress } from "@react-three/drei";
 
 import LandingPage            from "@/pages/LandingPage";
 import AboutPage              from "@/pages/AboutPage";
+import ComingSoonPage         from "@/pages/ComingSoonPage";
 import ProductShowcase        from "@/pages/ProductShowcase";       // existing MP5K page
 import M416Showcase           from "@/pages/M416Showcase";
 import CrimsonBlasterShowcase from "@/pages/CrimsonBlasterShowcase";
@@ -75,6 +76,9 @@ function App() {
 
                 {/* About */}
                 <Route path="/about"          element={<AboutPage />} />
+
+                {/* Coming soon (holding page) */}
+                <Route path="/coming-soon"    element={<ComingSoonPage />} />
 
                 {/* Product detail pages */}
                 <Route path="/product/mp5k"   element={<ProductShowcase />} />
