@@ -1,6 +1,6 @@
 import { Suspense, useState } from "react";
 import { Canvas } from "@react-three/fiber";
-import { ContactShadows, Environment } from "@react-three/drei";
+import { ContactShadows } from "@react-three/drei";
 import * as THREE from "three";
 import WaterGunModel from "./WaterGunModel";
 import WaterStream from "./WaterStream";
@@ -10,24 +10,17 @@ export default function WaterGunScene({ modelRef, isFiring }) {
 
     return (
         <Canvas
-            shadows
             camera={{ position: [0, 0.2, 6.2], fov: 35 }}
             dpr={[1, 2]}
             gl={{ antialias: true, alpha: true }}
             style={{ background: "transparent" }}
         >
-            <ambientLight intensity={0.35} />
-            <directionalLight
-                position={[5, 7, 6]}
-                intensity={1.6}
-                color="#ffffff"
-                castShadow
-            />
-            <directionalLight position={[-6, 3, -2]} intensity={0.6} color="#cfe5ff" />
+            {/* Flat, even lighting — no dramatic studio rig or HDRI reflections */}
+            <ambientLight intensity={1.5} />
+            <hemisphereLight args={["#ffffff", "#d6d6d6", 0.6]} />
+            <directionalLight position={[3, 6, 5]} intensity={0.6} color="#ffffff" />
 
             <Suspense fallback={null}>
-                <Environment preset="studio" background={false} />
-
                 <group ref={modelRef}>
                     <WaterGunModel
                         isFiring={isFiring}

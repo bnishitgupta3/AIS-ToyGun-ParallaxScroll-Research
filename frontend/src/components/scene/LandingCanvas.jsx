@@ -2,7 +2,6 @@ import { Suspense } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import {
     useGLTF,
-    Environment,
     ContactShadows,
     Sparkles,
 } from "@react-three/drei";
@@ -159,17 +158,10 @@ function LandingScene({ model1Ref, model2Ref, model3Ref, mouseRef, scrollRef }) 
 
     return (
         <>
-            {/* Dramatic dark-background studio lighting */}
-            <ambientLight intensity={0.25} />
-            <directionalLight position={[0, 8, 5]}   intensity={2.6} color="#ffffff" castShadow />
-            <directionalLight position={[-7, 2, -2]}  intensity={0.9} color="#3a8fff" />
-            <directionalLight position={[7, -1, 3]}   intensity={0.6} color="#ff6b35" />
-            <spotLight position={[2, 10, 6]} intensity={4.2} angle={0.38} penumbra={0.85} color="#ffffff" />
-
-            {/* HDRI environment — drives photoreal metal/plastic reflections. */}
-            <Suspense fallback={null}>
-                <Environment preset="studio" background={false} />
-            </Suspense>
+            {/* Flat, even lighting — no dramatic studio rig or HDRI reflections */}
+            <ambientLight intensity={1.5} />
+            <hemisphereLight args={["#ffffff", "#d6d6d6", 0.6]} />
+            <directionalLight position={[3, 6, 5]} intensity={0.6} color="#ffffff" />
 
             {/* Slow, out-of-focus particles behind the guns — premium depth */}
             <Sparkles
@@ -202,16 +194,6 @@ function LandingScene({ model1Ref, model2Ref, model3Ref, mouseRef, scrollRef }) 
                     <GenericGunModel url="/assets/crimson-blaster.glb" targetSize={2.8} />
                 </Suspense>
             </group>
-
-            {/* Invisible floor plane — receives cast shadows */}
-            <mesh
-                position={[0, -1.61, 0]}
-                rotation={[-Math.PI / 2, 0, 0]}
-                receiveShadow
-            >
-                <planeGeometry args={[60, 60]} />
-                <shadowMaterial transparent opacity={0.4} />
-            </mesh>
 
             {/* Grounded contact shadow under the active model area */}
             <ContactShadows
