@@ -49,7 +49,7 @@ const WaterGunModel = forwardRef(function WaterGunModel(
                 o.castShadow = false;
                 o.receiveShadow = false;
                 if (o.material) {
-                    o.material.envMapIntensity = 0.9;
+                    o.material.envMapIntensity = 1.0;
                     o.material.needsUpdate = true;
                 }
             }

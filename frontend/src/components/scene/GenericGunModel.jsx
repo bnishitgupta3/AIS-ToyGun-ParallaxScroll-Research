@@ -48,14 +48,14 @@ export default function GenericGunModel({
                     ? o.material.map((mat) => {
                           const m = mat.clone();
                           m.transparent = true;
-                          m.envMapIntensity = 0.9;
+                          m.envMapIntensity = 1.0;
                           m.needsUpdate = true;
                           return m;
                       })
                     : (() => {
                           const m = o.material.clone();
                           m.transparent = true;
-                          m.envMapIntensity = 0.9;
+                          m.envMapIntensity = 1.0;
                           m.needsUpdate = true;
                           return m;
                       })();

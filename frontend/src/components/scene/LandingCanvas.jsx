@@ -7,6 +7,7 @@ import {
 } from "@react-three/drei";
 import * as THREE from "three";
 import GenericGunModel from "./GenericGunModel";
+import NeutralEnvironment from "./NeutralEnvironment";
 
 /* Pre-warm all three models so Arsenal transitions feel instant */
 useGLTF.preload("/assets/watergun.glb");
@@ -158,10 +159,12 @@ function LandingScene({ model1Ref, model2Ref, model3Ref, mouseRef, scrollRef }) 
 
     return (
         <>
-            {/* Flat, even lighting — no dramatic studio rig or HDRI reflections */}
-            <ambientLight intensity={1.5} />
-            <hemisphereLight args={["#ffffff", "#d6d6d6", 0.6]} />
-            <directionalLight position={[3, 6, 5]} intensity={0.6} color="#ffffff" />
+            {/* Neutral, even lighting — shows the asset at its true brightness.
+                NeutralEnvironment provides soft IBL so PBR/metal reads correctly;
+                a low ambient + one gentle key light add minimal form. */}
+            <NeutralEnvironment intensity={1.1} />
+            <ambientLight intensity={0.55} />
+            <directionalLight position={[3, 6, 5]} intensity={0.5} color="#ffffff" />
 
             {/* Slow, out-of-focus particles behind the guns — premium depth */}
             <Sparkles
@@ -214,7 +217,7 @@ export default function LandingCanvas({ model1Ref, model2Ref, model3Ref, mouseRe
         <Canvas
             camera={{ position: [0, 0.15, 7.5], fov: 40 }}
             dpr={[1, 2]}
-            gl={{ antialias: true, alpha: true }}
+            gl={{ antialias: true, alpha: true, toneMapping: THREE.NeutralToneMapping }}
             style={{
                 position: "fixed",
                 top: 0, left: 0,
