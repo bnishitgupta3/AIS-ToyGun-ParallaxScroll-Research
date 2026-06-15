@@ -90,7 +90,7 @@ export default function HeroVideo() {
             ))}
 
             {/* Dark tint + subtle bottom vignette so text/gun pop */}
-            <div className="absolute inset-0 bg-black/80" />
+            <div className="absolute inset-0 bg-black/70" />
             <div
                 className="absolute inset-0"
                 style={{
