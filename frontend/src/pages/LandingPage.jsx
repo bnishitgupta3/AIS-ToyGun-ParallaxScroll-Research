@@ -7,6 +7,7 @@ import { useProgress } from "@react-three/drei";
 
 import LandingCanvas, { HERO_GUN_X, GUN_SPACING } from "@/components/scene/LandingCanvas";
 import LandingNav     from "@/components/landing/LandingNav";
+import HeroVideo      from "@/components/landing/HeroVideo";
 import HeroSection    from "@/components/landing/HeroSection";
 import ArsenalSection from "@/components/landing/ArsenalSection";
 import MissionSection from "@/components/landing/MissionSection";
@@ -225,6 +226,9 @@ export default function LandingPage() {
          * overlay (z:10), making the 3D guns visible through transparent areas.
          */
         <div className="dot-grid relative overflow-x-hidden text-[#1a1a1a]">
+
+            {/* ── HERO BACKGROUND VIDEO (z:0 — behind the 3D canvas) ── */}
+            <HeroVideo />
 
             {/* Film-grain texture layer (light, subtle on the bright bg) */}
             <div className="film-grain" style={{ opacity: 0.03 }} />

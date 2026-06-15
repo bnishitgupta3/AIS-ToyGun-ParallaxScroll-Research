@@ -53,8 +53,10 @@ function responsiveLayout(width, height) {
         radius: clamp(aspect * 2.6, 1.7, ARC_RADIUS),
         depth:  clamp(aspect * 1.9, 1.4, ARC_DEPTH),
         scale:  clamp(aspect * 0.78, 0.52, 1.0),
-        heroX:  clamp((aspect - 0.78) * 3.2, 0, 1) * HERO_GUN_X,
-        heroY:  -clamp((0.95 - aspect) * 2.2, 0, 1) * 1.15,  // gun lower on mobile hero
+        /* Spyra-style hero: gun centred horizontally, sitting LOWER so the
+           centred headline above it has room (more drop on tall/mobile). */
+        heroX:  0,
+        heroY:  -1.15 - clamp((0.95 - aspect) * 2.2, 0, 1) * 0.7,
     };
 }
 
