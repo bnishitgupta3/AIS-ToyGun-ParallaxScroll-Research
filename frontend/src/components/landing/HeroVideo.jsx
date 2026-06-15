@@ -15,6 +15,9 @@ export default function HeroVideo() {
     const [active, setActive] = useState(0);
     const switching = useRef(false);
     const [fade, setFade] = useState(1);
+    /* Defer the 2nd (heavier) clip — only fetch it once clip 1 is playing,
+       so the initial page load downloads just clip 1 (~3.6 MB), not ~17 MB. */
+    const [loadSecond, setLoadSecond] = useState(false);
 
     /* Kick off the first clip */
     useEffect(() => {
@@ -45,6 +48,13 @@ export default function HeroVideo() {
         if (i !== active || switching.current) return;
         const v = refs[i].current;
         if (!v || !v.duration) return;
+
+        /* Once clip 1 has been playing a moment, start fetching clip 2 so it
+           has time to buffer before the crossfade — but not on initial load. */
+        if (i === 0 && !loadSecond && v.currentTime > 1.5) {
+            setLoadSecond(true);
+        }
+
         if (v.currentTime >= v.duration - CROSSFADE) {
             switching.current = true;
             const next = 1 - i;
@@ -68,10 +78,11 @@ export default function HeroVideo() {
                 <video
                     key={src}
                     ref={refs[i]}
-                    src={src}
+                    /* Clip 1 loads immediately; clip 2 only once clip 1 is playing */
+                    src={i === 0 || loadSecond ? src : undefined}
                     muted
                     playsInline
-                    preload="auto"
+                    preload={i === 0 ? "auto" : "none"}
                     onTimeUpdate={onTimeUpdate(i)}
                     className="absolute inset-0 h-full w-full object-cover transition-opacity duration-700 ease-in-out"
                     style={{ opacity: active === i ? 1 : 0 }}
@@ -79,7 +90,7 @@ export default function HeroVideo() {
             ))}
 
             {/* Dark tint + subtle bottom vignette so text/gun pop */}
-            <div className="absolute inset-0 bg-black/55" />
+            <div className="absolute inset-0 bg-black/68" />
             <div
                 className="absolute inset-0"
                 style={{
