@@ -33,10 +33,11 @@ export default function ComingSoonPage() {
             />
 
             {/* Big "COMING SOON" wordmark — BEHIND the gun, faded.
-                Much larger on phones (28vw) so it reads around/above the
-                silhouette; desktop keeps the original sizing. */}
+                On phones it's stretched VERTICALLY (scaleY) so the two words
+                spread tall and flank the gun (top/bottom) rather than hiding
+                behind it. Desktop keeps the original compact sizing. */}
             <div className="pointer-events-none absolute inset-0 z-0 flex items-center justify-center">
-                <h2 className="font-instrument select-none text-center text-[28vw] leading-[0.82] tracking-tight text-[#1a1a1a]/[0.13] md:text-[clamp(64px,19vw,290px)] md:leading-[0.8] md:text-[#1a1a1a]/[0.09]">
+                <h2 className="font-instrument select-none text-center text-[24vw] leading-[1.05] scale-y-[1.7] tracking-tight text-[#1a1a1a]/[0.14] md:scale-y-100 md:text-[clamp(64px,19vw,290px)] md:leading-[0.8] md:text-[#1a1a1a]/[0.09]">
                     COMING
                     <br />
                     SOON
