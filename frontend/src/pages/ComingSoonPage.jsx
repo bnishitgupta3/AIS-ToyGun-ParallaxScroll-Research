@@ -5,53 +5,47 @@ import ComingSoonGun from "@/components/landing/ComingSoonGun";
 
 const EASE = [0.16, 1, 0.3, 1];
 
-/* Floating droplet accents — purely decorative, theme-tinted blurs. */
-const DROPS = [
-    { left: "12%", top: "22%", size: 120, color: "rgba(249,115,22,0.16)", dur: 7, delay: 0 },
-    { left: "78%", top: "18%", size: 90,  color: "rgba(8,113,231,0.12)",  dur: 9, delay: 1 },
-    { left: "68%", top: "70%", size: 150, color: "rgba(249,115,22,0.12)", dur: 8, delay: 0.5 },
-    { left: "20%", top: "72%", size: 80,  color: "rgba(8,113,231,0.10)",  dur: 10, delay: 1.5 },
-];
-
 /**
- * Coming Soon — standalone teaser. A slowly auto-rotating all-black MP5K
- * sits behind the copy (top headline + bottom signup frame it). Reveals
- * nothing concrete — pure tease. Can later be served on its own.
+ * Coming Soon — a dark, spotlit teaser focused entirely on the slowly
+ * rotating all-black MP5K. Deliberately distinct from the site's light
+ * dot-grid theme: the gun is the hero, the copy stays minimal.
  */
 export default function ComingSoonPage() {
     const [email, setEmail] = useState("");
     const [submitted, setSubmitted] = useState(false);
 
     return (
-        <div className="dot-grid relative min-h-[100svh] overflow-hidden text-[#1a1a1a]">
-            {/* Floating droplet field */}
-            {DROPS.map((d, i) => (
-                <motion.div
-                    key={i}
-                    aria-hidden="true"
-                    className="pointer-events-none absolute rounded-full blur-2xl"
-                    style={{ left: d.left, top: d.top, width: d.size, height: d.size, background: d.color }}
-                    animate={{ y: [0, -22, 0], opacity: [0.7, 1, 0.7] }}
-                    transition={{ duration: d.dur, delay: d.delay, repeat: Infinity, ease: "easeInOut" }}
-                />
-            ))}
+        <div className="relative min-h-[100svh] overflow-hidden bg-[#0a0a0b] text-white">
+            {/* Focused spotlight backdrop (lighter centre → fades to black edges) */}
+            <div
+                className="pointer-events-none absolute inset-0"
+                style={{
+                    background:
+                        "radial-gradient(60% 55% at 50% 48%, #232427 0%, #141416 45%, #0a0a0b 100%)",
+                }}
+            />
+            {/* warm floor glow under the gun */}
+            <div
+                className="pointer-events-none absolute inset-x-0 bottom-0 h-1/3"
+                style={{
+                    background:
+                        "radial-gradient(50% 100% at 50% 100%, rgba(249,115,22,0.16) 0%, transparent 70%)",
+                }}
+            />
 
-            {/* Rotating dark teaser gun (behind everything) */}
+            {/* Rotating dark gun — the centrepiece */}
             <ComingSoonGun />
 
-            {/* Minimal logo */}
+            {/* Logo */}
             <header className="absolute left-1/2 top-7 z-20 -translate-x-1/2">
-                <Link
-                    to="/"
-                    className="font-instrument text-[28px] leading-none tracking-tight text-[#1a1a1a]"
-                >
+                <Link to="/" className="font-instrument text-[28px] leading-none tracking-tight text-white">
                     UTG
                 </Link>
             </header>
 
-            {/* Content frames the gun: headline on top, signup at the bottom */}
-            <main className="relative z-10 flex min-h-[100svh] flex-col items-center justify-between px-6 pb-10 pt-24 text-center md:pt-28">
-                {/* TOP block */}
+            {/* Minimal copy framing the gun */}
+            <main className="relative z-10 flex min-h-[100svh] flex-col items-center justify-between px-6 pb-9 pt-24 text-center md:pt-28">
+                {/* Top — eyebrow + short headline */}
                 <div className="flex flex-col items-center">
                     <motion.span
                         initial={{ opacity: 0, y: 12 }}
@@ -65,28 +59,26 @@ export default function ComingSoonPage() {
                     <motion.h1
                         initial={{ opacity: 0, scale: 0.95 }}
                         animate={{ opacity: 1, scale: 1 }}
-                        transition={{ duration: 1.4, ease: EASE }}
-                        className="font-instrument mt-5 text-[clamp(40px,9vw,92px)] leading-[0.92] tracking-tight text-[#1a1a1a]"
+                        transition={{ duration: 1.3, ease: EASE }}
+                        className="font-instrument mt-4 text-[clamp(38px,8vw,80px)] leading-[0.95] tracking-tight text-white"
                     >
                         Redefining
-                        <br />
-                        <span className="text-[#1a1a1a]/45">how India plays.</span>
+                        <span className="text-white/40"> how India plays.</span>
                     </motion.h1>
-
-                    <motion.p
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 1.1, delay: 0.3, ease: EASE }}
-                        className="mt-5 max-w-lg font-inter text-[15px] leading-relaxed text-[#1a1a1a]/55 md:text-[16px]"
-                    >
-                        Something big is filling up. We're reimagining the water
-                        fight — from Holi to high-noon, beaches to backyards. Less
-                        plastic toy, more pure adrenaline.
-                    </motion.p>
                 </div>
 
-                {/* BOTTOM block */}
+                {/* Bottom — signup + tag */}
                 <div className="flex w-full flex-col items-center">
+                    <motion.p
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        transition={{ duration: 1, delay: 0.4 }}
+                        className="mb-6 max-w-md font-inter text-[14px] leading-relaxed text-white/55"
+                    >
+                        Something is loading. The water fight, reimagined — built
+                        to thrill. Be the first to make a splash.
+                    </motion.p>
+
                     <motion.form
                         initial={{ opacity: 0, y: 16 }}
                         animate={{ opacity: 1, y: 0 }}
@@ -109,7 +101,7 @@ export default function ComingSoonPage() {
                                     value={email}
                                     onChange={(e) => setEmail(e.target.value)}
                                     placeholder="you@email.com"
-                                    className="flex-1 rounded-full border border-black/15 bg-white/70 px-6 py-3 font-inter text-[14px] text-[#1a1a1a] placeholder-[#1a1a1a]/35 outline-none backdrop-blur-sm transition-colors focus:border-[#f97316]"
+                                    className="flex-1 rounded-full border border-white/15 bg-white/10 px-6 py-3 font-inter text-[14px] text-white placeholder-white/40 outline-none backdrop-blur-sm transition-colors focus:border-[#f97316]"
                                 />
                                 <button
                                     type="submit"
@@ -129,13 +121,13 @@ export default function ComingSoonPage() {
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         transition={{ duration: 1, delay: 0.9 }}
-                        className="mt-8 flex items-center gap-3"
+                        className="mt-7 flex items-center gap-3"
                     >
-                        <span className="h-px w-10 bg-[#1a1a1a]/20" />
-                        <span className="font-inter text-[11px] font-semibold uppercase tracking-[0.4em] text-[#1a1a1a]/40">
+                        <span className="h-px w-10 bg-white/20" />
+                        <span className="font-inter text-[11px] font-semibold uppercase tracking-[0.4em] text-white/45">
                             Coming Soon · 2026
                         </span>
-                        <span className="h-px w-10 bg-[#1a1a1a]/20" />
+                        <span className="h-px w-10 bg-white/20" />
                     </motion.div>
                 </div>
             </main>

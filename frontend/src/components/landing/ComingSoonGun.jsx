@@ -3,6 +3,7 @@ import { Canvas, useFrame } from "@react-three/fiber";
 import { useGLTF } from "@react-three/drei";
 import * as THREE from "three";
 import { asset } from "@/lib/asset";
+import NeutralEnvironment from "@/components/scene/NeutralEnvironment";
 
 useGLTF.preload(asset("/assets/mp5k-dark.glb"));
 
@@ -20,7 +21,7 @@ function DarkGun() {
         const size = new THREE.Vector3();
         box.getSize(size);
         const longest = Math.max(size.x, size.y, size.z);
-        c.scale.setScalar(3.0 / longest);
+        c.scale.setScalar(3.6 / longest);
         return c;
     }, [scene]);
 
@@ -29,28 +30,36 @@ function DarkGun() {
     });
 
     return (
-        <group ref={ref} rotation={[0.05, 0, 0]}>
+        <group ref={ref} rotation={[0.08, 0, 0]}>
             <primitive object={cloned} />
         </group>
     );
 }
 
 /**
- * Background teaser for the Coming Soon page — the dark MP5K silhouette
- * rotating slowly behind the copy. Fixed/absolute, non-interactive.
+ * Coming Soon centrepiece — the dark MP5K, spotlit against a dark backdrop
+ * with a cool rim light so its edges and metal catch the light (reads as a
+ * dark gun, not a flat black blob), slowly rotating.
  */
 export default function ComingSoonGun() {
     return (
         <div className="pointer-events-none absolute inset-0 z-0">
             <Canvas
-                camera={{ position: [0, 0.1, 7], fov: 40 }}
+                camera={{ position: [0, 0.1, 6.6], fov: 42 }}
                 dpr={[1, 2]}
-                gl={{ alpha: true }}
+                gl={{ alpha: true, toneMapping: THREE.NeutralToneMapping }}
                 style={{ background: "transparent" }}
             >
-                <ambientLight intensity={0.7} />
-                <directionalLight position={[4, 6, 5]} intensity={1.2} color="#ffffff" />
-                <directionalLight position={[-5, 2, -3]} intensity={0.4} color="#ffffff" />
+                {/* Subtle reflections so the black metal isn't a void */}
+                <NeutralEnvironment intensity={0.45} />
+                {/* low ambient — keep it moody */}
+                <ambientLight intensity={0.35} />
+                {/* warm key from front-right */}
+                <directionalLight position={[4, 5, 5]} intensity={2.6} color="#fff3e6" />
+                {/* cool rim from back-left to catch the edges */}
+                <directionalLight position={[-5, 1.5, -4]} intensity={2.4} color="#aac8ff" />
+                {/* top spotlight for a studio feel */}
+                <spotLight position={[0, 7, 3]} intensity={3} angle={0.5} penumbra={1} color="#ffffff" />
                 <Suspense fallback={null}>
                     <DarkGun />
                 </Suspense>

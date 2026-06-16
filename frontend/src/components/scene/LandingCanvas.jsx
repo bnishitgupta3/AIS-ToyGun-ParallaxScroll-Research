@@ -61,7 +61,7 @@ function responsiveLayout(width, height) {
            gun (the laptop overlap issue). Drops a little further on tall
            screens, but stays clear of the bottom edge. */
         heroX:  0,
-        heroY:  -1.4 - clamp((0.95 - aspect) * 2.2, 0, 1) * 0.45,
+        heroY:  -1.1 - clamp((0.95 - aspect) * 2.2, 0, 1) * 0.4,
     };
 }
 
