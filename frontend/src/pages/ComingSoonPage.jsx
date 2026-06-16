@@ -116,7 +116,7 @@ export default function ComingSoonPage() {
                             e.preventDefault();
                             if (email) setSubmitted(true);
                         }}
-                        className="flex w-full max-w-md items-center gap-3"
+                        className="flex w-full max-w-md flex-col items-stretch gap-3 sm:flex-row sm:items-center"
                     >
                         {submitted ? (
                             <p className="mx-auto font-inter text-[15px] font-medium text-[#f97316]">
@@ -130,11 +130,11 @@ export default function ComingSoonPage() {
                                     value={email}
                                     onChange={(e) => setEmail(e.target.value)}
                                     placeholder="you@email.com"
-                                    className="flex-1 rounded-full border border-black/15 bg-white/70 px-6 py-3 font-inter text-[14px] text-[#1a1a1a] placeholder-[#1a1a1a]/35 outline-none backdrop-blur-sm transition-colors focus:border-[#f97316]"
+                                    className="w-full flex-1 rounded-full border border-black/15 bg-white/70 px-6 py-3 font-inter text-[14px] text-[#1a1a1a] placeholder-[#1a1a1a]/35 outline-none backdrop-blur-sm transition-colors focus:border-[#f97316]"
                                 />
                                 <button
                                     type="submit"
-                                    className="group relative shrink-0 overflow-hidden rounded-full bg-[#f97316] px-7 py-3 font-inter text-[13px] font-semibold text-white shadow-[inset_0_-4px_4px_rgba(255,255,255,0.39)] transition-all hover:brightness-110"
+                                    className="group relative w-full shrink-0 overflow-hidden rounded-full bg-[#f97316] px-7 py-3 font-inter text-[13px] font-semibold text-white shadow-[inset_0_-4px_4px_rgba(255,255,255,0.39)] transition-all hover:brightness-110 sm:w-auto"
                                 >
                                     <span
                                         aria-hidden="true"

@@ -31,8 +31,16 @@ function GunSilhouette() {
         return c;
     }, [scene]);
 
-    useFrame((_, dt) => {
-        if (ref.current) ref.current.rotation.y += dt * 0.32; // teasing slow spin
+    useFrame((state, dt) => {
+        if (!ref.current) return;
+        ref.current.rotation.y += dt * 0.32; // teasing slow spin
+
+        /* Fit-to-viewport: on narrow / portrait screens shrink the gun so it
+           doesn't overflow and swallow the whole page (desktop stays full). */
+        const aspect = state.size.width / Math.max(1, state.size.height);
+        const halfX = Math.tan((42 * Math.PI) / 180 / 2) * 6.6 * aspect; // half-width at z=0
+        const fit = Math.min(1, (halfX * 0.82) / 1.9); // 1.9 ≈ gun half-length
+        ref.current.scale.setScalar(fit);
     });
 
     return (
