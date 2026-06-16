@@ -60,11 +60,11 @@ export default function ComingSoonPage() {
                     initial={{ opacity: 0, scale: 0.95 }}
                     animate={{ opacity: 1, scale: 1 }}
                     transition={{ duration: 1.4, ease: EASE }}
-                    className="font-instrument mt-6 text-[clamp(46px,11vw,108px)] leading-[0.92] tracking-tight text-[#1a1a1a]"
+                    className="font-instrument mt-6 text-[clamp(44px,10.5vw,104px)] leading-[0.92] tracking-tight text-[#1a1a1a]"
                 >
-                    Summer's about
+                    Redefining
                     <br />
-                    <span className="text-[#1a1a1a]/45">to get soaked.</span>
+                    <span className="text-[#1a1a1a]/45">how India plays.</span>
                 </motion.h1>
 
                 <motion.p
@@ -73,10 +73,10 @@ export default function ComingSoonPage() {
                     transition={{ duration: 1.1, delay: 0.3, ease: EASE }}
                     className="mt-8 max-w-xl font-inter text-[16px] leading-relaxed text-[#1a1a1a]/60 md:text-[18px]"
                 >
-                    We've been quietly engineering something worth getting wet for —
-                    precision water blasters built to outrange, outlast, and outgun
-                    everything in the backyard. The arsenal drops soon. Stay dry while
-                    you still can.
+                    Something big is filling up. We're reimagining the water fight —
+                    from Holi to high-noon, beaches to backyards — with blasters
+                    engineered to thrill. Less plastic toy, more pure adrenaline.
+                    The drop is coming. Be the first to make a splash.
                 </motion.p>
 
                 {/* Notify signup */}

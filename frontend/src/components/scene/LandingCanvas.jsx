@@ -1,4 +1,4 @@
-import { Suspense } from "react";
+import { Suspense, useRef } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import {
     useGLTF,
@@ -51,19 +51,27 @@ const clamp = (v, a, b) => (v < a ? a : v > b ? b : v);
 function responsiveLayout(width, height) {
     const aspect = (width || 1) / (height || 1);
     return {
-        radius: clamp(aspect * 2.6, 1.7, ARC_RADIUS),
+        /* Lower radius floor so the side guns stay fully on-screen (not cut
+           off at the edges) on narrow / portrait devices. */
+        radius: clamp(aspect * 2.3, 1.35, ARC_RADIUS),
         depth:  clamp(aspect * 1.9, 1.4, ARC_DEPTH),
-        scale:  clamp(aspect * 0.78, 0.52, 1.0),
-        /* Spyra-style hero: gun centred horizontally, sitting LOWER so the
-           centred headline above it has room (more drop on tall/mobile). */
+        scale:  clamp(aspect * 0.8, 0.5, 1.0),
+        /* Spyra-style hero: gun centred horizontally, sitting a touch lower so
+           the headline above it has room — but not so low it clips the bottom
+           on tall/mobile screens. */
         heroX:  0,
-        heroY:  -1.15 - clamp((0.95 - aspect) * 2.2, 0, 1) * 0.7,
+        heroY:  -0.9 - clamp((0.95 - aspect) * 2.2, 0, 1) * 0.5,
     };
 }
 
 /* ── Scene graph — must live inside <Canvas> ── */
 function LandingScene({ model1Ref, model2Ref, model3Ref, mouseRef, scrollRef }) {
     const { size } = useThree();
+    /* On (re)mount the gun groups start at origin (0,0,0). Without this, the
+       first frames would DAMP them from centre to their hero poses — making
+       e.g. the Crimson gun visibly fly across the hero when you return to the
+       homepage. We snap straight to target on the first fully-loaded frame. */
+    const firstFrame = useRef(true);
     /*
      * BUTTERY CAROUSEL CORE
      * ─────────────────────
@@ -98,6 +106,10 @@ function LandingScene({ model1Ref, model2Ref, model3Ref, mouseRef, scrollRef }) 
 
         // clamp dt so a tab-switch frame-spike can't teleport the guns
         const d = Math.min(dt, 1 / 30);
+
+        // First fully-loaded frame snaps to target; afterwards we damp.
+        const snap = firstFrame.current;
+        const ap = (cur, tgt) => (snap ? tgt : damp(cur, tgt, DAMP_LAMBDA, d));
 
         for (let i = 0; i < guns.length; i++) {
             const g = guns[i];
@@ -139,17 +151,17 @@ function LandingScene({ model1Ref, model2Ref, model3Ref, mouseRef, scrollRef }) 
                 tRotX  = (1 - entry) * (-m.y * 0.14);
             }
 
-            /* — Damp every channel for buttery motion — */
-            g.position.x = damp(g.position.x, tX, DAMP_LAMBDA, d);
-            g.position.y = damp(g.position.y, tY, DAMP_LAMBDA, d);
-            g.position.z = damp(g.position.z, tZ, DAMP_LAMBDA, d);
-            g.rotation.y = damp(g.rotation.y, tRotY, DAMP_LAMBDA, d);
-            g.rotation.x = damp(g.rotation.x, tRotX, DAMP_LAMBDA, d);
-            const ns = damp(g.scale.x, tS, DAMP_LAMBDA, d);
+            /* — Damp every channel for buttery motion (snap on first frame) — */
+            g.position.x = ap(g.position.x, tX);
+            g.position.y = ap(g.position.y, tY);
+            g.position.z = ap(g.position.z, tZ);
+            g.rotation.y = ap(g.rotation.y, tRotY);
+            g.rotation.x = ap(g.rotation.x, tRotX);
+            const ns = ap(g.scale.x, tS);
             g.scale.setScalar(ns);
 
             /* — Fade the non-focused guns (like the 40% thumbnails) — */
-            const op = damp(g.userData.op ?? 1, tO, DAMP_LAMBDA, d);
+            const op = ap(g.userData.op ?? 1, tO);
             g.userData.op = op;
             g.traverse((o) => {
                 if (o.isMesh && o.material) {
@@ -158,6 +170,9 @@ function LandingScene({ model1Ref, model2Ref, model3Ref, mouseRef, scrollRef }) 
                 }
             });
         }
+
+        // Once all three guns exist and have been placed, leave snap mode.
+        if (snap && guns.every(Boolean)) firstFrame.current = false;
     });
 
     return (

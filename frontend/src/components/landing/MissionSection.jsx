@@ -5,19 +5,17 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 gsap.registerPlugin(ScrollTrigger);
 
 const WORDS = [
-    { text: "We", accent: false },
-    { text: "didn't", accent: false },
-    { text: "settle", accent: false },
-    { text: "for", accent: false },
-    { text: "cheap", accent: true },
-    { text: "plastic.", accent: true },
-    { text: "We", accent: false },
-    { text: "engineered", accent: false },
-    { text: "something", accent: false },
-    { text: "worthy", accent: true },
-    { text: "of", accent: false },
-    { text: "the", accent: false },
-    { text: "backyard.", accent: false },
+    { text: "Every", accent: false },
+    { text: "Holi,", accent: true },
+    { text: "every", accent: false },
+    { text: "summer,", accent: true },
+    { text: "every", accent: false },
+    { text: "splash", accent: false },
+    { text: "deserves", accent: false },
+    { text: "better", accent: false },
+    { text: "than", accent: false },
+    { text: "cheap", accent: false },
+    { text: "plastic.", accent: false },
 ];
 
 const STATS = [
@@ -97,9 +95,10 @@ export default function MissionSection({ missionRef }) {
                 </div>
 
                 <p className="mt-12 max-w-[54ch] text-base leading-relaxed text-zinc-400 md:text-lg">
-                    Every component is stress-tested. Every weld is scrutinized.
-                    Every trigger pull sends a calibrated, high-pressure stream
-                    across distances that cheap toys can't touch.
+                    From Holi mornings with the whole mohalla to lazy summer
+                    afternoons by the farmhouse pool — we engineered blasters that
+                    reach farther, last longer and never run dry. Built for Indian
+                    summers, made for memories that get gloriously, joyfully wet.
                 </p>
 
                 <div className="mt-16 grid grid-cols-2 gap-8 border-t border-zinc-800 pt-12 md:grid-cols-4">

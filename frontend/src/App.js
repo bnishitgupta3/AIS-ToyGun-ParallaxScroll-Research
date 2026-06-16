@@ -7,6 +7,10 @@ import { useProgress } from "@react-three/drei";
 import LandingPage            from "@/pages/LandingPage";
 import AboutPage              from "@/pages/AboutPage";
 import ComingSoonPage         from "@/pages/ComingSoonPage";
+import NotFoundPage          from "@/pages/NotFoundPage";
+import PrivacyPolicyPage     from "@/pages/PrivacyPolicyPage";
+import TermsPage             from "@/pages/TermsPage";
+import ReturnsShippingPage   from "@/pages/ReturnsShippingPage";
 import ProductShowcase        from "@/pages/ProductShowcase";       // existing MP5K page
 import M416Showcase           from "@/pages/M416Showcase";
 import CrimsonBlasterShowcase from "@/pages/CrimsonBlasterShowcase";
@@ -80,13 +84,19 @@ function App() {
                 {/* Coming soon (holding page) */}
                 <Route path="/coming-soon"    element={<ComingSoonPage />} />
 
+                {/* Legal / policy pages */}
+                <Route path="/privacy"        element={<PrivacyPolicyPage />} />
+                <Route path="/terms"          element={<TermsPage />} />
+                <Route path="/returns"        element={<ReturnsShippingPage />} />
+
                 {/* Product detail pages */}
                 <Route path="/product/mp5k"   element={<ProductShowcase />} />
                 <Route path="/product/m416"   element={<M416Showcase />} />
                 <Route path="/product/crimson" element={<CrimsonBlasterShowcase />} />
 
-                {/* Fallback → home */}
-                <Route path="*"              element={<LandingPage />} />
+                {/* Branded 404 — also reachable at /404 for testing */}
+                <Route path="/404"            element={<NotFoundPage />} />
+                <Route path="*"              element={<NotFoundPage />} />
             </Routes>
         </BrowserRouter>
     );

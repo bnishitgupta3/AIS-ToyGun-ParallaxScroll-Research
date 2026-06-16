@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://bnishitgupta3.github.io/AIS-ToyGun-ParallaxScroll-Research/sitemap.xml

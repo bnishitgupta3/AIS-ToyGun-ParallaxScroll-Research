@@ -1,10 +1,30 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 
 const NAV_LINKS = {
-    Products: ["MP5K-UTG", "M416 Water X", "Crimson Blaster", "Accessories"],
-    Company: ["About", "Careers", "Press", "Dealers"],
-    Support: ["FAQ", "Warranty", "Returns", "Contact"],
-    Legal: ["Privacy", "Terms", "Cookies"],
+    Products: [
+        { label: "MP5K-UTG", to: "/product/mp5k" },
+        { label: "M416 Water X", to: "/product/m416" },
+        { label: "Crimson Blaster", to: "/product/crimson" },
+        { label: "Coming Soon", to: "/coming-soon" },
+    ],
+    Company: [
+        { label: "About", to: "/about" },
+        { label: "Careers", to: "#" },
+        { label: "Press", to: "#" },
+        { label: "Dealers", to: "#" },
+    ],
+    Support: [
+        { label: "Returns & Shipping", to: "/returns" },
+        { label: "FAQ", to: "#" },
+        { label: "Warranty", to: "#" },
+        { label: "Contact", to: "#" },
+    ],
+    Legal: [
+        { label: "Privacy Policy", to: "/privacy" },
+        { label: "Terms & Conditions", to: "/terms" },
+        { label: "Returns & Shipping", to: "/returns" },
+    ],
 };
 
 const SOCIALS = ["TK", "IG", "YT", "X"];
@@ -91,13 +111,19 @@ export default function LandingFooter() {
                             </span>
                             <ul className="mt-4 space-y-3">
                                 {items.map((item) => (
-                                    <li key={item}>
-                                        <a
-                                            href="#"
-                                            className="text-sm text-zinc-400 transition-colors hover:text-orange-400"
-                                        >
-                                            {item}
-                                        </a>
+                                    <li key={item.label}>
+                                        {item.to === "#" ? (
+                                            <span className="text-sm text-zinc-500">
+                                                {item.label}
+                                            </span>
+                                        ) : (
+                                            <Link
+                                                to={item.to}
+                                                className="text-sm text-zinc-400 transition-colors hover:text-orange-400"
+                                            >
+                                                {item.label}
+                                            </Link>
+                                        )}
                                     </li>
                                 ))}
                             </ul>

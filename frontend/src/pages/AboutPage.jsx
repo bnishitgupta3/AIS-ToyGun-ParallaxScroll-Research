@@ -55,9 +55,9 @@ export default function AboutPage() {
                     transition={{ duration: 1.3, ease: EASE }}
                     className="font-instrument mt-5 text-[clamp(40px,8vw,84px)] leading-[0.95] tracking-tight text-[#1a1a1a]"
                 >
-                    We build the weapons
+                    We build the blasters
                     <br />
-                    <span className="text-[#1a1a1a]/50">summer deserves.</span>
+                    <span className="text-[#1a1a1a]/50">Indian summers deserve.</span>
                 </motion.h1>
 
                 <motion.p
@@ -66,11 +66,12 @@ export default function AboutPage() {
                     transition={{ duration: 1.1, delay: 0.25, ease: EASE }}
                     className="mt-8 max-w-2xl font-inter text-[16px] leading-relaxed text-[#1a1a1a]/65 md:text-[18px]"
                 >
-                    UTG Tactical started with a simple frustration: backyard water
-                    fights deserved better than leaky, short-range plastic. So we
-                    brought motorsport-grade engineering to the fight — precision
-                    barrels, electric drives, and drum-fed capacity, wrapped in a
-                    shell that looks as serious as it performs.
+                    UTG Tactical began with a very Indian frustration: every Holi and
+                    every summer, our water fights deserved better than leaky,
+                    short-range plastic. So we brought serious engineering to the
+                    fun — precision barrels, electric drives and drum-fed capacity,
+                    built for beaches, water parks, society lawns, farmhouse pools
+                    and the backyards where the best memories get made.
                 </motion.p>
 
                 {/* ── Stats ── */}
