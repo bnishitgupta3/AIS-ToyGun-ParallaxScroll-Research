@@ -1,7 +1,8 @@
 import ProductShowcaseTemplate from "./ProductShowcaseTemplate";
+import { asset } from "@/lib/asset";
 
 const CRIMSON_PRODUCT = {
-    modelUrl:    "/assets/crimson-blaster.glb",
+    modelUrl:    asset("/assets/crimson-blaster.glb"),
     name:        "Crimson Blaster",
     code:        "Crimson·MB",
     tagline:     "Gel Blaster · High Velocity · Full Auto",

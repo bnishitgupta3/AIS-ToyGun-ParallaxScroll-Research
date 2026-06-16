@@ -8,11 +8,12 @@ import {
 import * as THREE from "three";
 import GenericGunModel from "./GenericGunModel";
 import NeutralEnvironment from "./NeutralEnvironment";
+import { asset } from "@/lib/asset";
 
 /* Pre-warm all three models so Arsenal transitions feel instant */
-useGLTF.preload("/assets/watergun.glb");
-useGLTF.preload("/assets/m416-watergun.glb");
-useGLTF.preload("/assets/crimson-blaster.glb");
+useGLTF.preload(asset("/assets/watergun.glb"));
+useGLTF.preload(asset("/assets/m416-watergun.glb"));
+useGLTF.preload(asset("/assets/crimson-blaster.glb"));
 
 /* World-space layout constants — MUST match LandingPage. */
 export const HERO_GUN_X = 2.4;   // model1's X during the hero (renders in right column)
@@ -182,21 +183,21 @@ function LandingScene({ model1Ref, model2Ref, model3Ref, mouseRef, scrollRef }) 
             {/* Product 1 – MP5K-UTG  (hero + arsenal slot 0) */}
             <group ref={model1Ref}>
                 <Suspense fallback={null}>
-                    <GenericGunModel url="/assets/watergun.glb" targetSize={2.8} />
+                    <GenericGunModel url={asset("/assets/watergun.glb")} targetSize={2.8} />
                 </Suspense>
             </group>
 
             {/* Product 2 – M416 Water X  (arsenal slot 1) */}
             <group ref={model2Ref}>
                 <Suspense fallback={null}>
-                    <GenericGunModel url="/assets/m416-watergun.glb" targetSize={2.8} />
+                    <GenericGunModel url={asset("/assets/m416-watergun.glb")} targetSize={2.8} />
                 </Suspense>
             </group>
 
             {/* Product 3 – Crimson Blaster  (arsenal slot 2) */}
             <group ref={model3Ref}>
                 <Suspense fallback={null}>
-                    <GenericGunModel url="/assets/crimson-blaster.glb" targetSize={2.8} />
+                    <GenericGunModel url={asset("/assets/crimson-blaster.glb")} targetSize={2.8} />
                 </Suspense>
             </group>
 

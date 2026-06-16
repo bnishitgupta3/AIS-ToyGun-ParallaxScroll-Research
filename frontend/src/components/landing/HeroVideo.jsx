@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
+import { asset } from "@/lib/asset";
 
-const CLIPS = ["/assets/hero-1.mp4", "/assets/hero-2.mp4"];
+const CLIPS = [asset("/assets/hero-1.mp4"), asset("/assets/hero-2.mp4")];
 const CROSSFADE = 0.7; // seconds before a clip ends to start the next
 
 /**

@@ -2,8 +2,9 @@ import { forwardRef, useEffect, useMemo, useRef } from "react";
 import { useGLTF } from "@react-three/drei";
 import { useFrame } from "@react-three/fiber";
 import * as THREE from "three";
+import { asset } from "@/lib/asset";
 
-const MODEL_URL = "/assets/watergun.glb";
+const MODEL_URL = asset("/assets/watergun.glb");
 
 /**
  * MP5K-UTG water gun model.

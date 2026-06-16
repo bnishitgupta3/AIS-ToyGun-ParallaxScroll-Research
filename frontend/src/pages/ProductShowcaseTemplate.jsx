@@ -17,16 +17,17 @@ import GenericGunScene from "@/components/scene/GenericGunScene";
 import ParallaxBackground from "@/components/showcase/ParallaxBackground";
 import FireEffects from "@/components/showcase/FireEffects";
 import { useGLTF } from "@react-three/drei";
+import { asset } from "@/lib/asset";
 
 /* Preload all product models so switching pages feels instant */
-useGLTF.preload("/assets/watergun.glb");
-useGLTF.preload("/assets/m416-watergun.glb");
-useGLTF.preload("/assets/crimson-blaster.glb");
+useGLTF.preload(asset("/assets/watergun.glb"));
+useGLTF.preload(asset("/assets/m416-watergun.glb"));
+useGLTF.preload(asset("/assets/crimson-blaster.glb"));
 
 gsap.registerPlugin(ScrollTrigger);
 
 const DEFAULTS = {
-    modelUrl:          "/assets/watergun.glb",
+    modelUrl:          asset("/assets/watergun.glb"),
     name:              "UTG Tactical",
     code:              "UTG·001",
     tagline:           "Electric Water Gun",

@@ -1,7 +1,8 @@
 import ProductShowcaseTemplate from "./ProductShowcaseTemplate";
+import { asset } from "@/lib/asset";
 
 const M416_PRODUCT = {
-    modelUrl:    "/assets/m416-watergun.glb",
+    modelUrl:    asset("/assets/m416-watergun.glb"),
     name:        "M416 Water X",
     code:        "M416·WX",
     tagline:     "Electric Water Gun · Long-Range · Drum Mag",
