@@ -35,7 +35,7 @@ export default function HeroSection({ heroRef }) {
         <section
             ref={heroRef}
             id="hero"
-            className="relative flex min-h-[100svh] w-full flex-col items-center overflow-hidden px-6 pt-[15vh] text-center sm:px-8"
+            className="relative flex min-h-[100svh] w-full flex-col items-center overflow-hidden px-6 pt-[12vh] text-center sm:px-8"
         >
             <motion.div
                 variants={container}
@@ -52,7 +52,7 @@ export default function HeroSection({ heroRef }) {
 
                 <motion.h1
                     variants={rise}
-                    className="font-instrument text-[clamp(40px,9.5vw,100px)] leading-[0.92] tracking-tight text-white drop-shadow-[0_2px_24px_rgba(0,0,0,0.55)]"
+                    className="font-instrument text-[clamp(38px,8vw,84px)] leading-[0.92] tracking-tight text-white drop-shadow-[0_2px_24px_rgba(0,0,0,0.55)]"
                 >
                     Holi to high-noon —
                     <br />

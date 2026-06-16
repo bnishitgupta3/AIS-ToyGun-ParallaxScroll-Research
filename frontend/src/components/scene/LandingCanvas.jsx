@@ -56,11 +56,12 @@ function responsiveLayout(width, height) {
         radius: clamp(aspect * 2.3, 1.35, ARC_RADIUS),
         depth:  clamp(aspect * 1.9, 1.4, ARC_DEPTH),
         scale:  clamp(aspect * 0.8, 0.5, 1.0),
-        /* Spyra-style hero: gun centred horizontally, sitting a touch lower so
-           the headline above it has room — but not so low it clips the bottom
-           on tall/mobile screens. */
+        /* Spyra-style hero: gun centred horizontally, sitting in the LOWER
+           third so the headline + Explore button above it never overlap the
+           gun (the laptop overlap issue). Drops a little further on tall
+           screens, but stays clear of the bottom edge. */
         heroX:  0,
-        heroY:  -0.9 - clamp((0.95 - aspect) * 2.2, 0, 1) * 0.5,
+        heroY:  -1.4 - clamp((0.95 - aspect) * 2.2, 0, 1) * 0.45,
     };
 }
 
@@ -140,7 +141,7 @@ function LandingScene({ model1Ref, model2Ref, model3Ref, mouseRef, scrollRef }) 
             const tX = lerp(hX, cX, entry);
             const tY = lerp(hY, 0,  entry);
             const tZ = lerp(0,  cZ, entry);
-            const tS = lerp(1,  cS, entry) * R.scale;      // shrink whole rig on small screens
+            const tS = lerp(0.85, cS, entry) * R.scale;    // hero gun a touch smaller; arsenal unaffected
             const tO = lerp(1,  cO, entry);  // fully opaque in hero, fades on the arc
             let   tRotY = lerp(0, cRotY, entry);
             let   tRotX = 0;
