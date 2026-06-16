@@ -32,9 +32,11 @@ export default function ComingSoonPage() {
                 }}
             />
 
-            {/* Big "COMING SOON" wordmark — BEHIND the gun, faded */}
+            {/* Big "COMING SOON" wordmark — BEHIND the gun, faded.
+                Much larger on phones (28vw) so it reads around/above the
+                silhouette; desktop keeps the original sizing. */}
             <div className="pointer-events-none absolute inset-0 z-0 flex items-center justify-center">
-                <h2 className="font-instrument select-none text-center text-[clamp(64px,19vw,290px)] leading-[0.8] tracking-tight text-[#1a1a1a]/[0.09]">
+                <h2 className="font-instrument select-none text-center text-[28vw] leading-[0.82] tracking-tight text-[#1a1a1a]/[0.13] md:text-[clamp(64px,19vw,290px)] md:leading-[0.8] md:text-[#1a1a1a]/[0.09]">
                     COMING
                     <br />
                     SOON
