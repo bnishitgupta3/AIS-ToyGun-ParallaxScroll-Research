@@ -1,0 +1,11 @@
+{
+  "files": {
+    "main.css": "/AIS-ToyGun-ParallaxScroll-Research/static/css/main.b8e94346.css",
+    "main.js": "/AIS-ToyGun-ParallaxScroll-Research/static/js/main.dd0e0b02.js",
+    "index.html": "/AIS-ToyGun-ParallaxScroll-Research/index.html"
+  },
+  "entrypoints": [
+    "static/css/main.b8e94346.css",
+    "static/js/main.dd0e0b02.js"
+  ]
+}
