@@ -196,7 +196,7 @@ function LandingScene({ model1Ref, model2Ref, model3Ref, mouseRef, scrollRef }) 
                 color="#ffffff"
             />
 
-            {/* Product 1 – MP5K-UTG  (hero + arsenal slot 0) */}
+            {/* Product 1 – MP5K  (hero + arsenal slot 0) */}
             <group ref={model1Ref}>
                 <Suspense fallback={null}>
                     <GenericGunModel url={asset("/assets/watergun.glb")} targetSize={2.8} />

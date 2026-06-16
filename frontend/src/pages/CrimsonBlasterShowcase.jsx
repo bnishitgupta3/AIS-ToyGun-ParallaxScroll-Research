@@ -6,7 +6,7 @@ const CRIMSON_PRODUCT = {
     name:        "Crimson Blaster",
     code:        "Crimson·MB",
     tagline:     "Gel Blaster · High Velocity · Full Auto",
-    eyebrow:     "/// UTG · Tactical Division · 2026",
+    eyebrow:     "/// SONIQ Toys · 2026",
     accentColor: "#ef4444",   // tactical red
     accentDeep:  "#b91c1c",
     specs: [

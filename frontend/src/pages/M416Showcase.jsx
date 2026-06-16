@@ -6,7 +6,7 @@ const M416_PRODUCT = {
     name:        "M416 Water X",
     code:        "M416·WX",
     tagline:     "Electric Water Gun · Long-Range · Drum Mag",
-    eyebrow:     "/// UTG · Tactical Division · 2026",
+    eyebrow:     "/// SONIQ Toys · 2026",
     accentColor: "#3b82f6",   // electric blue
     accentDeep:  "#1d4ed8",
     specs: [

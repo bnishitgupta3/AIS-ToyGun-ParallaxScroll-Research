@@ -43,7 +43,7 @@ export default function LandingNav() {
                         onClick={() => setOpen(false)}
                         className="font-instrument text-[28px] leading-none tracking-tight text-[#1a1a1a] select-none"
                     >
-                        UTG
+                        SONIQ
                     </Link>
 
                     {/* Desktop links */}

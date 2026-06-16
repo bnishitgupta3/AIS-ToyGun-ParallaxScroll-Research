@@ -6,10 +6,13 @@ import ComingSoonGun from "@/components/landing/ComingSoonGun";
 const EASE = [0.16, 1, 0.3, 1];
 
 /**
- * Coming Soon — a sunny teaser built around a rotating DARK SILHOUETTE of the
- * MP5K (shape only, no detail). A big semi-transparent "COMING SOON" sits
- * behind the gun; the copy leans into Indian summer play (Holi, farmhouse
- * pools, water parks, backyards) and builds anticipation.
+ * Coming Soon — robustly responsive teaser.
+ *
+ * Layout is a normal flowing column (eyebrow/headline → gun stage → copy →
+ * signup). The rotating dark silhouette and the big "COMING SOON" wordmark
+ * live INSIDE a self-contained, overflow-hidden "stage" box, so they can
+ * never bleed into and overlap the text on any screen size. Fonts use clamp()
+ * so they scale smoothly from small phones to desktop.
  */
 export default function ComingSoonPage() {
     const [email, setEmail] = useState("");
@@ -17,10 +20,10 @@ export default function ComingSoonPage() {
 
     return (
         <div
-            className="relative min-h-[100svh] overflow-hidden text-[#1a1a1a]"
+            className="relative min-h-[100svh] w-full overflow-x-hidden text-[#1a1a1a]"
             style={{
                 background:
-                    "radial-gradient(75% 65% at 50% 38%, #FFF7EC 0%, #FCEAD3 55%, #F4E5D2 100%)",
+                    "radial-gradient(80% 60% at 50% 30%, #FFF7EC 0%, #FCEAD3 55%, #F4E5D2 100%)",
             }}
         >
             {/* warm sun glow up top */}
@@ -28,76 +31,63 @@ export default function ComingSoonPage() {
                 className="pointer-events-none absolute inset-0"
                 style={{
                     background:
-                        "radial-gradient(40% 30% at 50% 6%, rgba(255,193,110,0.45) 0%, transparent 70%)",
+                        "radial-gradient(40% 26% at 50% 4%, rgba(255,193,110,0.45) 0%, transparent 70%)",
                 }}
             />
 
-            {/* Big "COMING SOON" wordmark — BEHIND the gun, faded.
-                On phones it's stretched VERTICALLY (scaleY) so the two words
-                spread tall and flank the gun (top/bottom) rather than hiding
-                behind it. Desktop keeps the original compact sizing. */}
-            <div className="pointer-events-none absolute inset-0 z-0 flex items-center justify-center">
-                <h2 className="font-instrument select-none text-center text-[24vw] leading-[1.05] scale-y-[1.7] tracking-tight text-[#1a1a1a]/[0.14] md:scale-y-100 md:text-[clamp(64px,19vw,290px)] md:leading-[0.8] md:text-[#1a1a1a]/[0.09]">
-                    COMING
-                    <br />
-                    SOON
-                </h2>
-            </div>
-
-            {/* Rotating dark silhouette (z-1, over the wordmark) */}
-            <ComingSoonGun />
-
             {/* Logo */}
-            <header className="absolute left-1/2 top-7 z-20 -translate-x-1/2">
-                <Link to="/" className="font-instrument text-[28px] leading-none tracking-tight text-[#1a1a1a]">
-                    UTG
+            <header className="absolute left-1/2 top-6 z-30 -translate-x-1/2">
+                <Link to="/" className="font-instrument text-[26px] leading-none tracking-tight text-[#1a1a1a] sm:text-[28px]">
+                    SONIQ
                 </Link>
             </header>
 
-            {/* Copy frames the gun: hook on top, anticipation + signup at the bottom */}
-            <main className="relative z-20 flex min-h-[100svh] flex-col items-center justify-between px-6 pb-9 pt-24 text-center md:pt-28">
-                {/* TOP — eyebrow + hook */}
-                <div className="flex flex-col items-center">
-                    <motion.span
-                        initial={{ opacity: 0, y: 12 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.8, ease: EASE }}
-                        className="font-inter text-[11px] font-semibold uppercase tracking-[0.45em] text-[#f97316]"
-                    >
-                        /// UTG Tactical · Made in India · 2026
-                    </motion.span>
-
-                    <motion.h1
-                        initial={{ opacity: 0, scale: 0.96 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        transition={{ duration: 1.2, ease: EASE }}
-                        className="font-instrument mt-4 text-[clamp(34px,6.5vw,68px)] leading-[0.95] tracking-tight text-[#1a1a1a]"
-                    >
+            <main className="relative z-20 mx-auto flex min-h-[100svh] max-w-2xl flex-col items-center justify-center gap-6 px-6 py-24 text-center sm:gap-8 sm:py-28">
+                {/* ── Eyebrow + hook ── */}
+                <motion.div
+                    initial={{ opacity: 0, y: 14 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.9, ease: EASE }}
+                    className="flex flex-col items-center"
+                >
+                    <span className="font-inter text-[10px] font-semibold uppercase tracking-[0.4em] text-[#f97316] sm:text-[11px] sm:tracking-[0.45em]">
+                        /// SONIQ Toys · Made in India · 2026
+                    </span>
+                    <h1 className="font-instrument mt-3 text-[clamp(30px,7vw,64px)] leading-[1.0] tracking-tight text-[#1a1a1a]">
                         Get ready to get
                         <span className="text-[#f97316]"> drenched.</span>
-                    </motion.h1>
+                    </h1>
+                </motion.div>
+
+                {/* ── GUN STAGE — wordmark + rotating silhouette, fully contained ── */}
+                <div className="relative h-[36vh] min-h-[240px] w-full overflow-hidden sm:h-[46vh]">
+                    {/* Wordmark behind the gun (clipped to this box) */}
+                    <div className="absolute inset-0 flex items-center justify-center">
+                        <h2 className="font-instrument select-none text-center text-[clamp(58px,16vw,230px)] leading-[0.82] tracking-tight text-[#1a1a1a]/[0.12] scale-y-[1.8] sm:scale-y-[1.4] md:scale-y-100">
+                            COMING
+                            <br />
+                            SOON
+                        </h2>
+                    </div>
+                    {/* Rotating dark silhouette (fills + fits this box) */}
+                    <ComingSoonGun />
                 </div>
 
-                {/* BOTTOM — anticipation copy + pressure meter + signup */}
-                <div className="flex w-full flex-col items-center">
-                    <motion.p
-                        initial={{ opacity: 0, y: 14 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 1, delay: 0.35, ease: EASE }}
-                        className="mb-6 max-w-xl font-inter text-[15px] leading-relaxed text-[#1a1a1a]/65 md:text-[16px]"
-                    >
-                        Holi mornings. Farmhouse pools. Water parks, society lawns and
-                        sun-soaked backyard showdowns. A whole new way to play is
-                        charging up — and this summer will never be dry again.
-                    </motion.p>
+                {/* ── Anticipation copy + pressure meter + signup ── */}
+                <motion.div
+                    initial={{ opacity: 0, y: 16 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 1, delay: 0.3, ease: EASE }}
+                    className="flex w-full flex-col items-center"
+                >
+                    <p className="max-w-xl font-inter text-[14px] leading-relaxed text-[#1a1a1a]/65 sm:text-[16px]">
+                        Holi mornings. Farmhouse pools. Water parks, society lawns
+                        and sun-soaked backyard showdowns. A whole new way to play is
+                        charging up, and this summer will never be dry again.
+                    </p>
 
-                    {/* "Pressure building" anticipation meter (on-theme charge bar) */}
-                    <motion.div
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        transition={{ duration: 1, delay: 0.5 }}
-                        className="mb-7 w-full max-w-xs"
-                    >
+                    {/* "Pressure building" charge meter */}
+                    <div className="mt-6 w-full max-w-xs">
                         <div className="mb-2 flex items-center justify-between font-nokia text-[10px] uppercase tracking-[0.25em] text-[#1a1a1a]/45">
                             <span>Pressure building</span>
                             <span>2026</span>
@@ -109,17 +99,14 @@ export default function ComingSoonPage() {
                                 transition={{ duration: 3.2, repeat: Infinity, ease: "easeInOut" }}
                             />
                         </div>
-                    </motion.div>
+                    </div>
 
-                    <motion.form
-                        initial={{ opacity: 0, y: 16 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 1, delay: 0.6, ease: EASE }}
+                    <form
                         onSubmit={(e) => {
                             e.preventDefault();
                             if (email) setSubmitted(true);
                         }}
-                        className="flex w-full max-w-md flex-col items-stretch gap-3 sm:flex-row sm:items-center"
+                        className="mt-7 flex w-full max-w-md flex-col items-stretch gap-3 sm:flex-row sm:items-center"
                     >
                         {submitted ? (
                             <p className="mx-auto font-inter text-[15px] font-medium text-[#f97316]">
@@ -147,8 +134,8 @@ export default function ComingSoonPage() {
                                 </button>
                             </>
                         )}
-                    </motion.form>
-                </div>
+                    </form>
+                </motion.div>
             </main>
         </div>
     );

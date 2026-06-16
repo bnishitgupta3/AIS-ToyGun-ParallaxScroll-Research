@@ -47,7 +47,7 @@ const holdCenter = (i) => i * (HOLD_FRAC + TRANS_FRAC) + HOLD_FRAC / 2;
 
 export default function LandingPage() {
     /* ── 3D model refs – populated inside <Canvas> ── */
-    const model1Ref = useRef();  // MP5K-UTG
+    const model1Ref = useRef();  // MP5K
     const model2Ref = useRef();  // M416
     const model3Ref = useRef();  // Crimson Blaster
 

@@ -45,7 +45,7 @@ export default function NotFoundPage() {
                     className="mt-6 max-w-md font-inter text-[15px] leading-relaxed text-[#1a1a1a]/60 md:text-[17px]"
                 >
                     This page slipped away like water through your fingers. The
-                    page you're after doesn't exist — but the arsenal is just a
+                    page you're after doesn't exist, but the arsenal is just a
                     click away. Reload, regroup, re-engage.
                 </motion.p>
 
@@ -72,7 +72,7 @@ export default function NotFoundPage() {
                         to="/about"
                         className="inline-flex items-center gap-2 rounded-full border border-[#1a1a1a]/25 px-7 py-3 font-inter text-[13px] font-semibold text-[#1a1a1a] transition-all hover:border-[#1a1a1a] hover:bg-[#1a1a1a] hover:text-white"
                     >
-                        About UTG
+                        About SONIQ
                     </Link>
                 </motion.div>
             </main>

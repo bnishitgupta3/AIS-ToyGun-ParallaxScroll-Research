@@ -47,14 +47,14 @@ export default function HeroSection({ heroRef }) {
                     variants={rise}
                     className="mb-5 font-inter text-[10px] font-semibold uppercase tracking-[0.4em] text-[#f97316] sm:text-[12px]"
                 >
-                    /// UTG Tactical · Made for Indian Summers
+                    /// SONIQ Toys · Made for Indian Summers
                 </motion.span>
 
                 <motion.h1
                     variants={rise}
                     className="font-instrument text-[clamp(38px,8vw,84px)] leading-[0.92] tracking-tight text-white drop-shadow-[0_2px_24px_rgba(0,0,0,0.55)]"
                 >
-                    Holi to high-noon —
+                    Holi to high-noon,
                     <br />
                     <span className="text-white/55">soak every moment.</span>
                 </motion.h1>
@@ -64,7 +64,7 @@ export default function HeroSection({ heroRef }) {
                     className="mt-6 max-w-2xl font-inter text-[15px] leading-relaxed text-white/75 sm:text-[17px]"
                 >
                     Precision water blasters built for Holi mornings, scorching
-                    afternoons and every splash in between — beaches, water parks,
+                    afternoons and every splash in between: beaches, water parks,
                     society lawns, farmhouse pools and your own backyard. This
                     summer, play harder.
                 </motion.p>

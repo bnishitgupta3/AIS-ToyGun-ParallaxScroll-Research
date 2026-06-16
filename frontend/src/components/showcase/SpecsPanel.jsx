@@ -36,7 +36,7 @@ export default function SpecsPanel({ onFire, isFiring }) {
                     <span className="text-[color:var(--accent)]">Battle.</span>
                 </h2>
                 <p className="mt-5 max-w-[34ch] text-sm leading-relaxed text-zinc-600">
-                    Drum-fed, electric drive, full-auto rated. The MP5K-UTG is
+                    Drum-fed, electric drive, full-auto rated. The MP5K is
                     engineered for soaking precision and zero-recoil play.
                 </p>
 

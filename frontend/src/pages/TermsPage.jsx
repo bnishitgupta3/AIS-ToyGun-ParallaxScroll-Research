@@ -4,8 +4,8 @@ export default function TermsPage() {
     return (
         <LegalLayout eyebrow="/// Legal" title="Terms & Conditions" updated="16 June 2026">
             <p>
-                These Terms & Conditions govern your access to and use of the UTG
-                Tactical website and the purchase of our products. They are
+                These Terms & Conditions govern your access to and use of the SONIQ
+                Toys website and the purchase of our products. They are
                 governed by the Indian Contract Act, 1872, the Consumer Protection
                 Act, 2019, the Consumer Protection (E-Commerce) Rules, 2020, and
                 the Information Technology Act, 2000. By using this website or
@@ -50,9 +50,9 @@ export default function TermsPage() {
 
             <Section heading="5. Intellectual property">
                 <p>
-                    All content on this website — including the brand name, logos,
-                    designs, 3D models, text and imagery — is the property of UTG
-                    Tactical and protected under applicable Indian IP laws. You may
+                    All content on this website, including the brand name, logos,
+                    designs, 3D models, text and imagery, is the property of SONIQ
+                    Toys and protected under applicable Indian IP laws. You may
                     not reproduce or use it without written permission.
                 </p>
             </Section>
@@ -77,7 +77,7 @@ export default function TermsPage() {
             <Section heading="8. Grievance redressal">
                 <p>
                     For any complaint, contact our Grievance Officer at
-                    grievance@utgtactical.in. Consumers may also approach the
+                    grievance@soniqtoys.in. Consumers may also approach the
                     National Consumer Helpline (1915) or the relevant Consumer
                     Disputes Redressal Commission.
                 </p>

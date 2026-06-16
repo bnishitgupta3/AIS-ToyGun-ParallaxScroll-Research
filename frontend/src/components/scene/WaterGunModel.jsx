@@ -7,7 +7,7 @@ import { asset } from "@/lib/asset";
 const MODEL_URL = asset("/assets/watergun.glb");
 
 /**
- * MP5K-UTG water gun model.
+ * MP5K water gun model.
  * Exposes its outer Group via forwardRef so the parent (outside <Canvas/>)
  * can drive scroll-tied GSAP tweens on position / rotation / scale.
  */

@@ -56,7 +56,7 @@ function AddToCartButton() {
 export const PRODUCTS = [
     {
         id: "p0",
-        name: "MP5K-UTG",
+        name: "MP5K",
         tagline: "Electric · Drum-Fed · Full Auto",
         price: "$89",
         link: "/product/mp5k",

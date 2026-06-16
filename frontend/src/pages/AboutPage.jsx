@@ -17,7 +17,7 @@ const STATS = [
 const VALUES = [
     {
         title: "Precision over plastic",
-        body: "Every component is CNC-checked and stress-tested. We refuse the throwaway-toy mindset — these are instruments, not novelties.",
+        body: "Every component is CNC-checked and stress-tested. We refuse the throwaway-toy mindset; these are instruments, not novelties.",
     },
     {
         title: "Engineered to dominate",
@@ -46,7 +46,7 @@ export default function AboutPage() {
                     transition={{ duration: 0.8, ease: EASE }}
                     className="font-inter text-[11px] font-semibold uppercase tracking-[0.4em] text-[#f97316]"
                 >
-                    /// About UTG Tactical
+                    /// About SONIQ Toys
                 </motion.span>
 
                 <motion.h1
@@ -66,10 +66,10 @@ export default function AboutPage() {
                     transition={{ duration: 1.1, delay: 0.25, ease: EASE }}
                     className="mt-8 max-w-2xl font-inter text-[16px] leading-relaxed text-[#1a1a1a]/65 md:text-[18px]"
                 >
-                    UTG Tactical began with a very Indian frustration: every Holi and
+                    SONIQ Toys began with a very Indian frustration: every Holi and
                     every summer, our water fights deserved better than leaky,
                     short-range plastic. So we brought serious engineering to the
-                    fun — precision barrels, electric drives and drum-fed capacity,
+                    fun: precision barrels, electric drives and drum-fed capacity,
                     built for beaches, water parks, society lawns, farmhouse pools
                     and the backyards where the best memories get made.
                 </motion.p>

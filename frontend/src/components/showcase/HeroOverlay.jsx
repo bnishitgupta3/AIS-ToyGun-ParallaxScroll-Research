@@ -10,7 +10,7 @@ export default function HeroOverlay() {
                 data-testid="hero-eyebrow"
                 className="font-mono-tactical text-xs font-bold uppercase tracking-[0.5em] text-[color:var(--accent)] mb-6"
             >
-                /// UTG · Tactical Division · 2026
+                /// SONIQ Toys · 2026
             </span>
 
             <h1
@@ -23,7 +23,7 @@ export default function HeroOverlay() {
                 <span className="inline-block translate-y-[0.08em] text-[color:var(--accent)]">
                     ·
                 </span>
-                UTG
+                SONIQ
             </h1>
 
             <div

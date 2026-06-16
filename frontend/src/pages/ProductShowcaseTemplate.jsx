@@ -28,10 +28,10 @@ gsap.registerPlugin(ScrollTrigger);
 
 const DEFAULTS = {
     modelUrl:          asset("/assets/watergun.glb"),
-    name:              "UTG Tactical",
-    code:              "UTG·001",
+    name:              "SONIQ Toys",
+    code:              "SONIQ·001",
     tagline:           "Electric Water Gun",
-    eyebrow:           "/// UTG · Tactical Division · 2026",
+    eyebrow:           "/// SONIQ Toys · 2026",
     accentColor:       "#ff5a1f",
     accentDeep:        "#d63f0a",
     specs: [
@@ -46,7 +46,7 @@ const DEFAULTS = {
     specsDescription:  "Drum-fed, electric drive, full-auto rated.",
     price:             "$89.00",
     squadPrice:        "$299.00",
-    version:           "v1.0.0 · UTG-001",
+    version:           "v1.0.0 · SONIQ-001",
     unitLabel:         "7B-001 · In stock",
     homeLink:          "/",
 };
@@ -408,7 +408,7 @@ export default function ProductShowcaseTemplate({ product: rawProduct }) {
                         </div>
 
                         <div className="mt-20 flex items-center justify-between telemetry-label text-zinc-500">
-                            <span>© 2026 UTG Tactical</span>
+                            <span>© 2026 SONIQ Toys</span>
                             <span>{product.version}</span>
                             <span>Built · React · R3F · GSAP</span>
                         </div>

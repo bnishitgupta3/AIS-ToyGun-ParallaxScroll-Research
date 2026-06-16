@@ -4,7 +4,7 @@ export default function PrivacyPolicyPage() {
     return (
         <LegalLayout eyebrow="/// Legal" title="Privacy Policy" updated="16 June 2026">
             <p>
-                This Privacy Policy describes how UTG Tactical ("we", "us", "our")
+                This Privacy Policy describes how SONIQ Toys ("we", "us", "our")
                 collects, uses, stores, discloses and protects your personal data
                 when you visit or purchase from our website. We are committed to
                 handling your information in accordance with the Information
@@ -91,8 +91,8 @@ export default function PrivacyPolicyPage() {
                     Grievance Officer can be reached at:
                 </p>
                 <p>
-                    Grievance Officer, UTG Tactical<br />
-                    Email: grievance@utgtactical.in<br />
+                    Grievance Officer, SONIQ Toys<br />
+                    Email: grievance@soniqtoys.in<br />
                     We aim to acknowledge complaints within 24 hours and resolve
                     them within the timelines prescribed by law.
                 </p>

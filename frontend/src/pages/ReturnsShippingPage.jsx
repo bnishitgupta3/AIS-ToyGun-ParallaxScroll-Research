@@ -43,7 +43,7 @@ export default function ReturnsShippingPage() {
                     defective.
                 </p>
                 <p>
-                    To initiate a return, email support@utgtactical.in with your
+                    To initiate a return, email support@soniqtoys.in with your
                     order ID and photos/video of the issue. We will arrange a pickup
                     or guide you on the next steps.
                 </p>
@@ -68,8 +68,8 @@ export default function ReturnsShippingPage() {
 
             <Section heading="7. Contact & grievance">
                 <p>
-                    Support: support@utgtactical.in · Grievance Officer:
-                    grievance@utgtactical.in. You may also reach the National
+                    Support: support@soniqtoys.in · Grievance Officer:
+                    grievance@soniqtoys.in. You may also reach the National
                     Consumer Helpline at 1915.
                 </p>
             </Section>

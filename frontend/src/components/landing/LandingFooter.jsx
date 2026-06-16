@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 
 const NAV_LINKS = {
     Products: [
-        { label: "MP5K-UTG", to: "/product/mp5k" },
+        { label: "MP5K", to: "/product/mp5k" },
         { label: "M416 Water X", to: "/product/m416" },
         { label: "Crimson Blaster", to: "/product/crimson" },
         { label: "Coming Soon", to: "/coming-soon" },
@@ -42,7 +42,7 @@ export default function LandingFooter() {
                         <div className="flex items-center gap-3">
                             <div className="h-3 w-3 rounded-full bg-orange-500" />
                             <span className="font-mono-tactical text-sm font-bold uppercase tracking-[0.3em] text-white">
-                                UTG · Tactical
+                                SONIQ Toys
                             </span>
                         </div>
                         <p className="mt-5 max-w-[36ch] text-sm leading-relaxed text-zinc-400">
@@ -133,7 +133,7 @@ export default function LandingFooter() {
 
                 {/* Bottom bar */}
                 <div className="mt-16 flex flex-col items-start justify-between gap-4 border-t border-zinc-800 pt-8 font-mono-tactical text-[10px] uppercase tracking-[0.3em] text-zinc-700 md:flex-row md:items-center">
-                    <span>© 2026 UTG Tactical · All rights reserved</span>
+                    <span>© 2026 SONIQ Toys · All rights reserved</span>
                     <span>Built · React · R3F · GSAP</span>
                 </div>
             </div>

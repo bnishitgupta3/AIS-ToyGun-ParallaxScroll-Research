@@ -19,7 +19,7 @@ export default function FooterCTA() {
                             is.
                         </h2>
                         <p className="mt-6 max-w-md text-sm leading-relaxed text-zinc-400">
-                            The MP5K-UTG ships with a full charging kit, two
+                            The MP5K ships with a full charging kit, two
                             drum mags and an extended-range nozzle. Limited
                             allocation per region.
                         </p>
@@ -67,8 +67,8 @@ export default function FooterCTA() {
                 </div>
 
                 <div className="mt-20 flex items-center justify-between font-mono-tactical text-[10px] uppercase tracking-[0.32em] text-zinc-500">
-                    <span>© 2026 UTG Tactical</span>
-                    <span>v1.4.0 · MP5K-UTG</span>
+                    <span>© 2026 SONIQ Toys</span>
+                    <span>v1.4.0 · MP5K</span>
                     <span>Built · React · R3F · GSAP</span>
                 </div>
             </div>
