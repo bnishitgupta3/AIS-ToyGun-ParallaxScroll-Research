@@ -65,7 +65,7 @@ export default function ComingSoonPage() {
                     <div className="absolute inset-0 flex items-center justify-center">
                         <h2 className="font-instrument select-none text-center text-[clamp(58px,16vw,230px)] leading-[0.82] tracking-tight text-[#1a1a1a]/[0.12] scale-y-[1.8] sm:scale-y-[1.4] md:scale-y-100">
                             COMING
-                            <br />
+                            <br /> <br /> <br />
                             SOON
                         </h2>
                     </div>
