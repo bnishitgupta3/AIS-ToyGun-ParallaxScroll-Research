@@ -1,42 +1,21 @@
 import "@/App.css";
 import { useEffect, useRef } from "react";
-import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import gsap from "gsap";
 import { useProgress } from "@react-three/drei";
 
-import LandingPage            from "@/pages/LandingPage";
-import AboutPage              from "@/pages/AboutPage";
-import ComingSoonPage         from "@/pages/ComingSoonPage";
-import NotFoundPage          from "@/pages/NotFoundPage";
-import PrivacyPolicyPage     from "@/pages/PrivacyPolicyPage";
-import TermsPage             from "@/pages/TermsPage";
-import ReturnsShippingPage   from "@/pages/ReturnsShippingPage";
-import ProductShowcase        from "@/pages/ProductShowcase";       // existing MP5K page
-import M416Showcase           from "@/pages/M416Showcase";
-import CrimsonBlasterShowcase from "@/pages/CrimsonBlasterShowcase";
+import ComingSoonPage from "@/pages/ComingSoonPage";
 
-/* Force every route change to start at the top of the new page.
-   ScrollTrigger pinned sections leave window scroll wherever the
-   user was — without this they enter the next page mid-section.
-   Also re-hides body so the next page also waits for its assets. */
-function ScrollToTop() {
-    const { pathname } = useLocation();
-    useEffect(() => {
-        window.scrollTo(0, 0);
-        // Re-arm the FOUC gate for the incoming page
-        document.body.classList.add("loading");
-        if (typeof window !== "undefined" && window.ScrollTrigger) {
-            requestAnimationFrame(() => window.ScrollTrigger.refresh());
-        }
-    }, [pathname]);
-    return null;
-}
+/* ──────────────────────────────────────────────────────────────────────────
+   STANDALONE COMING-SOON BUILD
+   This branch (coming-soon) ships ONLY the holding page. There is no router
+   and no link to the main site — the logo is inert, so visitors always stay
+   on the teaser. The full D2C site lives on `main` and is built/deployed
+   separately. Do not add routes here.
+   ────────────────────────────────────────────────────────────────────────── */
 
 /* Foolproof FOUC reveal: body ships with class="loading" (visibility:
-   hidden + opacity: 0). Once drei's useProgress reports all GLBs as
-   resolved, a single GSAP autoAlpha tween on <body> fades the entire
-   document in. No React state, no per-page wrappers — one source of
-   truth at the document level. */
+   hidden + opacity: 0). Once drei's useProgress reports the GLB resolved,
+   a single GSAP autoAlpha tween on <body> fades the document in. */
 function BodyReveal() {
     const { progress, active } = useProgress();
     const revealed = useRef(false);
@@ -48,17 +27,15 @@ function BodyReveal() {
         gsap.to("body", { autoAlpha: 1, duration: 0.45, ease: "power2.inOut" });
     };
 
-    /* Fallback: never blank the page for more than ~900ms waiting on the
-       heavy .glb downloads. The HTML, fonts and GSAP animations show
-       immediately; the 3-D guns stream in afterwards via Suspense. This is
-       what keeps the site feeling instant on slow / mobile connections. */
+    /* Never blank the page for more than ~900ms waiting on the silhouette
+       model; the HTML, fonts and animations show immediately. */
     useEffect(() => {
         const t = setTimeout(reveal, 900);
         return () => clearTimeout(t);
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
-    /* Reveal sooner if the models actually finish first. */
+    /* Reveal sooner if the model actually finishes first. */
     useEffect(() => {
         if (progress >= 100 && !active) {
             requestAnimationFrame(() => requestAnimationFrame(reveal));
@@ -71,34 +48,10 @@ function BodyReveal() {
 
 function App() {
     return (
-        <BrowserRouter basename={process.env.PUBLIC_URL}>
-            <ScrollToTop />
+        <>
             <BodyReveal />
-            <Routes>
-                {/* Home — full D2C landing page */}
-                <Route path="/"               element={<LandingPage />} />
-
-                {/* About */}
-                <Route path="/about"          element={<AboutPage />} />
-
-                {/* Coming soon (holding page) */}
-                <Route path="/coming-soon"    element={<ComingSoonPage />} />
-
-                {/* Legal / policy pages */}
-                <Route path="/privacy"        element={<PrivacyPolicyPage />} />
-                <Route path="/terms"          element={<TermsPage />} />
-                <Route path="/returns"        element={<ReturnsShippingPage />} />
-
-                {/* Product detail pages */}
-                <Route path="/product/mp5k"   element={<ProductShowcase />} />
-                <Route path="/product/m416"   element={<M416Showcase />} />
-                <Route path="/product/crimson" element={<CrimsonBlasterShowcase />} />
-
-                {/* Branded 404 — also reachable at /404 for testing */}
-                <Route path="/404"            element={<NotFoundPage />} />
-                <Route path="*"              element={<NotFoundPage />} />
-            </Routes>
-        </BrowserRouter>
+            <ComingSoonPage />
+        </>
     );
 }
 

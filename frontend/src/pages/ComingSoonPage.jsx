@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import ComingSoonGun from "@/components/landing/ComingSoonGun";
 
@@ -35,11 +34,11 @@ export default function ComingSoonPage() {
                 }}
             />
 
-            {/* Logo */}
+            {/* Logo — inert on the standalone teaser; clicking it stays here */}
             <header className="absolute left-1/2 top-6 z-30 -translate-x-1/2">
-                <Link to="/" className="font-instrument text-[26px] leading-none tracking-tight text-[#1a1a1a] sm:text-[28px]">
+                <span className="font-instrument select-none text-[26px] leading-none tracking-tight text-[#1a1a1a] sm:text-[28px]">
                     SONIQ
-                </Link>
+                </span>
             </header>
 
             <main className="relative z-20 mx-auto flex min-h-[100svh] max-w-2xl flex-col items-center justify-center gap-6 px-6 py-24 text-center sm:gap-8 sm:py-28">
