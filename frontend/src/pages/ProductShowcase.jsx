@@ -177,7 +177,7 @@ export default function ProductShowcase() {
 
                     {/* Side gutter labels */}
                     <div className="pointer-events-none absolute bottom-6 right-8 z-30 hidden font-mono-tactical text-[10px] uppercase tracking-[0.32em] text-zinc-500 md:block">
-                        Sec · 01 / 02 — Showcase
+                        Sec · 01 / 02 · Showcase
                     </div>
                 </div>
             </section>

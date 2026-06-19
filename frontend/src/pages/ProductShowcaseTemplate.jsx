@@ -335,7 +335,7 @@ export default function ProductShowcaseTemplate({ product: rawProduct }) {
                         </aside>
 
                         <div className="pointer-events-none absolute bottom-6 right-8 z-30 hidden telemetry-label text-zinc-500 md:block">
-                            Sec · 01 / 02 — Showcase
+                            Sec · 01 / 02 · Showcase
                         </div>
                     </div>
                 </section>

@@ -63,7 +63,7 @@ export default function ComingSoonPage() {
                 <div className="relative h-[36vh] min-h-[240px] w-full overflow-hidden sm:h-[46vh]">
                     {/* Wordmark behind the gun (clipped to this box) */}
                     <div className="absolute inset-0 flex items-center justify-center">
-                        <h2 className="font-instrument select-none text-center text-[clamp(58px,16vw,230px)] leading-[0.82] tracking-tight text-[#1a1a1a]/[0.12] scale-y-[1.8] sm:scale-y-[1.4] md:scale-y-100">
+                        <h2 className="font-instrument select-none text-center text-[clamp(58px,16vw,230px)] leading-[0.82] tracking-tight text-[#1a1a1a]/[0.12] scale-y-[2.2] sm:scale-y-[1.7] md:scale-y-100">
                             COMING
                             <br /> 
                             SOON

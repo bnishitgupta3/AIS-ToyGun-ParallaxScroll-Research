@@ -206,7 +206,7 @@ export default function ArsenalSection({ arsenalRef, onSelect, activeIndex = 0 }
 
             {/* Section label */}
             <div className="pointer-events-none absolute bottom-6 right-8 z-20 font-nokia text-[10px] uppercase tracking-[0.32em] text-[#1a1a1a]/25">
-                Sec · 02 / 05 — Arsenal
+                Sec · 02 / 05 · Arsenal
             </div>
         </section>
     );

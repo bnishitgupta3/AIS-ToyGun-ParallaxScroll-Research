@@ -96,7 +96,7 @@ export default function MissionSection({ missionRef }) {
 
                 <p className="mt-12 max-w-[54ch] text-base leading-relaxed text-zinc-400 md:text-lg">
                     From Holi mornings with the whole mohalla to lazy summer
-                    afternoons by the farmhouse pool — we engineered blasters that
+                    afternoons by the farmhouse pool, we engineered blasters that
                     reach farther, last longer and never run dry. Built for Indian
                     summers, made for memories that get gloriously, joyfully wet.
                 </p>
