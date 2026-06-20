@@ -50,7 +50,7 @@ export default function ComingSoonPage() {
 
     return (
         <div
-            className="relative min-h-[100svh] w-full overflow-x-hidden text-[#1a1a1a]"
+            className="relative h-[100svh] w-full overflow-hidden text-[#1a1a1a]"
             style={{
                 background:
                     "radial-gradient(80% 60% at 50% 30%, #FFF7EC 0%, #FCEAD3 55%, #F4E5D2 100%)",
@@ -72,13 +72,13 @@ export default function ComingSoonPage() {
                 </span>
             </header>
 
-            <main className="relative z-20 mx-auto flex min-h-[100svh] max-w-2xl flex-col items-center justify-center gap-6 px-6 py-24 text-center sm:gap-8 sm:py-28">
+            <main className="relative z-20 mx-auto flex h-[100svh] max-w-2xl flex-col items-center px-6 pb-5 pt-16 text-center sm:pb-10 sm:pt-24">
                 {/* ── Eyebrow + hook ── */}
                 <motion.div
                     initial={{ opacity: 0, y: 14 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.9, ease: EASE }}
-                    className="flex flex-col items-center"
+                    className="flex shrink-0 flex-col items-center"
                 >
                     <span className="font-inter text-[10px] font-semibold uppercase tracking-[0.4em] text-[#f97316] sm:text-[11px] sm:tracking-[0.45em]">
                         /// SONIQ Toys · Made in India · 2026
@@ -89,13 +89,16 @@ export default function ComingSoonPage() {
                     </h1>
                 </motion.div>
 
-                {/* ── GUN STAGE — wordmark + rotating silhouette, fully contained ── */}
-                <div className="relative h-[36vh] min-h-[240px] w-full overflow-hidden sm:h-[46vh]">
+                {/* ── GUN STAGE — wordmark + rotating silhouette, fully contained.
+                    flex-1 so it absorbs whatever vertical space is left between the
+                    fixed headline and the fixed signup block → the page always fits
+                    exactly one screen (no scroll) on any height. ── */}
+                <div className="relative my-2 w-full flex-1 min-h-0 overflow-hidden sm:my-4">
                     {/* Wordmark behind the gun (clipped to this box) */}
                     <div className="absolute inset-0 flex items-center justify-center">
-                        <h2 className="font-instrument select-none text-center text-[clamp(58px,16vw,230px)] leading-[0.82] tracking-tight text-[#1a1a1a]/[0.12] scale-y-[2.2] sm:scale-y-[1.7] md:scale-y-100">
+                        <h2 className="font-instrument select-none text-center text-[clamp(46px,14vw,230px)] leading-[0.82] tracking-tight text-[#1a1a1a]/[0.12] scale-y-[1.6] sm:scale-y-[1.5] md:scale-y-100">
                             COMING
-                            <br /> 
+                            <br />
                             SOON
                         </h2>
                     </div>
@@ -108,16 +111,16 @@ export default function ComingSoonPage() {
                     initial={{ opacity: 0, y: 16 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 1, delay: 0.3, ease: EASE }}
-                    className="flex w-full flex-col items-center"
+                    className="flex w-full shrink-0 flex-col items-center"
                 >
-                    <p className="max-w-xl font-inter text-[14px] leading-relaxed text-[#1a1a1a]/65 sm:text-[16px]">
+                    <p className="max-w-xl font-inter text-[13px] leading-relaxed text-[#1a1a1a]/65 sm:text-[16px]">
                         Holi mornings. Farmhouse pools. Water parks, society lawns
                         and sun-soaked backyard showdowns. A whole new way to play is
                         charging up, and this summer will never be dry again.
                     </p>
 
                     {/* "Pressure building" charge meter */}
-                    <div className="mt-6 w-full max-w-xs">
+                    <div className="mt-3 w-full max-w-xs sm:mt-5">
                         <div className="mb-2 flex items-center justify-between font-nokia text-[10px] uppercase tracking-[0.25em] text-[#1a1a1a]/45">
                             <span>Pressure building</span>
                             <span>2026</span>
@@ -132,14 +135,14 @@ export default function ComingSoonPage() {
                     </div>
 
                     {status === "success" ? (
-                        <p className="mt-7 mx-auto max-w-md font-inter text-[15px] font-medium text-[#f97316]">
+                        <p className="mt-4 mx-auto max-w-md font-inter text-[15px] font-medium text-[#f97316]">
                             You're in. We'll call you to the frontline the moment it drops, with early-access offers first. ✓
                         </p>
                     ) : (
                         <>
                             <form
                                 onSubmit={handleSubmit}
-                                className="mt-7 flex w-full max-w-md flex-col items-stretch gap-3 sm:flex-row sm:items-center"
+                                className="mt-4 flex w-full max-w-md flex-col items-stretch gap-2.5 sm:mt-6 sm:flex-row sm:items-center sm:gap-3"
                             >
                                 <input
                                     type="email"
