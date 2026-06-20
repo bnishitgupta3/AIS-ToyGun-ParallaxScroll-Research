@@ -16,9 +16,8 @@ const NAV_LINKS = {
     ],
     Support: [
         { label: "Returns & Shipping", to: "/returns" },
-        { label: "FAQ", to: "#" },
-        { label: "Warranty", to: "#" },
-        { label: "Contact", to: "#" },
+        { label: "FAQ", to: "/faq" },
+        { label: "Contact", to: "/contact" },
     ],
     Legal: [
         { label: "Privacy Policy", to: "/privacy" },
