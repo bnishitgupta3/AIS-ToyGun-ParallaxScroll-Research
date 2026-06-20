@@ -13,6 +13,7 @@ import ArsenalSection from "@/components/landing/ArsenalSection";
 import MissionSection from "@/components/landing/MissionSection";
 import FieldTestSection from "@/components/landing/FieldTestSection";
 import LandingFooter  from "@/components/landing/LandingFooter";
+import SectionDots    from "@/components/landing/SectionDots";
 
 gsap.registerPlugin(ScrollTrigger, ScrollToPlugin);
 
@@ -265,6 +266,9 @@ export default function LandingPage() {
             {/* ── SCROLLABLE HTML OVERLAY ── */}
             <div className="relative z-10">
                 <LandingNav />
+
+                {/* Right-edge section dots (scrollspy) — appears from Arsenal down */}
+                <SectionDots />
 
                 {/* 1 — HERO */}
                 <HeroSection heroRef={heroRef} />
