@@ -114,9 +114,9 @@ export default function ComingSoonPage() {
                     className="flex w-full shrink-0 flex-col items-center"
                 >
                     <p className="max-w-xl font-inter text-[13px] leading-relaxed text-[#1a1a1a]/65 sm:text-[16px]">
-                        Holi mornings. Farmhouse pools. Water parks, society lawns
-                        and sun-soaked backyard showdowns. A whole new way to play is
-                        charging up, and this summer will never be dry again.
+                        Holi mornings. Rooftop ambushes. Farmhouse pools, society
+                        lawns and backyard showdowns. A whole new way to play is
+                        charging up, and no day, in any season, stays dry again.
                     </p>
 
                     {/* "Pressure building" charge meter */}
