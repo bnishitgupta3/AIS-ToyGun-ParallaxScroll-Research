@@ -4,6 +4,11 @@ import ComingSoonGun from "@/components/landing/ComingSoonGun";
 
 const EASE = [0.16, 1, 0.3, 1];
 
+/* Formspree endpoint that collects early-access signups.
+   Get yours at https://formspree.io → create a form → copy its endpoint
+   (looks like https://formspree.io/f/abcdwxyz) and paste it below. */
+const FORMSPREE_ENDPOINT = "https://formspree.io/f/mwvjgyor";
+
 /**
  * Coming Soon — robustly responsive teaser.
  *
@@ -15,7 +20,33 @@ const EASE = [0.16, 1, 0.3, 1];
  */
 export default function ComingSoonPage() {
     const [email, setEmail] = useState("");
-    const [submitted, setSubmitted] = useState(false);
+    const [status, setStatus] = useState("idle"); // idle | submitting | success | error
+    const [errorMsg, setErrorMsg] = useState("");
+
+    async function handleSubmit(e) {
+        e.preventDefault();
+        if (!email || status === "submitting") return;
+        setStatus("submitting");
+        setErrorMsg("");
+        try {
+            const res = await fetch(FORMSPREE_ENDPOINT, {
+                method: "POST",
+                headers: { "Content-Type": "application/json", Accept: "application/json" },
+                body: JSON.stringify({ email, source: "coming-soon" }),
+            });
+            if (res.ok) {
+                setStatus("success");
+            } else {
+                const data = await res.json().catch(() => ({}));
+                const msg = data && data.errors && data.errors[0] && data.errors[0].message;
+                setErrorMsg(msg || "Something went wrong. Please try again.");
+                setStatus("error");
+            }
+        } catch (_) {
+            setErrorMsg("Network error. Please check your connection and try again.");
+            setStatus("error");
+        }
+    }
 
     return (
         <div
@@ -100,40 +131,50 @@ export default function ComingSoonPage() {
                         </div>
                     </div>
 
-                    <form
-                        onSubmit={(e) => {
-                            e.preventDefault();
-                            if (email) setSubmitted(true);
-                        }}
-                        className="mt-7 flex w-full max-w-md flex-col items-stretch gap-3 sm:flex-row sm:items-center"
-                    >
-                        {submitted ? (
-                            <p className="mx-auto font-inter text-[15px] font-medium text-[#f97316]">
-                                You're in. We'll call you to the frontline the moment it drops. ✓
-                            </p>
-                        ) : (
-                            <>
+                    {status === "success" ? (
+                        <p className="mt-7 mx-auto max-w-md font-inter text-[15px] font-medium text-[#f97316]">
+                            You're in. We'll call you to the frontline the moment it drops, with early-access offers first. ✓
+                        </p>
+                    ) : (
+                        <>
+                            <form
+                                onSubmit={handleSubmit}
+                                className="mt-7 flex w-full max-w-md flex-col items-stretch gap-3 sm:flex-row sm:items-center"
+                            >
                                 <input
                                     type="email"
+                                    name="email"
                                     required
                                     value={email}
                                     onChange={(e) => setEmail(e.target.value)}
                                     placeholder="you@email.com"
-                                    className="w-full flex-1 rounded-full border border-black/15 bg-white/70 px-6 py-3 font-inter text-[14px] text-[#1a1a1a] placeholder-[#1a1a1a]/35 outline-none backdrop-blur-sm transition-colors focus:border-[#f97316]"
+                                    disabled={status === "submitting"}
+                                    className="w-full flex-1 rounded-full border border-black/15 bg-white/70 px-6 py-3 font-inter text-[14px] text-[#1a1a1a] placeholder-[#1a1a1a]/35 outline-none backdrop-blur-sm transition-colors focus:border-[#f97316] disabled:opacity-60"
                                 />
                                 <button
                                     type="submit"
-                                    className="group relative w-full shrink-0 overflow-hidden rounded-full bg-[#f97316] px-7 py-3 font-inter text-[13px] font-semibold text-white shadow-[inset_0_-4px_4px_rgba(255,255,255,0.39)] transition-all hover:brightness-110 sm:w-auto"
+                                    disabled={status === "submitting"}
+                                    className="group relative w-full shrink-0 overflow-hidden rounded-full bg-[#f97316] px-7 py-3 font-inter text-[13px] font-semibold text-white shadow-[inset_0_-4px_4px_rgba(255,255,255,0.39)] transition-all hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-70 sm:w-auto"
                                 >
                                     <span
                                         aria-hidden="true"
                                         className="pointer-events-none absolute left-[10%] top-[1px] h-4 w-[80%] rounded-[12px] bg-gradient-to-b from-[#FFD9B8] to-transparent transition-transform duration-200 group-hover:scale-x-105"
                                     />
-                                    <span className="relative">Get Early Access</span>
+                                    <span className="relative">
+                                        {status === "submitting" ? "Joining…" : "Get Early Access"}
+                                    </span>
                                 </button>
-                            </>
-                        )}
-                    </form>
+                            </form>
+
+                            {status === "error" && (
+                                <p className="mt-3 font-inter text-[13px] text-red-600">{errorMsg}</p>
+                            )}
+
+                            <p className="mt-3 max-w-md font-inter text-[11px] leading-relaxed text-[#1a1a1a]/40">
+                                We'll only email you about the launch and early-access offers. No spam, unsubscribe anytime.
+                            </p>
+                        </>
+                    )}
                 </motion.div>
             </main>
         </div>
