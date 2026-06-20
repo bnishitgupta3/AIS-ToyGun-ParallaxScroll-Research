@@ -73,6 +73,10 @@ export default function LandingPage() {
         activeIdxRef.current = idx;
         setActiveIdx(idx);
     };
+    /* While a thumbnail click-to-seek is animating, hold the highlight on the
+       chosen weapon (index) so the scroll-driven onUpdate can't drag it back.
+       null = no seek in progress (highlight follows scroll normally). */
+    const seekLockRef = useRef(null);
 
     /* ── Scroll progress shared with the 3D canvas ──
        GSAP writes here every scroll tick; the Canvas's useFrame reads it
@@ -85,11 +89,21 @@ export default function LandingPage() {
     const seekToWeapon = (index) => {
         const st = arsenalST.current;
         if (!st) return;
+        // Highlight the picked tile instantly on click — don't wait for the
+        // carousel to finish animating the gun to the front (otherwise the tap
+        // feels unregistered and users double-click). Lock it for the duration
+        // of the seek so onUpdate (which tracks scroll position) can't drag the
+        // highlight back to where the gun currently is.
+        setActive(index);
+        seekLockRef.current = index;
         const targetY = st.start + (st.end - st.start) * holdCenter(index);
         gsap.to(window, {
             scrollTo: { y: targetY, autoKill: false },
             duration: 1,
             ease: "power3.inOut",
+            onComplete: () => {
+                if (seekLockRef.current === index) seekLockRef.current = null;
+            },
         });
     };
 
@@ -197,7 +211,13 @@ export default function LandingPage() {
                         /* Remap raw scroll → carousel position with dwells. */
                         const pos = remapArsenal(self.progress);  // 0 .. N-1
                         scrollRef.current.arsenal = pos / (ARSENAL_COUNT - 1);
-                        setActive(Math.round(pos));
+                        /* During a click-to-seek, keep the highlight pinned to the
+                           chosen weapon; otherwise track the scroll position. */
+                        setActive(
+                            seekLockRef.current !== null
+                                ? seekLockRef.current
+                                : Math.round(pos),
+                        );
                     },
                     onRefresh: () =>
                         setActive(
