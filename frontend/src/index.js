@@ -23,11 +23,21 @@ const queryClient = new QueryClient({
   },
 });
 
-const root = ReactDOM.createRoot(document.getElementById("root"));
-root.render(
+const rootEl = document.getElementById("root");
+const app = (
   <React.StrictMode>
     <QueryClientProvider client={queryClient}>
       <App />
     </QueryClientProvider>
-  </React.StrictMode>,
+  </React.StrictMode>
 );
+
+// react-snap pre-renders each route to static HTML at build time so search
+// engines and AI crawlers (which often don't run JS) can read the content.
+// When that pre-rendered markup is present we hydrate it; otherwise we mount
+// fresh (normal dev / non-prerendered serving).
+if (rootEl.hasChildNodes()) {
+  ReactDOM.hydrateRoot(rootEl, app);
+} else {
+  ReactDOM.createRoot(rootEl).render(app);
+}

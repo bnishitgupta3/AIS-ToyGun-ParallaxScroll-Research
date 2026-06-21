@@ -14,6 +14,9 @@ import MissionSection from "@/components/landing/MissionSection";
 import FieldTestSection from "@/components/landing/FieldTestSection";
 import LandingFooter  from "@/components/landing/LandingFooter";
 import SectionDots    from "@/components/landing/SectionDots";
+import { isPrerendering } from "@/lib/isPrerendering";
+
+const PRERENDER = isPrerendering();
 
 gsap.registerPlugin(ScrollTrigger, ScrollToPlugin);
 
@@ -248,20 +251,27 @@ export default function LandingPage() {
          */
         <div className="dot-grid relative overflow-x-hidden text-[#1a1a1a]">
 
-            {/* ── HERO BACKGROUND VIDEO (z:0 — behind the 3D canvas) ── */}
-            <HeroVideo />
+            {/* Heavy hero video + WebGL canvas: skipped during react-snap
+                prerender (they never reach network-idle) so the page's text is
+                captured for crawlers. Real browsers always render them. */}
+            {!PRERENDER && (
+                <>
+                    {/* ── HERO BACKGROUND VIDEO (z:0 — behind the 3D canvas) ── */}
+                    <HeroVideo />
 
-            {/* Film-grain texture layer (light, subtle on the bright bg) */}
-            <div className="film-grain" style={{ opacity: 0.03 }} />
+                    {/* Film-grain texture layer (light, subtle on the bright bg) */}
+                    <div className="film-grain" style={{ opacity: 0.03 }} />
 
-            {/* ── FIXED GLOBAL 3D CANVAS ── */}
-            <LandingCanvas
-                model1Ref={model1Ref}
-                model2Ref={model2Ref}
-                model3Ref={model3Ref}
-                mouseRef={mouseRef}
-                scrollRef={scrollRef}
-            />
+                    {/* ── FIXED GLOBAL 3D CANVAS ── */}
+                    <LandingCanvas
+                        model1Ref={model1Ref}
+                        model2Ref={model2Ref}
+                        model3Ref={model3Ref}
+                        mouseRef={mouseRef}
+                        scrollRef={scrollRef}
+                    />
+                </>
+            )}
 
             {/* ── SCROLLABLE HTML OVERLAY ── */}
             <div className="relative z-10">

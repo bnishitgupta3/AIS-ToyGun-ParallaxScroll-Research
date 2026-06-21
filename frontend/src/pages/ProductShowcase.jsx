@@ -8,8 +8,11 @@ import SpecsPanel from "@/components/showcase/SpecsPanel";
 import ParallaxBackground from "@/components/showcase/ParallaxBackground";
 import FooterCTA from "@/components/showcase/FooterCTA";
 import FireEffects from "@/components/showcase/FireEffects";
+import { isPrerendering } from "@/lib/isPrerendering";
 
 gsap.registerPlugin(ScrollTrigger);
+
+const PRERENDER = isPrerendering();
 
 export default function ProductShowcase() {
     const sectionRef = useRef(null);
@@ -168,7 +171,9 @@ export default function ProductShowcase() {
                     <ParallaxBackground />
 
                     <div className="absolute inset-0 z-10">
-                        <WaterGunScene modelRef={modelRef} isFiring={isFiring} />
+                        {!PRERENDER && (
+                            <WaterGunScene modelRef={modelRef} isFiring={isFiring} />
+                        )}
                     </div>
 
                     <HeroOverlay />

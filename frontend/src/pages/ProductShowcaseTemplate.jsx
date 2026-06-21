@@ -18,6 +18,9 @@ import ParallaxBackground from "@/components/showcase/ParallaxBackground";
 import FireEffects from "@/components/showcase/FireEffects";
 import { useGLTF } from "@react-three/drei";
 import { asset } from "@/lib/asset";
+import { isPrerendering } from "@/lib/isPrerendering";
+
+const PRERENDER = isPrerendering();
 
 /* Preload all product models so switching pages feels instant */
 useGLTF.preload(asset("/assets/watergun.glb"));
@@ -190,14 +193,16 @@ export default function ProductShowcaseTemplate({ product: rawProduct }) {
                     <div className="relative h-screen w-full overflow-hidden">
                         <ParallaxBackground />
 
-                        {/* 3-D canvas layer */}
+                        {/* 3-D canvas layer (skipped during prerender) */}
                         <div className="absolute inset-0 z-10">
-                            <GenericGunScene
-                                key={product.modelUrl}
-                                modelRef={modelRef}
-                                modelUrl={product.modelUrl}
-                                isFiring={isFiring}
-                            />
+                            {!PRERENDER && (
+                                <GenericGunScene
+                                    key={product.modelUrl}
+                                    modelRef={modelRef}
+                                    modelUrl={product.modelUrl}
+                                    isFiring={isFiring}
+                                />
+                            )}
                         </div>
 
                         {/* Hero overlay */}

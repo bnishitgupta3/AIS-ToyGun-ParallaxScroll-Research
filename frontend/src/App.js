@@ -16,6 +16,21 @@ import ContactPage          from "@/pages/ContactPage";
 import ProductShowcase        from "@/pages/ProductShowcase";       // existing MP5K page
 import M416Showcase           from "@/pages/M416Showcase";
 import CrimsonBlasterShowcase from "@/pages/CrimsonBlasterShowcase";
+import RouteSeo              from "@/components/seo/RouteSeo";
+import { initAnalytics, trackPageview } from "@/lib/analytics";
+
+/* Analytics: init GA4 once (if a Measurement ID is configured) and report a
+   page_view on every SPA route change. */
+function Analytics() {
+    const { pathname } = useLocation();
+    useEffect(() => {
+        initAnalytics();
+    }, []);
+    useEffect(() => {
+        trackPageview(pathname);
+    }, [pathname]);
+    return null;
+}
 
 /* Force every route change to start at the top of the new page.
    ScrollTrigger pinned sections leave window scroll wherever the
@@ -76,6 +91,8 @@ function App() {
         <BrowserRouter basename={process.env.PUBLIC_URL}>
             <ScrollToTop />
             <BodyReveal />
+            <RouteSeo />
+            <Analytics />
             <Routes>
                 {/* Home — full D2C landing page */}
                 <Route path="/"               element={<LandingPage />} />
