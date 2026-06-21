@@ -33,6 +33,18 @@ export default function LandingNav() {
         }
     };
 
+    /* Logo → hero section of the homepage, no matter the current scroll.
+       On the homepage we just scroll to the top (no history entry), so the
+       browser Back button still restores the previous scroll position. On any
+       other page the <Link to="/"> navigates home and lands at the hero. */
+    const goHome = (e) => {
+        setOpen(false);
+        if (location.pathname === "/") {
+            e.preventDefault();
+            window.scrollTo({ top: 0, behavior: "smooth" });
+        }
+    };
+
     return (
         <div className="pointer-events-none fixed left-1/2 top-6 z-50 w-[95%] max-w-5xl -translate-x-1/2">
             <nav className="pointer-events-auto rounded-[26px] border border-black/10 bg-white/75 px-5 py-3 backdrop-blur-md">
@@ -40,7 +52,7 @@ export default function LandingNav() {
                     {/* Logo → home */}
                     <Link
                         to="/"
-                        onClick={() => setOpen(false)}
+                        onClick={goHome}
                         className="font-instrument text-[28px] leading-none tracking-tight text-[#1a1a1a] select-none"
                     >
                         SONIQ
