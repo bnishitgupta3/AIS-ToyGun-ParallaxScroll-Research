@@ -62,6 +62,12 @@ export const PRODUCTS = [
         link: "/product/mp5k",
         accent: "#f97316",
         sub: "Water Gun",
+        stats: [
+            { label: "Range", value: "9 m" },
+            { label: "Shots / Refill", value: "220" },
+            { label: "Fire Rate", value: "8 /s" },
+            { label: "Battery", value: "45 min" },
+        ],
     },
     {
         id: "p1",
@@ -71,6 +77,12 @@ export const PRODUCTS = [
         link: "/product/m416",
         accent: "#0871E7",
         sub: "Water Gun",
+        stats: [
+            { label: "Range", value: "12 m" },
+            { label: "Shots / Refill", value: "300" },
+            { label: "Fire Rate", value: "10 /s" },
+            { label: "Battery", value: "60 min" },
+        ],
     },
     {
         id: "p2",
@@ -80,6 +92,12 @@ export const PRODUCTS = [
         link: "/product/crimson",
         accent: "#ef4444",
         sub: "Gel Blaster",
+        stats: [
+            { label: "Range", value: "18 m" },
+            { label: "Shots / Refill", value: "350" },
+            { label: "Fire Rate", value: "11 /s" },
+            { label: "Battery", value: "50 min" },
+        ],
     },
 ];
 
@@ -141,7 +159,7 @@ export default function ArsenalSection({ arsenalRef, onSelect, activeIndex = 0 }
             </div>
 
             {/* ── BELOW the gun — View Details + Add to Cart (stacked per weapon) ── */}
-            <div className="absolute bottom-[24%] left-1/2 z-20 h-12 -translate-x-1/2">
+            <div className="absolute bottom-[29%] left-1/2 z-20 h-12 -translate-x-1/2">
                 {PRODUCTS.map((p, i) => (
                     <div
                         key={p.id}
@@ -169,6 +187,35 @@ export default function ArsenalSection({ arsenalRef, onSelect, activeIndex = 0 }
 
                         {/* Add to Cart — themed orange */}
                         <AddToCartButton />
+                    </div>
+                ))}
+            </div>
+
+            {/* ── Spec strip — translucent glass with key numbers (per weapon),
+                   sits below the buttons and above the thumbnail tiles ── */}
+            <div className="pointer-events-none absolute bottom-32 left-1/2 z-20 -translate-x-1/2">
+                {PRODUCTS.map((p, i) => (
+                    <div
+                        key={p.id}
+                        id={`arsenal-stats-${i}`}
+                        className="absolute bottom-0 left-1/2 -translate-x-1/2 transition-opacity duration-500"
+                        style={{ opacity: i === activeIndex ? 1 : 0 }}
+                    >
+                        <div className="flex items-stretch divide-x divide-[#1a1a1a]/10 rounded-2xl border border-white/60 bg-white/40 px-1 py-2 shadow-[0_10px_34px_-14px_rgba(0,0,0,0.3)] backdrop-blur-md">
+                            {p.stats.map((s) => (
+                                <div
+                                    key={s.label}
+                                    className="flex flex-col items-center px-3 sm:px-5"
+                                >
+                                    <span className="font-instrument text-[18px] leading-none text-[#1a1a1a] sm:text-[23px]">
+                                        {s.value}
+                                    </span>
+                                    <span className="mt-1 whitespace-nowrap font-inter text-[8px] font-semibold uppercase tracking-[0.16em] text-[#1a1a1a]/50 sm:text-[9px]">
+                                        {s.label}
+                                    </span>
+                                </div>
+                            ))}
+                        </div>
                     </div>
                 ))}
             </div>
