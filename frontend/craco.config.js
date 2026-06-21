@@ -55,6 +55,13 @@ let webpackConfig = {
       if (config.enableHealthCheck && healthPluginInstance) {
         webpackConfig.plugins.push(healthPluginInstance);
       }
+
+      // SECURITY: never emit source maps in production builds. Public .map
+      // files expose the full original source. Committed here (not via a
+      // gitignored .env) so it applies to every machine/CI build.
+      if (process.env.NODE_ENV === "production") {
+        webpackConfig.devtool = false;
+      }
       return webpackConfig;
     },
   },
