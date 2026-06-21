@@ -30,6 +30,11 @@ const META = {
         description:
             "Get in touch with SONIQ Toys for product help, orders, returns, grievances or partnership enquiries.",
     },
+    "/careers": {
+        title: "Careers at SONIQ Toys · Come Make a Splash",
+        description:
+            "Help build India's most-loved water blaster brand. Join the SONIQ Toys team across design, engineering, operations, growth and more.",
+    },
     "/returns": {
         title: "Returns & Shipping · SONIQ Toys",
         description:

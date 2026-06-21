@@ -13,6 +13,7 @@ import TermsPage             from "@/pages/TermsPage";
 import ReturnsShippingPage   from "@/pages/ReturnsShippingPage";
 import FAQPage               from "@/pages/FAQPage";
 import ContactPage          from "@/pages/ContactPage";
+import CareersPage          from "@/pages/CareersPage";
 import ProductShowcase        from "@/pages/ProductShowcase";       // existing MP5K page
 import M416Showcase           from "@/pages/M416Showcase";
 import CrimsonBlasterShowcase from "@/pages/CrimsonBlasterShowcase";
@@ -109,6 +110,7 @@ function App() {
                 <Route path="/returns"        element={<ReturnsShippingPage />} />
                 <Route path="/faq"            element={<FAQPage />} />
                 <Route path="/contact"        element={<ContactPage />} />
+                <Route path="/careers"        element={<CareersPage />} />
 
                 {/* Product detail pages */}
                 <Route path="/product/mp5k"   element={<ProductShowcase />} />

@@ -10,9 +10,7 @@ const NAV_LINKS = {
     ],
     Company: [
         { label: "About", to: "/about" },
-        { label: "Careers", to: "#" },
-        { label: "Press", to: "#" },
-        { label: "Dealers", to: "#" },
+        { label: "Careers", to: "/careers" },
     ],
     Support: [
         { label: "Returns & Shipping", to: "/returns" },
@@ -133,7 +131,12 @@ export default function LandingFooter() {
                 {/* Bottom bar */}
                 <div className="mt-16 flex flex-col items-start justify-between gap-4 border-t border-zinc-800 pt-8 font-mono-tactical text-[10px] uppercase tracking-[0.3em] text-zinc-700 md:flex-row md:items-center">
                     <span>© 2026 SONIQ Toys · All rights reserved</span>
-                    <span>Built · React · R3F · GSAP</span>
+                    <div className="flex items-center gap-5">
+                        <Link to="/404" className="text-zinc-700 transition-colors hover:text-orange-400">
+                            404
+                        </Link>
+                        <span>Built · React · R3F · GSAP</span>
+                    </div>
                 </div>
             </div>
         </footer>

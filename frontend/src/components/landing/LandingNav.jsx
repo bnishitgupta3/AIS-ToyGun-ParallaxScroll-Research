@@ -8,10 +8,10 @@ const SECTION_LINKS = [
     { label: "Field Test", target: "#field-test" },
 ];
 
-/* Real page routes (404 is a temporary test link) */
+/* Real page routes */
 const PAGE_LINKS = [
-    { label: "About", to: "/about" },
-    { label: "404",   to: "/404" },
+    { label: "About",   to: "/about" },
+    { label: "Contact", to: "/contact" },
 ];
 
 /**

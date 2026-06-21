@@ -36,6 +36,11 @@
         <priority>0.6</priority>
     </url>
     <url>
+        <loc>https://www.soniqtoys.com/careers</loc>
+        <changefreq>monthly</changefreq>
+        <priority>0.6</priority>
+    </url>
+    <url>
         <loc>https://www.soniqtoys.com/returns</loc>
         <changefreq>yearly</changefreq>
         <priority>0.4</priority>
