@@ -1,6 +1,8 @@
-from fastapi import FastAPI, APIRouter
+from fastapi import FastAPI, APIRouter, Depends, HTTPException, status
+from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from dotenv import load_dotenv
 from starlette.middleware.cors import CORSMiddleware
+import jwt
 from motor.motor_asyncio import AsyncIOMotorClient
 import os
 import logging
@@ -24,6 +26,25 @@ app = FastAPI()
 
 # Create a router with the /api prefix
 api_router = APIRouter(prefix="/api")
+
+
+# ── AUTH (deny-by-default) ──────────────────────────────────────────────────
+# Reusable dependency for any endpoint that reads or modifies real data.
+# Pattern: add `user = Depends(current_user)` AND scope every query by
+# ownership (e.g. {"owner_id": user["sub"]}) to prevent IDOR / broken access
+# control. Public endpoints must be opted-in explicitly, never by omission.
+bearer_scheme = HTTPBearer(auto_error=True)
+
+
+def current_user(creds: HTTPAuthorizationCredentials = Depends(bearer_scheme)) -> dict:
+    secret = os.environ.get("JWT_SECRET")
+    if not secret:
+        # Fail closed rather than accept unverified tokens.
+        raise HTTPException(status.HTTP_500_INTERNAL_SERVER_ERROR, "Auth not configured")
+    try:
+        return jwt.decode(creds.credentials, secret, algorithms=["HS256"])
+    except jwt.PyJWTError:
+        raise HTTPException(status.HTTP_401_UNAUTHORIZED, "Invalid or expired token")
 
 
 # Define Models
@@ -69,12 +90,22 @@ async def get_status_checks():
 # Include the router in the main app
 app.include_router(api_router)
 
+# SECURITY: explicit origin allowlist. A wildcard '*' combined with
+# allow_credentials=True lets any site make credentialed cross-origin requests
+# and read the responses. Fail closed if the allowlist is not configured.
+_cors_origins = [o.strip() for o in os.environ.get("CORS_ORIGINS", "").split(",") if o.strip()]
+if not _cors_origins:
+    raise RuntimeError(
+        "CORS_ORIGINS must be set to an explicit comma-separated allowlist "
+        "(e.g. 'https://www.soniqtoys.com'). Refusing to start with a wildcard."
+    )
+
 app.add_middleware(
     CORSMiddleware,
     allow_credentials=True,
-    allow_origins=os.environ.get('CORS_ORIGINS', '*').split(','),
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_origins=_cors_origins,
+    allow_methods=["GET", "POST"],
+    allow_headers=["Authorization", "Content-Type"],
 )
 
 # Configure logging

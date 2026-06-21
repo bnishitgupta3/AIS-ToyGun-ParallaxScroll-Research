@@ -1,7 +1,13 @@
 @import url("https://api.fontshare.com/v2/css?f[]=cabinet-grotesk@900,800,700,500&f[]=satoshi@700,500,400&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap");
-/* Nokia pixel font — used for telemetry / typing UI */
-@import url("https://db.onlinewebfonts.com/c/440b53b1a1c65037f944ff19259d8014?family=Nokia+Cellphone+FC+Small");
+/* Nokia pixel font — SELF-HOSTED. Was loaded from the untrusted third-party
+   CDN db.onlinewebfonts.com (supply-chain + privacy risk); now served from our
+   own origin. */
+@font-face {
+    font-family: "Nokia Cellphone FC Small";
+    src: url("./fonts/nokia-cellphone-fc-small.woff2") format("woff2");
+    font-display: swap;
+}
 
 @tailwind base;
 @tailwind components;
