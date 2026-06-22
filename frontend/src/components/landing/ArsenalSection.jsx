@@ -161,7 +161,7 @@ export default function ArsenalSection({ arsenalRef, onSelect, activeIndex = 0 }
             {/* ── BELOW the gun — View Details + Add to Cart (stacked per weapon).
                    Fixed offset (not %) so it stays just above the spec strip with
                    a small, consistent gap on any viewport height. ── */}
-            <div className="absolute bottom-[11.75rem] left-1/2 z-20 h-12 -translate-x-1/2">
+            <div className="absolute bottom-[12.75rem] left-1/2 z-20 h-12 -translate-x-1/2">
                 {PRODUCTS.map((p, i) => (
                     <div
                         key={p.id}
@@ -205,7 +205,7 @@ export default function ArsenalSection({ arsenalRef, onSelect, activeIndex = 0 }
                     >
                         {/* Apple "liquid glass" tile — translucent material, bright
                             specular rim, inner refraction glow, layered float shadow */}
-                        <div className="relative overflow-hidden rounded-[26px] bg-white/25 backdrop-blur-2xl backdrop-saturate-[1.6] shadow-[inset_0_1px_0_rgba(255,255,255,0.95),inset_0_0_0_1px_rgba(255,255,255,0.5),inset_0_-14px_22px_-14px_rgba(255,255,255,0.8),0_12px_28px_-10px_rgba(0,0,0,0.22),0_30px_60px_-24px_rgba(0,0,0,0.42)]">
+                        <div className="relative overflow-hidden rounded-[26px] bg-white/40 backdrop-blur-2xl backdrop-saturate-[1.2] shadow-[inset_0_1px_0_rgba(255,255,255,0.95),inset_0_0_0_1px_rgba(255,255,255,0.5),inset_0_-14px_22px_-14px_rgba(255,255,255,0.8),0_12px_28px_-10px_rgba(0,0,0,0.22),0_30px_60px_-24px_rgba(0,0,0,0.42)]">
                             {/* specular sheen + bright top rim */}
                             <span
                                 aria-hidden="true"
@@ -221,7 +221,7 @@ export default function ArsenalSection({ arsenalRef, onSelect, activeIndex = 0 }
                                         key={s.label}
                                         className="flex flex-col items-center px-3 sm:px-5"
                                     >
-                                        <span className="font-instrument text-[18px] leading-none text-[#1a1a1a] sm:text-[23px]">
+                                        <span className="whitespace-nowrap font-instrument text-[18px] leading-none text-[#1a1a1a] sm:text-[23px]">
                                             {s.value}
                                         </span>
                                         <span className="mt-1 whitespace-nowrap font-inter text-[8px] font-semibold uppercase tracking-[0.16em] text-[#1a1a1a]/55 sm:text-[9px]">
