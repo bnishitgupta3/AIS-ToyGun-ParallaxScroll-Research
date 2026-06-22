@@ -158,8 +158,10 @@ export default function ArsenalSection({ arsenalRef, onSelect, activeIndex = 0 }
                 </div>
             </div>
 
-            {/* ── BELOW the gun — View Details + Add to Cart (stacked per weapon) ── */}
-            <div className="absolute bottom-[29%] left-1/2 z-20 h-12 -translate-x-1/2">
+            {/* ── BELOW the gun — View Details + Add to Cart (stacked per weapon).
+                   Fixed offset (not %) so it stays just above the spec strip with
+                   a small, consistent gap on any viewport height. ── */}
+            <div className="absolute bottom-[15.5rem] left-1/2 z-20 h-12 -translate-x-1/2">
                 {PRODUCTS.map((p, i) => (
                     <div
                         key={p.id}
@@ -201,20 +203,28 @@ export default function ArsenalSection({ arsenalRef, onSelect, activeIndex = 0 }
                         className="absolute bottom-0 left-1/2 -translate-x-1/2 transition-opacity duration-500"
                         style={{ opacity: i === activeIndex ? 1 : 0 }}
                     >
-                        <div className="flex items-stretch divide-x divide-[#1a1a1a]/10 rounded-2xl border border-white/60 bg-white/40 px-1 py-2 shadow-[0_10px_34px_-14px_rgba(0,0,0,0.3)] backdrop-blur-md">
-                            {p.stats.map((s) => (
-                                <div
-                                    key={s.label}
-                                    className="flex flex-col items-center px-3 sm:px-5"
-                                >
-                                    <span className="font-instrument text-[18px] leading-none text-[#1a1a1a] sm:text-[23px]">
-                                        {s.value}
-                                    </span>
-                                    <span className="mt-1 whitespace-nowrap font-inter text-[8px] font-semibold uppercase tracking-[0.16em] text-[#1a1a1a]/50 sm:text-[9px]">
-                                        {s.label}
-                                    </span>
-                                </div>
-                            ))}
+                        {/* Aero / Apple "liquid glass" tile */}
+                        <div className="relative overflow-hidden rounded-3xl border border-white/70 bg-gradient-to-b from-white/55 to-white/20 shadow-[inset_0_1px_0_rgba(255,255,255,0.9),0_18px_46px_-16px_rgba(0,0,0,0.4)] backdrop-blur-xl backdrop-saturate-150">
+                            {/* glossy top sheen */}
+                            <span
+                                aria-hidden="true"
+                                className="pointer-events-none absolute inset-x-0 top-0 h-1/2 bg-gradient-to-b from-white/55 to-transparent"
+                            />
+                            <div className="relative z-10 flex items-stretch divide-x divide-[#1a1a1a]/10 px-1 py-2.5">
+                                {p.stats.map((s) => (
+                                    <div
+                                        key={s.label}
+                                        className="flex flex-col items-center px-3 sm:px-5"
+                                    >
+                                        <span className="font-instrument text-[18px] leading-none text-[#1a1a1a] sm:text-[23px]">
+                                            {s.value}
+                                        </span>
+                                        <span className="mt-1 whitespace-nowrap font-inter text-[8px] font-semibold uppercase tracking-[0.16em] text-[#1a1a1a]/55 sm:text-[9px]">
+                                            {s.label}
+                                        </span>
+                                    </div>
+                                ))}
+                            </div>
                         </div>
                     </div>
                 ))}
