@@ -13,7 +13,7 @@ function AddToCartButton() {
             <button
                 type="button"
                 onClick={() => setQty(1)}
-                className="group relative inline-flex items-center gap-2 overflow-hidden rounded-full bg-[#f97316] px-3.5 py-2.5 font-inter text-[10px] font-semibold uppercase tracking-[0.1em] text-white shadow-[inset_0_-4px_4px_rgba(255,255,255,0.35)] transition-all hover:brightness-110 sm:px-7 sm:text-[12px] sm:tracking-[0.2em]"
+                className="group relative inline-flex items-center gap-2 overflow-hidden rounded-full bg-[#f97316] px-7 py-2.5 font-inter text-[12px] font-semibold uppercase tracking-[0.2em] text-white shadow-[inset_0_-4px_4px_rgba(255,255,255,0.35)] transition-all hover:brightness-110"
             >
                 <span
                     aria-hidden="true"
@@ -164,7 +164,7 @@ export default function ArsenalSection({ arsenalRef, onSelect, activeIndex = 0 }
                     <div
                         key={p.id}
                         id={`arsenal-btn-${i}`}
-                        className="absolute left-1/2 top-0 flex -translate-x-1/2 items-center gap-2 whitespace-nowrap transition-opacity duration-500 sm:gap-3"
+                        className="absolute left-1/2 top-0 flex -translate-x-1/2 items-center gap-3 whitespace-nowrap transition-opacity duration-500"
                         style={{
                             opacity: i === activeIndex ? 1 : 0,
                             pointerEvents: i === activeIndex ? "auto" : "none",
@@ -173,7 +173,7 @@ export default function ArsenalSection({ arsenalRef, onSelect, activeIndex = 0 }
                         {/* View Details — clean dark outline */}
                         <Link
                             to={p.link}
-                            className="group inline-flex items-center gap-2 rounded-full border border-[#1a1a1a]/30 px-3.5 py-2.5 font-inter text-[10px] font-semibold uppercase tracking-[0.1em] text-[#1a1a1a] transition-all hover:border-[#1a1a1a] hover:bg-[#1a1a1a] hover:text-white sm:px-7 sm:text-[12px] sm:tracking-[0.2em]"
+                            className="group inline-flex items-center gap-2 rounded-full border border-[#1a1a1a]/30 px-7 py-2.5 font-inter text-[12px] font-semibold uppercase tracking-[0.2em] text-[#1a1a1a] transition-all hover:border-[#1a1a1a] hover:bg-[#1a1a1a] hover:text-white"
                         >
                             View Details
                             <svg
@@ -205,9 +205,9 @@ export default function ArsenalSection({ arsenalRef, onSelect, activeIndex = 0 }
                             {p.stats.map((s) => (
                                 <div
                                     key={s.label}
-                                    className="flex flex-col items-center px-2.5 sm:px-5"
+                                    className="flex flex-col items-center px-3 sm:px-5"
                                 >
-                                    <span className="font-instrument text-[16px] leading-none text-[#1a1a1a] sm:text-[23px]">
+                                    <span className="font-instrument text-[18px] leading-none text-[#1a1a1a] sm:text-[23px]">
                                         {s.value}
                                     </span>
                                     <span className="mt-1 whitespace-nowrap font-inter text-[8px] font-semibold uppercase tracking-[0.16em] text-[#1a1a1a]/50 sm:text-[9px]">
@@ -221,14 +221,14 @@ export default function ArsenalSection({ arsenalRef, onSelect, activeIndex = 0 }
             </div>
 
             {/* ── Bottom thumbnail navigation ── */}
-            <div className="absolute bottom-8 left-1/2 z-30 flex -translate-x-1/2 items-center gap-2 sm:bottom-10 sm:gap-4">
+            <div className="absolute bottom-10 left-1/2 z-30 flex -translate-x-1/2 items-center gap-3 sm:gap-4">
                 {PRODUCTS.map((p, i) => (
                     <button
                         key={p.id}
                         id={`arsenal-thumb-${i}`}
                         type="button"
                         onClick={() => onSelect?.(i)}
-                        className="group relative flex h-16 w-[84px] shrink-0 flex-col justify-between overflow-hidden rounded-xl border-2 bg-white/70 p-2 text-left backdrop-blur-md transition-all duration-300 sm:h-20 sm:w-32 sm:p-2.5"
+                        className="group relative flex h-20 w-28 shrink-0 flex-col justify-between overflow-hidden rounded-xl border-2 bg-white/70 p-2.5 text-left backdrop-blur-md transition-all duration-300 sm:w-32"
                         style={{
                             opacity: i === activeIndex ? 1 : 0.4,
                             borderColor: i === activeIndex ? p.accent : "rgba(0,0,0,0.10)",
@@ -236,14 +236,14 @@ export default function ArsenalSection({ arsenalRef, onSelect, activeIndex = 0 }
                     >
                         {/* Accent swatch */}
                         <span
-                            className="h-1.5 w-5 rounded-full sm:w-6"
+                            className="h-1.5 w-6 rounded-full"
                             style={{ background: p.accent }}
                         />
                         <div>
-                            <div className="font-instrument text-[12px] leading-tight text-[#1a1a1a] sm:text-[15px]">
+                            <div className="font-instrument text-[15px] leading-tight text-[#1a1a1a]">
                                 {p.name}
                             </div>
-                            <div className="font-inter text-[7px] font-medium uppercase tracking-[0.12em] text-[#1a1a1a]/45 sm:text-[8px] sm:tracking-[0.15em]">
+                            <div className="font-inter text-[8px] font-medium uppercase tracking-[0.15em] text-[#1a1a1a]/45">
                                 {p.sub}
                             </div>
                         </div>
