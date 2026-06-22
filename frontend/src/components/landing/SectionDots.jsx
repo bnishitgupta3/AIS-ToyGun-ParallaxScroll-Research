@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
    only fades in once the Arsenal section reaches the upper viewport, remaining
    through to the footer. */
 const SECTIONS = [
+    { id: "hero", label: "Top" },
     { id: "arsenal", label: "Arsenal" },
     { id: "mission", label: "Mission" },
     { id: "field-test", label: "Field Test" },
