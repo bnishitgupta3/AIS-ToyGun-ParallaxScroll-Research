@@ -161,7 +161,7 @@ export default function ArsenalSection({ arsenalRef, onSelect, activeIndex = 0 }
             {/* ── BELOW the gun — View Details + Add to Cart (stacked per weapon).
                    Fixed offset (not %) so it stays just above the spec strip with
                    a small, consistent gap on any viewport height. ── */}
-            <div className="absolute bottom-[15.5rem] left-1/2 z-20 h-12 -translate-x-1/2">
+            <div className="absolute bottom-[11.75rem] left-1/2 z-20 h-12 -translate-x-1/2">
                 {PRODUCTS.map((p, i) => (
                     <div
                         key={p.id}
@@ -203,12 +203,17 @@ export default function ArsenalSection({ arsenalRef, onSelect, activeIndex = 0 }
                         className="absolute bottom-0 left-1/2 -translate-x-1/2 transition-opacity duration-500"
                         style={{ opacity: i === activeIndex ? 1 : 0 }}
                     >
-                        {/* Aero / Apple "liquid glass" tile */}
-                        <div className="relative overflow-hidden rounded-3xl border border-white/70 bg-gradient-to-b from-white/55 to-white/20 shadow-[inset_0_1px_0_rgba(255,255,255,0.9),0_18px_46px_-16px_rgba(0,0,0,0.4)] backdrop-blur-xl backdrop-saturate-150">
-                            {/* glossy top sheen */}
+                        {/* Apple "liquid glass" tile — translucent material, bright
+                            specular rim, inner refraction glow, layered float shadow */}
+                        <div className="relative overflow-hidden rounded-[26px] bg-white/25 backdrop-blur-2xl backdrop-saturate-[1.6] shadow-[inset_0_1px_0_rgba(255,255,255,0.95),inset_0_0_0_1px_rgba(255,255,255,0.5),inset_0_-14px_22px_-14px_rgba(255,255,255,0.8),0_12px_28px_-10px_rgba(0,0,0,0.22),0_30px_60px_-24px_rgba(0,0,0,0.42)]">
+                            {/* specular sheen + bright top rim */}
                             <span
                                 aria-hidden="true"
-                                className="pointer-events-none absolute inset-x-0 top-0 h-1/2 bg-gradient-to-b from-white/55 to-transparent"
+                                className="pointer-events-none absolute inset-x-0 top-0 h-3/5 bg-gradient-to-b from-white/55 via-white/12 to-transparent"
+                            />
+                            <span
+                                aria-hidden="true"
+                                className="pointer-events-none absolute inset-x-5 top-0 h-px bg-white/90"
                             />
                             <div className="relative z-10 flex items-stretch divide-x divide-[#1a1a1a]/10 px-1 py-2.5">
                                 {p.stats.map((s) => (
