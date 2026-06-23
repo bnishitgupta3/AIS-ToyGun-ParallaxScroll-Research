@@ -51,7 +51,7 @@ export default function SectionDots() {
     return (
         <div
             aria-hidden={!visible}
-            className={`fixed right-3 top-1/2 z-40 flex -translate-y-1/2 flex-col items-center gap-4 transition-opacity duration-300 sm:right-5 ${
+            className={`section-dots fixed right-3 top-1/2 z-40 flex -translate-y-1/2 flex-col items-center gap-4 transition-opacity duration-300 sm:right-5 ${
                 visible ? "opacity-100" : "pointer-events-none opacity-0"
             }`}
         >

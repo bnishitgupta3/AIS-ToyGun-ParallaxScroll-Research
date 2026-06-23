@@ -129,6 +129,16 @@ body.loading {
     color: #fff;
 }
 
+/* While the Buy Now sheet is open, hide page chrome (global nav + section
+   dots) so the modal owns the screen — standard modal UX. visibility:hidden
+   also takes them out of the accessibility tree. */
+body.sheet-open .landing-nav,
+body.sheet-open .section-dots {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+}
+
 /* Buy Now sheet — looping "pressure building" charge meter, mirrors the
    coming-soon teaser. CSS-only so it works regardless of framer presence. */
 .buy-now-charge {

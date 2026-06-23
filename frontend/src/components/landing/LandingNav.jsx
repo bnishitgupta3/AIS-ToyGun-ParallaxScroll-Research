@@ -46,7 +46,7 @@ export default function LandingNav() {
     };
 
     return (
-        <div className="pointer-events-none fixed left-1/2 top-6 z-50 w-[95%] max-w-5xl -translate-x-1/2">
+        <div className="landing-nav pointer-events-none fixed left-1/2 top-6 z-50 w-[95%] max-w-5xl -translate-x-1/2">
             <nav className="pointer-events-auto rounded-[26px] border border-black/10 bg-white/75 px-5 py-3 backdrop-blur-md">
                 <div className="flex items-center justify-between">
                     {/* Logo → home */}

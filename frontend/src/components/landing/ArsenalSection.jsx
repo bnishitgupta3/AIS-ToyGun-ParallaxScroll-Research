@@ -33,10 +33,14 @@ function BuyNowSheet({ open, product, onClose }) {
         if (!open) return;
         const prevOverflow = document.body.style.overflow;
         document.body.style.overflow = "hidden";
+        // Mark the body so global chrome (nav, section dots) can scope itself
+        // out of the way via CSS while the sheet is the focused surface.
+        document.body.classList.add("sheet-open");
         const onKey = (e) => e.key === "Escape" && onClose();
         window.addEventListener("keydown", onKey);
         return () => {
             document.body.style.overflow = prevOverflow;
+            document.body.classList.remove("sheet-open");
             window.removeEventListener("keydown", onKey);
         };
     }, [open, onClose]);
