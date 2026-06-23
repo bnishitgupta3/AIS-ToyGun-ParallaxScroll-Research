@@ -129,6 +129,18 @@ body.loading {
     color: #fff;
 }
 
+/* Buy Now sheet — looping "pressure building" charge meter, mirrors the
+   coming-soon teaser. CSS-only so it works regardless of framer presence. */
+.buy-now-charge {
+    width: 8%;
+    animation: buyNowCharge 3.2s ease-in-out infinite;
+}
+@keyframes buyNowCharge {
+    0%   { width: 8%; }
+    50%  { width: 92%; }
+    100% { width: 8%; }
+}
+
 /* ── Landing-page dot grid background ── */
 .dot-grid {
     background-color: #F3F4ED;
