@@ -17,6 +17,10 @@ export default function SpecsPanel({ onFire, isFiring }) {
             id="specs-panel"
             data-testid="specs-panel"
             className="pointer-events-auto absolute left-0 top-0 z-30 h-full w-full max-w-[440px] px-6 pt-24 md:px-10 md:pt-28 lg:px-14"
+            /* Match GSAP's initial state declaratively so the panel renders
+               hidden from frame 1 — otherwise it briefly shows before
+               useEffect's gsap.set hides it (FOUC on every page load). */
+            style={{ opacity: 0, transform: "translateX(-24px)" }}
         >
             <div className="flex h-full flex-col">
                 <span

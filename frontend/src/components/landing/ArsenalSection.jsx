@@ -1,6 +1,64 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
+/* Per-tile quantity counter. Lives in the bottom-right of each thumbnail.
+   Decision (Option A — best for conversion): counters are always enabled on
+   ALL three tiles, regardless of which weapon is "active". Forcing users to
+   navigate to a tile before adding it would add a step per item; this lets
+   them scan all three and add what catches their eye in one go.
+   stopPropagation on every click prevents the tile's gun-switch from firing. */
+function TileCartCounter({ accent }) {
+    const [qty, setQty] = useState(0);
+    const stop = (fn) => (e) => {
+        e.stopPropagation();
+        e.preventDefault();
+        fn();
+    };
+
+    if (qty === 0) {
+        return (
+            <button
+                type="button"
+                aria-label="Add one to cart"
+                onClick={stop(() => setQty(1))}
+                className="grid h-7 w-7 place-items-center rounded-full text-white shadow-sm transition hover:brightness-110"
+                style={{ background: accent }}
+            >
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
+                    <path d="M12 5v14M5 12h14" />
+                </svg>
+            </button>
+        );
+    }
+
+    return (
+        <div
+            className="inline-flex items-center gap-0.5 rounded-full py-0.5 pl-0.5 pr-0.5 text-white shadow-sm"
+            style={{ background: accent }}
+        >
+            <button
+                type="button"
+                aria-label="Remove one from cart"
+                onClick={stop(() => setQty((q) => Math.max(0, q - 1)))}
+                className="grid h-6 w-6 place-items-center rounded-full text-base leading-none transition hover:bg-white/20"
+            >
+                −
+            </button>
+            <span className="min-w-[1.25ch] text-center font-inter text-[12px] font-bold tabular-nums">
+                {qty}
+            </span>
+            <button
+                type="button"
+                aria-label="Add one to cart"
+                onClick={stop(() => setQty((q) => q + 1))}
+                className="grid h-6 w-6 place-items-center rounded-full text-base leading-none transition hover:bg-white/20"
+            >
+                +
+            </button>
+        </div>
+    );
+}
+
 /* Buy Now button — opens a "checkout coming soon" panel.
    Shopify integration lands later; this is the placeholder UI. */
 function BuyNowButton({ onClick }) {
@@ -219,6 +277,23 @@ export default function ArsenalSection({ arsenalRef, onSelect, activeIndex = 0 }
     // Which product (if any) opened the Buy Now sheet — null = closed.
     const [buyNowProduct, setBuyNowProduct] = useState(null);
 
+    // True once the section is pinned at the top of the viewport — at which
+    // point the gun's entry animation has settled. Gates the HTML overlay so
+    // the buttons + spec strip don't briefly overlap the in-flight gun on
+    // initial scroll into the section.
+    const [entered, setEntered] = useState(false);
+    useEffect(() => {
+        const section = arsenalRef?.current;
+        if (!section) return;
+        const update = () => {
+            const top = section.getBoundingClientRect().top;
+            if (top <= 0) setEntered(true);
+        };
+        update();
+        window.addEventListener("scroll", update, { passive: true });
+        return () => window.removeEventListener("scroll", update);
+    }, [arsenalRef]);
+
     return (
         <section
             ref={arsenalRef}
@@ -227,7 +302,10 @@ export default function ArsenalSection({ arsenalRef, onSelect, activeIndex = 0 }
             style={{ height: "100vh" }}
         >
             {/* ── TOP heading area — eyebrow + product name (ABOVE the gun) ── */}
-            <div className="pointer-events-none absolute left-1/2 top-20 z-20 flex -translate-x-1/2 flex-col items-center text-center md:top-24">
+            <div
+                className="pointer-events-none absolute left-1/2 top-20 z-20 flex -translate-x-1/2 flex-col items-center text-center transition-opacity duration-500 md:top-24"
+                style={{ opacity: entered ? 1 : 0 }}
+            >
                 <span className="font-inter text-xs font-semibold uppercase tracking-[0.4em] text-[#f97316]">
                     /// The Arsenal
                 </span>
@@ -261,7 +339,10 @@ export default function ArsenalSection({ arsenalRef, onSelect, activeIndex = 0 }
             {/* ── BELOW the gun — View Details + Add to Cart (stacked per weapon).
                    Fixed offset (not %) so it stays just above the spec strip with
                    a small, consistent gap on any viewport height. ── */}
-            <div className="absolute bottom-[12.75rem] left-1/2 z-20 h-12 -translate-x-1/2">
+            <div
+                className="absolute bottom-[12.75rem] left-1/2 z-20 h-12 -translate-x-1/2 transition-opacity duration-500"
+                style={{ opacity: entered ? 1 : 0 }}
+            >
                 {PRODUCTS.map((p, i) => (
                     <div
                         key={p.id}
@@ -296,7 +377,10 @@ export default function ArsenalSection({ arsenalRef, onSelect, activeIndex = 0 }
 
             {/* ── Spec strip — translucent glass with key numbers (per weapon),
                    sits below the buttons and above the thumbnail tiles ── */}
-            <div className="pointer-events-none absolute bottom-32 left-1/2 z-20 -translate-x-1/2">
+            <div
+                className="pointer-events-none absolute bottom-32 left-1/2 z-20 -translate-x-1/2 transition-opacity duration-500"
+                style={{ opacity: entered ? 1 : 0 }}
+            >
                 {PRODUCTS.map((p, i) => (
                     <div
                         key={p.id}
@@ -337,14 +421,28 @@ export default function ArsenalSection({ arsenalRef, onSelect, activeIndex = 0 }
             </div>
 
             {/* ── Bottom thumbnail navigation ── */}
-            <div className="absolute bottom-10 left-1/2 z-30 flex -translate-x-1/2 items-center gap-3 sm:gap-4">
+            <div
+                className="absolute bottom-10 left-1/2 z-30 flex -translate-x-1/2 items-center gap-3 transition-opacity duration-500 sm:gap-4"
+                style={{ opacity: entered ? 1 : 0 }}
+            >
                 {PRODUCTS.map((p, i) => (
-                    <button
+                    /* The tile itself acts as a clickable surface (gun switch).
+                       It's a div (not a button) so the cart counter buttons can
+                       legally nest inside. Keyboard support kept via role + key
+                       handlers. */
+                    <div
                         key={p.id}
                         id={`arsenal-thumb-${i}`}
-                        type="button"
+                        role="button"
+                        tabIndex={0}
                         onClick={() => onSelect?.(i)}
-                        className="group relative flex h-20 w-28 shrink-0 flex-col justify-between overflow-hidden rounded-xl border-2 bg-white/70 p-2.5 text-left backdrop-blur-md transition-all duration-300 sm:w-32"
+                        onKeyDown={(e) => {
+                            if (e.key === "Enter" || e.key === " ") {
+                                e.preventDefault();
+                                onSelect?.(i);
+                            }
+                        }}
+                        className="group relative flex h-20 w-28 shrink-0 cursor-pointer flex-col justify-between overflow-hidden rounded-xl border-2 bg-white/70 p-2.5 text-left backdrop-blur-md transition-all duration-300 sm:w-32"
                         style={{
                             opacity: i === activeIndex ? 1 : 0.4,
                             borderColor: i === activeIndex ? p.accent : "rgba(0,0,0,0.10)",
@@ -363,7 +461,12 @@ export default function ArsenalSection({ arsenalRef, onSelect, activeIndex = 0 }
                                 {p.sub}
                             </div>
                         </div>
-                    </button>
+
+                        {/* Cart counter — always enabled per tile, bottom-right */}
+                        <div className="absolute bottom-1.5 right-1.5">
+                            <TileCartCounter accent={p.accent} />
+                        </div>
+                    </div>
                 ))}
             </div>
 

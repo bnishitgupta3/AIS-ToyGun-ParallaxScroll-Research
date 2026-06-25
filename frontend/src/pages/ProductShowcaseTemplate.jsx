@@ -264,6 +264,9 @@ export default function ProductShowcaseTemplate({ product: rawProduct }) {
                         <aside
                             id="specs-panel"
                             className="pointer-events-auto absolute left-0 top-0 z-30 h-full w-full max-w-[440px] px-6 pt-24 md:px-10 md:pt-28 lg:px-14"
+                            /* Match GSAP's initial state declaratively so the
+                               panel renders hidden from frame 1. */
+                            style={{ opacity: 0, transform: "translateX(-24px)" }}
                         >
                             <div className="flex h-full flex-col">
                                 <span
