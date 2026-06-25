@@ -1,12 +1,16 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
-/* Per-tile quantity counter. Lives in the bottom-right of each thumbnail.
-   Decision (Option A — best for conversion): counters are always enabled on
-   ALL three tiles, regardless of which weapon is "active". Forcing users to
-   navigate to a tile before adding it would add a step per item; this lets
-   them scan all three and add what catches their eye in one go.
-   stopPropagation on every click prevents the tile's gun-switch from firing. */
+/* Per-tile cart counter. Sits in the tile's bottom action row (replacing the
+   redundant sub-label — the gun's category/tagline already live in the
+   heading area above the gun). Always enabled on all 3 tiles for friction-
+   free multi-add (best for conversion in a 3-product, all-visible carousel).
+   stopPropagation on every click prevents the tile's gun-switch from firing.
+
+   Visual:
+   - qty=0: ghost "+ Add" pill (accent-tinted at ~10% alpha, accent text)
+   - qty>0: filled stepper (accent fill, white text), same height/width so
+     the layout doesn't shift when qty changes. */
 function TileCartCounter({ accent }) {
     const [qty, setQty] = useState(0);
     const stop = (fn) => (e) => {
@@ -19,21 +23,31 @@ function TileCartCounter({ accent }) {
         return (
             <button
                 type="button"
-                aria-label="Add one to cart"
+                aria-label="Add to cart"
                 onClick={stop(() => setQty(1))}
-                className="grid h-7 w-7 place-items-center rounded-full text-white shadow-sm transition hover:brightness-110"
-                style={{ background: accent }}
+                className="flex h-7 w-full items-center justify-center gap-1 rounded-full font-inter text-[10px] font-semibold uppercase tracking-[0.18em] transition"
+                style={{
+                    background: `${accent}1a`, // ~10% alpha tint
+                    color: accent,
+                }}
+                onMouseEnter={(e) => {
+                    e.currentTarget.style.background = `${accent}33`;
+                }}
+                onMouseLeave={(e) => {
+                    e.currentTarget.style.background = `${accent}1a`;
+                }}
             >
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.8">
                     <path d="M12 5v14M5 12h14" />
                 </svg>
+                <span>Add</span>
             </button>
         );
     }
 
     return (
         <div
-            className="inline-flex items-center gap-0.5 rounded-full py-0.5 pl-0.5 pr-0.5 text-white shadow-sm"
+            className="flex h-7 w-full items-center justify-between rounded-full pl-0.5 pr-0.5 text-white shadow-sm"
             style={{ background: accent }}
         >
             <button
@@ -44,7 +58,7 @@ function TileCartCounter({ accent }) {
             >
                 −
             </button>
-            <span className="min-w-[1.25ch] text-center font-inter text-[12px] font-bold tabular-nums">
+            <span className="flex-1 text-center font-inter text-[12px] font-bold tabular-nums">
                 {qty}
             </span>
             <button
@@ -442,30 +456,29 @@ export default function ArsenalSection({ arsenalRef, onSelect, activeIndex = 0 }
                                 onSelect?.(i);
                             }
                         }}
-                        className="group relative flex h-20 w-28 shrink-0 cursor-pointer flex-col justify-between overflow-hidden rounded-xl border-2 bg-white/70 p-2.5 text-left backdrop-blur-md transition-all duration-300 sm:w-32"
+                        className="group relative flex h-20 w-28 shrink-0 cursor-pointer flex-col justify-between overflow-hidden rounded-xl border-2 bg-white/70 p-2 text-left backdrop-blur-md transition-all duration-300 sm:w-32"
                         style={{
                             opacity: i === activeIndex ? 1 : 0.4,
                             borderColor: i === activeIndex ? p.accent : "rgba(0,0,0,0.10)",
                         }}
                     >
-                        {/* Accent swatch */}
-                        <span
-                            className="h-1.5 w-6 rounded-full"
-                            style={{ background: p.accent }}
-                        />
-                        <div>
-                            <div className="font-instrument text-[15px] leading-tight text-[#1a1a1a]">
+                        {/* Top row: accent swatch + product name. Sub-label
+                            dropped here intentionally — it's already shown in
+                            the heading area above the gun, and freeing this
+                            space lets the cart action sit on its own row
+                            without overlap. */}
+                        <div className="flex flex-col">
+                            <span
+                                className="h-1.5 w-5 rounded-full"
+                                style={{ background: p.accent }}
+                            />
+                            <div className="mt-1.5 font-instrument text-[14px] leading-tight text-[#1a1a1a]">
                                 {p.name}
-                            </div>
-                            <div className="font-inter text-[8px] font-medium uppercase tracking-[0.15em] text-[#1a1a1a]/45">
-                                {p.sub}
                             </div>
                         </div>
 
-                        {/* Cart counter — always enabled per tile, bottom-right */}
-                        <div className="absolute bottom-1.5 right-1.5">
-                            <TileCartCounter accent={p.accent} />
-                        </div>
+                        {/* Bottom action row: full-width cart counter */}
+                        <TileCartCounter accent={p.accent} />
                     </div>
                 ))}
             </div>
