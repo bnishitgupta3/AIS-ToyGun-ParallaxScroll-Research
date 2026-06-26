@@ -1,4 +1,4 @@
-import { useRef } from "react";
+import ProductActions from "@/components/showcase/ProductActions";
 
 const specs = [
     { label: "RANGE", value: "10–12m", id: "spec-range" },
@@ -9,9 +9,9 @@ const specs = [
     { label: "MODE", value: "Semi · Burst · Auto", id: "spec-mode" },
 ];
 
-export default function SpecsPanel({ onFire, isFiring }) {
-    const btnRef = useRef();
+const MP5K = { name: "MP5K" };
 
+export default function SpecsPanel() {
     return (
         <aside
             id="specs-panel"
@@ -61,44 +61,12 @@ export default function SpecsPanel({ onFire, isFiring }) {
                     ))}
                 </ul>
 
-                <div className="mt-8 flex items-center gap-3">
-                    <button
-                        ref={btnRef}
-                        type="button"
-                        onClick={onFire}
-                        disabled={isFiring}
-                        data-testid="fire-button"
-                        className="btn-pill group inline-flex items-center gap-3 rounded-full bg-[color:var(--ink)] px-7 py-3.5 text-white"
-                    >
-                        <span
-                            className={`relative inline-flex h-2.5 w-2.5 rounded-full ${
-                                isFiring
-                                    ? "bg-[color:var(--accent)] flicker-fast"
-                                    : "bg-[color:var(--accent)]"
-                            }`}
-                        />
-                        <span className="font-mono-tactical text-sm font-bold uppercase tracking-[0.22em]">
-                            {isFiring ? "Firing…" : "Fire Test"}
-                        </span>
-                        <svg
-                            width="16"
-                            height="16"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                            strokeWidth="2.5"
-                            strokeLinecap="square"
-                            strokeLinejoin="miter"
-                            className="-mr-1 transition-transform group-hover:translate-x-0.5"
-                        >
-                            <path d="M5 12h14M13 5l7 7-7 7" />
-                        </svg>
-                    </button>
-                    <div className="font-mono-tactical text-[10px] uppercase tracking-[0.2em] text-zinc-400">
-                        Hold trigger
-                        <br />
-                        for full auto
-                    </div>
+                {/* Primary conversion cluster — replaces the old Fire Test
+                    button. Buy Now (primary) + Add to Cart (secondary) sit at
+                    the point of highest intent: right after the user has read
+                    the spec sheet. */}
+                <div className="mt-8">
+                    <ProductActions product={MP5K} accent="var(--accent)" />
                 </div>
 
                 <div className="mt-auto pt-10">

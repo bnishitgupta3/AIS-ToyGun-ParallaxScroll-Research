@@ -47,7 +47,7 @@ export default function HeroSection({ heroRef }) {
                     variants={rise}
                     className="mb-5 font-inter text-[10px] font-semibold uppercase tracking-[0.4em] text-[#f97316] sm:text-[12px]"
                 >
-                    /// SONIQ Toys · Made for Indian Summers
+                    /// SONIQ Toys · Made for Sunlit Days, All Year
                 </motion.span>
 
                 <motion.h1
@@ -63,10 +63,10 @@ export default function HeroSection({ heroRef }) {
                     variants={rise}
                     className="mt-6 max-w-2xl font-inter text-[15px] leading-relaxed text-white/75 sm:text-[17px]"
                 >
-                    Precision water blasters built for Holi mornings, scorching
-                    afternoons and every splash in between: beaches, water parks,
-                    society lawns, farmhouse pools and your own backyard. This
-                    summer, play harder.
+                    Precision water blasters built for Holi mornings, sunny
+                    weekends and every splash in between: beaches, water parks,
+                    society lawns, farmhouse pools, rooftops and your own
+                    backyard. Whenever the sun's out, play harder.
                 </motion.p>
 
                 <motion.a

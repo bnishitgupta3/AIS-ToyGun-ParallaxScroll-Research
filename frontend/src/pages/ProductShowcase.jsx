@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import LandingNav from "@/components/landing/LandingNav";
@@ -7,7 +7,6 @@ import HeroOverlay from "@/components/showcase/HeroOverlay";
 import SpecsPanel from "@/components/showcase/SpecsPanel";
 import ParallaxBackground from "@/components/showcase/ParallaxBackground";
 import FooterCTA from "@/components/showcase/FooterCTA";
-import FireEffects from "@/components/showcase/FireEffects";
 import { isPrerendering } from "@/lib/isPrerendering";
 
 gsap.registerPlugin(ScrollTrigger);
@@ -18,8 +17,6 @@ export default function ProductShowcase() {
     const sectionRef = useRef(null);
     const stageRef = useRef(null);
     const modelRef = useRef(null);
-    const fireResetTimerRef = useRef(null);
-    const [isFiring, setIsFiring] = useState(false);
     /* FOUC handled globally via body.loading + <BodyReveal /> in App.js */
 
     useEffect(() => {
@@ -120,31 +117,6 @@ export default function ProductShowcase() {
         };
     }, []);
 
-    const handleFire = () => {
-        if (typeof window !== "undefined") {
-            window.__lastFire = { clickedAt: Date.now(), wasFiring: isFiring };
-        }
-        if (isFiring) return;
-        setIsFiring(true);
-        if (fireResetTimerRef.current)
-            clearTimeout(fireResetTimerRef.current);
-        fireResetTimerRef.current = setTimeout(() => {
-            if (typeof window !== "undefined") {
-                window.__lastFireReset = Date.now();
-            }
-            setIsFiring(false);
-        }, 2400);
-    };
-
-    useEffect(() => {
-        if (typeof window !== "undefined") {
-            window.__isFiring = isFiring;
-            window.__isFiringChangedAt = Date.now();
-        }
-    }, [isFiring]);
-
-    useEffect(() => () => clearTimeout(fireResetTimerRef.current), []);
-
     return (
         <main
             data-testid="product-showcase"
@@ -172,13 +144,13 @@ export default function ProductShowcase() {
 
                     <div className="absolute inset-0 z-10">
                         {!PRERENDER && (
-                            <WaterGunScene modelRef={modelRef} isFiring={isFiring} />
+                            <WaterGunScene modelRef={modelRef} isFiring={false} />
                         )}
                     </div>
 
                     <HeroOverlay />
 
-                    <SpecsPanel onFire={handleFire} isFiring={isFiring} />
+                    <SpecsPanel />
 
                     {/* Side gutter labels */}
                     <div className="pointer-events-none absolute bottom-6 right-8 z-30 hidden font-mono-tactical text-[10px] uppercase tracking-[0.32em] text-zinc-500 md:block">
@@ -186,11 +158,6 @@ export default function ProductShowcase() {
                     </div>
                 </div>
             </section>
-
-            {/* Fixed-position fire effects overlay — sits outside the pinned
-                section so its conditional inline-style changes can't trigger
-                a ScrollTrigger refresh. */}
-            <FireEffects active={isFiring} />
 
             <FooterCTA />
             </div>

@@ -57,7 +57,7 @@ export default function AboutPage() {
                 >
                     We build the blasters
                     <br />
-                    <span className="text-[#1a1a1a]/50">Indian summers deserve.</span>
+                    <span className="text-[#1a1a1a]/50">every sunlit day deserves.</span>
                 </motion.h1>
 
                 <motion.p
@@ -66,12 +66,13 @@ export default function AboutPage() {
                     transition={{ duration: 1.1, delay: 0.25, ease: EASE }}
                     className="mt-8 max-w-2xl font-inter text-[16px] leading-relaxed text-[#1a1a1a]/65 md:text-[18px]"
                 >
-                    SONIQ Toys began with a very Indian frustration: every Holi and
-                    every summer, our water fights deserved better than leaky,
-                    short-range plastic. So we brought serious engineering to the
-                    fun: precision barrels, electric drives and drum-fed capacity,
-                    built for beaches, water parks, society lawns, farmhouse pools
-                    and the backyards where the best memories get made.
+                    SONIQ Toys began with a very Indian frustration: every Holi
+                    and every sunny weekend, our water fights deserved better
+                    than leaky, short-range plastic. So we brought serious
+                    engineering to the fun: precision barrels, electric drives
+                    and drum-fed capacity, built for beaches, water parks,
+                    society lawns, farmhouse pools, rooftops and the backyards
+                    where the best memories get made, the year round.
                 </motion.p>
 
                 {/* ── Stats ── */}

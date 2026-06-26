@@ -22,8 +22,6 @@ const M416_PRODUCT = {
         "Drum-fed long-barrel architecture with a transparent smoke-black shell. " +
         "The M416 Water X dominates from distance with pinpoint accuracy and a drum " +
         "mag that never runs dry.",
-    price:      "$119.00",
-    squadPrice: "$399.00",
     version:    "v1.0.0 · M416-WX",
     unitLabel:  "7B-416 · In stock",
     homeLink:   "/",

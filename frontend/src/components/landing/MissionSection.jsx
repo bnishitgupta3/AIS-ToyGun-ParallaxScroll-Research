@@ -8,7 +8,8 @@ const WORDS = [
     { text: "Every", accent: false },
     { text: "Holi,", accent: true },
     { text: "every", accent: false },
-    { text: "summer,", accent: true },
+    { text: "sunny", accent: true },
+    { text: "day,", accent: true },
     { text: "every", accent: false },
     { text: "splash", accent: false },
     { text: "deserves", accent: false },
@@ -95,10 +96,11 @@ export default function MissionSection({ missionRef }) {
                 </div>
 
                 <p className="mt-12 max-w-[54ch] text-base leading-relaxed text-zinc-400 md:text-lg">
-                    From Holi mornings with the whole mohalla to lazy summer
+                    From Holi mornings with the whole mohalla to lazy weekend
                     afternoons by the farmhouse pool, we engineered blasters that
-                    reach farther, last longer and never run dry. Built for Indian
-                    summers, made for memories that get gloriously, joyfully wet.
+                    reach farther, last longer and never run dry. Built for every
+                    sunlit day, all year round, made for memories that get
+                    gloriously, joyfully wet.
                 </p>
 
                 <div className="mt-16 grid grid-cols-2 gap-8 border-t border-zinc-800 pt-12 md:grid-cols-4">

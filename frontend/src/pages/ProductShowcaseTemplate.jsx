@@ -8,14 +8,14 @@
  *   • Suspense boundary owned by the page (Canvas mounts; assets stream in)
  */
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 import LandingNav from "@/components/landing/LandingNav";
 import GenericGunScene from "@/components/scene/GenericGunScene";
 import ParallaxBackground from "@/components/showcase/ParallaxBackground";
-import FireEffects from "@/components/showcase/FireEffects";
+import ProductActions from "@/components/showcase/ProductActions";
 import { useGLTF } from "@react-three/drei";
 import { asset } from "@/lib/asset";
 import { isPrerendering } from "@/lib/isPrerendering";
@@ -47,8 +47,6 @@ const DEFAULTS = {
     ],
     specsTitle:        ["Built for", "The Backyard", "Battle."],
     specsDescription:  "Drum-fed, electric drive, full-auto rated.",
-    price:             "$89.00",
-    squadPrice:        "$299.00",
     version:           "v1.0.0 · SONIQ-001",
     unitLabel:         "7B-001 · In stock",
     homeLink:          "/",
@@ -59,8 +57,6 @@ export default function ProductShowcaseTemplate({ product: rawProduct }) {
 
     const sectionRef        = useRef(null);
     const modelRef          = useRef(null);
-    const fireResetTimerRef = useRef(null);
-    const [isFiring, setIsFiring] = useState(false);
     /* FOUC handled globally via body.loading + <BodyReveal /> in App.js */
 
     /* ── GSAP scroll timeline ───────────────────────────────────────── */
@@ -160,15 +156,6 @@ export default function ProductShowcaseTemplate({ product: rawProduct }) {
         };
     }, []);
 
-    /* ── Fire handler ───────────────────────────────────────────────── */
-    const handleFire = () => {
-        if (isFiring) return;
-        setIsFiring(true);
-        clearTimeout(fireResetTimerRef.current);
-        fireResetTimerRef.current = setTimeout(() => setIsFiring(false), 2400);
-    };
-    useEffect(() => () => clearTimeout(fireResetTimerRef.current), []);
-
     const cssVars = {
         "--accent":      product.accentColor,
         "--accent-deep": product.accentDeep,
@@ -200,7 +187,7 @@ export default function ProductShowcaseTemplate({ product: rawProduct }) {
                                     key={product.modelUrl}
                                     modelRef={modelRef}
                                     modelUrl={product.modelUrl}
-                                    isFiring={isFiring}
+                                    isFiring={false}
                                 />
                             )}
                         </div>
@@ -304,34 +291,14 @@ export default function ProductShowcaseTemplate({ product: rawProduct }) {
                                     ))}
                                 </ul>
 
-                                <div className="mt-8 flex items-center gap-3">
-                                    <button
-                                        type="button"
-                                        onClick={handleFire}
-                                        disabled={isFiring}
-                                        className="btn-pill group inline-flex items-center gap-3 rounded-full bg-[color:var(--ink)] px-7 py-3.5 text-white"
-                                    >
-                                        <span
-                                            className={`relative inline-flex h-2.5 w-2.5 rounded-full ${isFiring ? "flicker-fast" : ""}`}
-                                            style={{ background: product.accentColor }}
-                                        />
-                                        <span className="font-mono-tactical text-sm font-bold uppercase tracking-[0.22em]">
-                                            {isFiring ? "Firing…" : "Fire Test"}
-                                        </span>
-                                        <svg
-                                            width="16" height="16" viewBox="0 0 24 24"
-                                            fill="none" stroke="currentColor" strokeWidth="2.5"
-                                            strokeLinecap="square" strokeLinejoin="miter"
-                                            className="-mr-1 transition-transform group-hover:translate-x-0.5"
-                                        >
-                                            <path d="M5 12h14M13 5l7 7-7 7" />
-                                        </svg>
-                                    </button>
-                                    <div className="telemetry-label text-zinc-400">
-                                        Hold trigger
-                                        <br />
-                                        for full auto
-                                    </div>
+                                {/* Primary conversion cluster — replaces the
+                                    old Fire Test button. Sits right after the
+                                    user has finished reading the spec sheet. */}
+                                <div className="mt-8">
+                                    <ProductActions
+                                        product={product}
+                                        accent={product.accentColor}
+                                    />
                                 </div>
 
                                 <div className="mt-auto pt-10">
@@ -348,9 +315,6 @@ export default function ProductShowcaseTemplate({ product: rawProduct }) {
                     </div>
                 </section>
 
-                {/* Fire effects portal */}
-                <FireEffects active={isFiring} />
-
                 {/* ── Footer / CTA (dark) ── */}
                 <section className="relative w-full bg-[color:var(--ink)] text-white">
                     <div className="mx-auto max-w-7xl px-6 py-24 md:px-12 md:py-32">
@@ -360,57 +324,36 @@ export default function ProductShowcaseTemplate({ product: rawProduct }) {
                                     className="telemetry-label"
                                     style={{ color: product.accentColor, opacity: 1 }}
                                 >
-                                    /// Deploy · Q1 2026
+                                    /// Deploy · 2026
                                 </span>
                                 <h2 className="font-display mt-5 text-5xl text-white sm:text-6xl">
-                                    Ready when
+                                    Ready for every
                                     <br />
                                     <span
                                         className="text-tactical-stroke"
                                         style={{ WebkitTextStrokeColor: "#fff" }}
                                     >
-                                        summer
+                                        sunlit
                                     </span>{" "}
-                                    is.
+                                    day.
                                 </h2>
                                 <p className="mt-6 max-w-md text-sm leading-relaxed text-zinc-400">
-                                    {product.specsDescription}
+                                    {product.specsDescription} Built for Holi
+                                    mornings, weekend pool runs, and every
+                                    bright afternoon in between, the year round.
                                 </p>
                             </div>
 
-                            <div className="md:col-span-5 md:pl-10">
-                                <div className="flex flex-col gap-4">
-                                    <div className="flex items-baseline justify-between border-b border-white/10 pb-3">
-                                        <span className="telemetry-label text-zinc-400">
-                                            Retail
-                                        </span>
-                                        <span className="telemetry-value text-2xl text-white">
-                                            {product.price}
-                                        </span>
-                                    </div>
-                                    <div className="flex items-baseline justify-between border-b border-white/10 pb-3">
-                                        <span className="telemetry-label text-zinc-400">
-                                            Squad Pack (×4)
-                                        </span>
-                                        <span
-                                            className="telemetry-value text-2xl"
-                                            style={{ color: product.accentColor }}
-                                        >
-                                            {product.squadPrice}
-                                        </span>
-                                    </div>
-                                    <button
-                                        type="button"
-                                        className="btn-pill mt-4 inline-flex items-center justify-between rounded-full px-7 py-4 text-black"
-                                        style={{ background: product.accentColor }}
-                                    >
-                                        <span className="font-mono-tactical text-sm font-bold uppercase tracking-[0.22em]">
-                                            Pre-Order Now
-                                        </span>
-                                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                                            <path d="M5 12h14M13 5l7 7-7 7" />
-                                        </svg>
-                                    </button>
+                            <div className="md:col-span-5 md:flex md:items-end md:pl-10">
+                                {/* Closing CTAs — Buy Now + Add to Cart. Pricing
+                                    block was removed pre-launch; swap in a
+                                    price row here once checkout ships. */}
+                                <div className="w-full">
+                                    <ProductActions
+                                        product={product}
+                                        accent={product.accentColor}
+                                        variant="dark"
+                                    />
                                 </div>
                             </div>
                         </div>
