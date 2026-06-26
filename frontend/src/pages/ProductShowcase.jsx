@@ -7,6 +7,7 @@ import HeroOverlay from "@/components/showcase/HeroOverlay";
 import SpecsPanel from "@/components/showcase/SpecsPanel";
 import ParallaxBackground from "@/components/showcase/ParallaxBackground";
 import FooterCTA from "@/components/showcase/FooterCTA";
+import AlsoInArsenal from "@/components/showcase/AlsoInArsenal";
 import { isPrerendering } from "@/lib/isPrerendering";
 
 gsap.registerPlugin(ScrollTrigger);
@@ -61,17 +62,17 @@ export default function ProductShowcase() {
                     },
                 });
 
-                // PHASE A — weighted zoom-in (snap, then settle)
+                // PHASE A — weighted zoom-in (snap, then settle). Hero text
+                // fades out FASTER than the gun grows so they never overlap
+                // (gun hits full scale at 0.28; text is gone by ~0.14).
                 tl.to(group.scale,    { x: 1, y: 1, z: 1, duration: 0.28, ease: "expo.out" }, 0)
                   .to(group.position, { y: 0,            duration: 0.28, ease: "expo.out" }, 0)
-                  .to("#scroll-hint", { opacity: 0,       duration: 0.08, ease: "power2.out" }, 0)
-                  .to("#hero-eyebrow",{ opacity: 0, y: -20, duration: 0.18, ease: "power3.in" }, 0.05)
-                  .to("#hero-subline",{ opacity: 0, y: -20, duration: 0.18, ease: "power3.in" }, 0.08);
-
-                // PHASE B — wordmark fades & lifts
-                tl.to("#hero-wordmark",
-                    { opacity: 0, y: -160, scale: 0.86, duration: 0.18, ease: "power4.in" },
-                    0.12);
+                  .to("#scroll-hint", { opacity: 0,       duration: 0.06, ease: "power2.out" }, 0)
+                  .to("#hero-eyebrow",{ opacity: 0, y: -16, duration: 0.10, ease: "power3.in" }, 0)
+                  .to("#hero-subline",{ opacity: 0, y: -16, duration: 0.10, ease: "power3.in" }, 0)
+                  .to("#hero-wordmark",
+                    { opacity: 0, y: -120, scale: 0.86, duration: 0.12, ease: "power4.in" },
+                    0);
 
                 // PHASE C — 360° spin (mechanical inOut)
                 tl.to(group.rotation,
@@ -158,6 +159,8 @@ export default function ProductShowcase() {
                     </div>
                 </div>
             </section>
+
+            <AlsoInArsenal currentLink="/product/mp5k" />
 
             <FooterCTA />
             </div>

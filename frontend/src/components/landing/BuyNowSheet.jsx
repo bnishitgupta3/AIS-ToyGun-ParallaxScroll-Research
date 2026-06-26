@@ -1,4 +1,5 @@
 import { useEffect } from "react";
+import { createPortal } from "react-dom";
 import { Link } from "react-router-dom";
 
 /* "Coming soon" panel — slides in from the RIGHT on desktop (md+) and from
@@ -26,7 +27,13 @@ export default function BuyNowSheet({ open, product, onClose }) {
         };
     }, [open, onClose]);
 
-    return (
+    // Portal into <body> so `position: fixed` escapes any ancestor that creates
+    // a containing block (e.g. SpecsPanel uses `transform: translateX(-24px)`
+    // for its slide-in; any transformed ancestor traps fixed-positioned
+    // descendants and made the sheet appear on initial load in the middle of
+    // the SpecsPanel column instead of being off-screen to the right).
+    if (typeof document === "undefined") return null;
+    return createPortal(
         <div
             aria-hidden={!open}
             className={`fixed inset-0 z-[60] ${open ? "" : "pointer-events-none"}`}
@@ -127,6 +134,7 @@ export default function BuyNowSheet({ open, product, onClose }) {
                     </div>
                 </div>
             </div>
-        </div>
+        </div>,
+        document.body,
     );
 }

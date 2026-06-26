@@ -13,10 +13,8 @@ const WORDS = [
     { text: "every", accent: false },
     { text: "splash", accent: false },
     { text: "deserves", accent: false },
-    { text: "better", accent: false },
-    { text: "than", accent: false },
-    { text: "cheap", accent: false },
-    { text: "plastic.", accent: false },
+    { text: "serious", accent: true },
+    { text: "engineering.", accent: false },
 ];
 
 const STATS = [

@@ -18,7 +18,7 @@ const META = {
     "/about": {
         title: "About SONIQ Toys · Made in India",
         description:
-            "The story behind SONIQ Toys: engineering premium water guns and gel blasters in India for players who want more than cheap plastic.",
+            "The story behind SONIQ Toys: engineering premium water guns and gel blasters in India for players who love precision, power and play.",
     },
     "/faq": {
         title: "FAQ · SONIQ Toys",

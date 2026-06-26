@@ -16,12 +16,12 @@ const STATS = [
 
 const VALUES = [
     {
-        title: "Precision over plastic",
-        body: "Every component is CNC-checked and stress-tested. We refuse the throwaway-toy mindset; these are instruments, not novelties.",
+        title: "Precision engineering",
+        body: "Every component is CNC-checked and stress-tested. We build instruments of play — designed to last, designed to delight.",
     },
     {
-        title: "Engineered to dominate",
-        body: "Drum-fed magazines, electric drives and calibrated pressure systems deliver range and fire-rate that cheap blasters can't touch.",
+        title: "Engineered to thrill",
+        body: "Drum-fed magazines, electric drives and calibrated pressure systems deliver the range, accuracy and fire-rate that turn a splash into an experience.",
     },
     {
         title: "Built for the field",
@@ -66,9 +66,9 @@ export default function AboutPage() {
                     transition={{ duration: 1.1, delay: 0.25, ease: EASE }}
                     className="mt-8 max-w-2xl font-inter text-[16px] leading-relaxed text-[#1a1a1a]/65 md:text-[18px]"
                 >
-                    SONIQ Toys began with a very Indian frustration: every Holi
-                    and every sunny weekend, our water fights deserved better
-                    than leaky, short-range plastic. So we brought serious
+                    SONIQ Toys was born from a love of play. Every Holi and
+                    every sunny weekend deserves a blaster that's a joy to
+                    hold and a thrill to fire. So we brought serious
                     engineering to the fun: precision barrels, electric drives
                     and drum-fed capacity, built for beaches, water parks,
                     society lawns, farmhouse pools, rooftops and the backyards

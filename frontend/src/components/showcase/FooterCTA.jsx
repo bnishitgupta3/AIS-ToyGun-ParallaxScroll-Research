@@ -48,7 +48,6 @@ export default function FooterCTA() {
                 <div className="mt-20 flex items-center justify-between font-mono-tactical text-[10px] uppercase tracking-[0.3em] text-zinc-500">
                     <span>© 2026 SONIQ Toys</span>
                     <span>v1.4.0 · MP5K</span>
-                    <span>Built · React · R3F · GSAP</span>
                 </div>
             </div>
         </section>

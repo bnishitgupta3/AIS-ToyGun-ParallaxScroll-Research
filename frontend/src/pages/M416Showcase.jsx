@@ -22,9 +22,10 @@ const M416_PRODUCT = {
         "Drum-fed long-barrel architecture with a transparent smoke-black shell. " +
         "The M416 Water X dominates from distance with pinpoint accuracy and a drum " +
         "mag that never runs dry.",
-    version:    "v1.0.0 · M416-WX",
-    unitLabel:  "7B-416 · In stock",
-    homeLink:   "/",
+    version:     "v1.0.0 · M416-WX",
+    unitLabel:   "7B-416 · In stock",
+    homeLink:    "/",
+    currentLink: "/product/m416",
 };
 
 export default function M416Showcase() {

@@ -16,6 +16,7 @@ import LandingNav from "@/components/landing/LandingNav";
 import GenericGunScene from "@/components/scene/GenericGunScene";
 import ParallaxBackground from "@/components/showcase/ParallaxBackground";
 import ProductActions from "@/components/showcase/ProductActions";
+import AlsoInArsenal from "@/components/showcase/AlsoInArsenal";
 import { useGLTF } from "@react-three/drei";
 import { asset } from "@/lib/asset";
 import { isPrerendering } from "@/lib/isPrerendering";
@@ -100,17 +101,17 @@ export default function ProductShowcaseTemplate({ product: rawProduct }) {
                     },
                 });
 
-                /* Phase A — heavy zoom-in: snaps fast, settles slow */
+                /* Phase A — heavy zoom-in: snaps fast, settles slow. Hero
+                   wordmark + sub fade out FASTER than the gun grows so they
+                   never overlap (gun hits full scale at 0.28; text gone by ~0.14). */
                 tl.to(group.scale,    { x: 1, y: 1, z: 1, duration: 0.28, ease: "expo.out" }, 0)
                   .to(group.position, { y: 0,            duration: 0.28, ease: "expo.out" }, 0)
-                  .to("#scroll-hint",  { opacity: 0,      duration: 0.08, ease: "power2.out" }, 0)
-                  .to("#hero-eyebrow", { opacity: 0, y: -20, duration: 0.18, ease: "power3.in" }, 0.05)
-                  .to("#hero-subline", { opacity: 0, y: -20, duration: 0.18, ease: "power3.in" }, 0.08);
-
-                /* Phase B — wordmark fades & lifts */
-                tl.to("#hero-wordmark",
-                    { opacity: 0, y: -160, scale: 0.86, duration: 0.18, ease: "power4.in" },
-                    0.12);
+                  .to("#scroll-hint",  { opacity: 0,      duration: 0.06, ease: "power2.out" }, 0)
+                  .to("#hero-eyebrow", { opacity: 0, y: -16, duration: 0.10, ease: "power3.in" }, 0)
+                  .to("#hero-subline", { opacity: 0, y: -16, duration: 0.10, ease: "power3.in" }, 0)
+                  .to("#hero-wordmark",
+                    { opacity: 0, y: -120, scale: 0.86, duration: 0.12, ease: "power4.in" },
+                    0);
 
                 /* Phase C — 360° showcase spin: power4.inOut = mechanical */
                 tl.to(group.rotation,
@@ -315,6 +316,9 @@ export default function ProductShowcaseTemplate({ product: rawProduct }) {
                     </div>
                 </section>
 
+                {/* Cross-sell — show the other two products */}
+                <AlsoInArsenal currentLink={product.currentLink} />
+
                 {/* ── Footer / CTA (dark) ── */}
                 <section className="relative w-full bg-[color:var(--ink)] text-white">
                     <div className="mx-auto max-w-7xl px-6 py-24 md:px-12 md:py-32">
@@ -361,7 +365,6 @@ export default function ProductShowcaseTemplate({ product: rawProduct }) {
                         <div className="mt-20 flex items-center justify-between telemetry-label text-zinc-500">
                             <span>© 2026 SONIQ Toys</span>
                             <span>{product.version}</span>
-                            <span>Built · React · R3F · GSAP</span>
                         </div>
                     </div>
                 </section>

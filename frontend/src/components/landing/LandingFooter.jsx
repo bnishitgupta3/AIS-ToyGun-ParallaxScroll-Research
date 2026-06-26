@@ -44,7 +44,7 @@ export default function LandingFooter() {
                         </div>
                         <p className="mt-5 max-w-[36ch] text-sm leading-relaxed text-zinc-400">
                             Engineering precision-grade water guns and gel blasters
-                            for players who demand more than plastic.
+                            for players who love serious play.
                         </p>
                         <div className="mt-8 flex items-center gap-3">
                             {SOCIALS.map((s) => (
