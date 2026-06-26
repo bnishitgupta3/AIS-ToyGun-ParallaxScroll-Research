@@ -1,16 +1,18 @@
-import { useState } from "react";
 import { Link } from "react-router-dom";
 import { PRODUCTS } from "@/components/landing/ArsenalSection";
+import { useCartItem } from "@/lib/cart";
 
 /* Cross-sell strip on every product page. Lists the OTHER two weapons from
    the Arsenal so a visitor can jump straight to another product or add it
    to cart from here, without bouncing back to the homepage. */
 
 /* Small cart counter — qty=0 shows ghost "+ Add", qty>0 shows -/+ stepper.
-   Each click stops propagation so the surrounding card stays a clean
-   visual unit (the View Product link is a separate target). */
-function MiniCounter({ accent }) {
-    const [qty, setQty] = useState(0);
+   Reads/writes through the global cart context so qty stays in sync with
+   the Arsenal tiles and the nav badge. Click stops propagation so the
+   surrounding card stays a clean visual unit (the View Product link is a
+   separate target). */
+function MiniCounter({ accent, cartKey }) {
+    const { qty, inc, dec, set } = useCartItem(cartKey);
     const stop = (fn) => (e) => {
         e.stopPropagation();
         e.preventDefault();
@@ -21,7 +23,7 @@ function MiniCounter({ accent }) {
             <button
                 type="button"
                 aria-label="Add to cart"
-                onClick={stop(() => setQty(1))}
+                onClick={stop(() => set(1))}
                 className="inline-flex h-9 items-center gap-1.5 rounded-full px-4 font-inter text-[11px] font-semibold uppercase tracking-[0.18em] transition"
                 style={{ background: `${accent}1a`, color: accent }}
                 onMouseEnter={(e) => {
@@ -46,7 +48,7 @@ function MiniCounter({ accent }) {
             <button
                 type="button"
                 aria-label="Remove one from cart"
-                onClick={stop(() => setQty((q) => Math.max(0, q - 1)))}
+                onClick={stop(dec)}
                 className="grid h-7 w-7 place-items-center rounded-full text-lg leading-none transition hover:bg-white/20"
             >
                 −
@@ -57,7 +59,7 @@ function MiniCounter({ accent }) {
             <button
                 type="button"
                 aria-label="Add one to cart"
-                onClick={stop(() => setQty((q) => q + 1))}
+                onClick={stop(inc)}
                 className="grid h-7 w-7 place-items-center rounded-full text-lg leading-none transition hover:bg-white/20"
             >
                 +
@@ -142,7 +144,7 @@ export default function AlsoInArsenal({ currentLink }) {
                                         <path d="M5 12h14M13 5l7 7-7 7" />
                                     </svg>
                                 </Link>
-                                <MiniCounter accent={p.accent} />
+                                <MiniCounter accent={p.accent} cartKey={p.link} />
                             </div>
                         </div>
                     ))}

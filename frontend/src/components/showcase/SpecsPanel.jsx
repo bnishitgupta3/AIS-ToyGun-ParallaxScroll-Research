@@ -9,7 +9,7 @@ const specs = [
     { label: "MODE", value: "Semi · Burst · Auto", id: "spec-mode" },
 ];
 
-const MP5K = { name: "MP5K" };
+const MP5K = { name: "MP5K", link: "/product/mp5k" };
 
 export default function SpecsPanel() {
     return (

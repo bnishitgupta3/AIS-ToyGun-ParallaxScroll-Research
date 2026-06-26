@@ -1,6 +1,6 @@
 import ProductActions from "@/components/showcase/ProductActions";
 
-const MP5K = { name: "MP5K" };
+const MP5K = { name: "MP5K", link: "/product/mp5k" };
 
 export default function FooterCTA() {
     return (

@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
+import { useCart } from "@/lib/cart";
 
 /* Homepage section anchors (smooth-scroll on home, route-then-scroll elsewhere) */
 const SECTION_LINKS = [
@@ -13,6 +14,38 @@ const PAGE_LINKS = [
     { label: "About",   to: "/about" },
     { label: "Contact", to: "/contact" },
 ];
+
+/* Cart icon + qty badge. Opens the shared BuyNowSheet (cart drawer). The
+   button stays visible on every viewport — qty badge appears only when there
+   is at least one item, so empty carts don't add visual noise. */
+function CartButton({ onAfterClick }) {
+    const { total, openDrawer } = useCart();
+    return (
+        <button
+            type="button"
+            aria-label={total > 0 ? `Open cart (${total} items)` : "Open cart"}
+            onClick={() => {
+                openDrawer(null);
+                onAfterClick && onAfterClick();
+            }}
+            className="relative flex h-9 w-9 items-center justify-center rounded-full text-[#1a1a1a] transition-colors hover:bg-black/5"
+        >
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="9" cy="20" r="1.4" />
+                <circle cx="18" cy="20" r="1.4" />
+                <path d="M2 3h2.5l2.2 12.2a1.5 1.5 0 0 0 1.5 1.3h8.4a1.5 1.5 0 0 0 1.5-1.2L21 7H6" />
+            </svg>
+            {total > 0 && (
+                <span
+                    aria-hidden="true"
+                    className="absolute -right-0.5 -top-0.5 grid h-[18px] min-w-[18px] place-items-center rounded-full bg-[#f97316] px-1 font-inter text-[10px] font-bold leading-none text-white"
+                >
+                    {total > 99 ? "99+" : total}
+                </span>
+            )}
+        </button>
+    );
+}
 
 /**
  * Global pill navbar — used on every page. Desktop shows inline links;
@@ -81,34 +114,40 @@ export default function LandingNav() {
                         ))}
                     </div>
 
-                    {/* Desktop CTA */}
-                    <a
-                        href="#arsenal"
-                        onClick={(e) => goSection(e, "#arsenal")}
-                        className="group relative hidden cursor-pointer overflow-hidden rounded-full bg-[#f97316] px-5 py-2 text-white shadow-[inset_0_-4px_4px_rgba(255,255,255,0.39)] outline outline-1 outline-[#f97316] -outline-offset-1 transition-all duration-200 hover:brightness-110 md:inline-block"
-                    >
-                        <span
-                            aria-hidden="true"
-                            className="pointer-events-none absolute left-[10%] top-[1px] h-4 w-[80%] rounded-[12px] bg-gradient-to-b from-[#FFD9B8] to-transparent transition-transform duration-200 group-hover:scale-x-105"
-                        />
-                        <span className="relative font-inter text-[14px] font-medium">Explore</span>
-                    </a>
+                    {/* Right cluster: cart icon (always visible) + Explore CTA
+                        (desktop) / hamburger (mobile) */}
+                    <div className="flex items-center gap-1 md:gap-3">
+                        <CartButton onAfterClick={() => setOpen(false)} />
 
-                    {/* Hamburger (mobile) */}
-                    <button
-                        type="button"
-                        aria-label={open ? "Close menu" : "Open menu"}
-                        onClick={() => setOpen((o) => !o)}
-                        className="flex h-9 w-9 items-center justify-center rounded-full text-[#1a1a1a] transition-colors hover:bg-black/5 md:hidden"
-                    >
-                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-                            {open ? (
-                                <path d="M6 6l12 12M18 6L6 18" />
-                            ) : (
-                                <><path d="M4 7h16" /><path d="M4 12h16" /><path d="M4 17h16" /></>
-                            )}
-                        </svg>
-                    </button>
+                        {/* Desktop CTA */}
+                        <a
+                            href="#arsenal"
+                            onClick={(e) => goSection(e, "#arsenal")}
+                            className="group relative hidden cursor-pointer overflow-hidden rounded-full bg-[#f97316] px-5 py-2 text-white shadow-[inset_0_-4px_4px_rgba(255,255,255,0.39)] outline outline-1 outline-[#f97316] -outline-offset-1 transition-all duration-200 hover:brightness-110 md:inline-block"
+                        >
+                            <span
+                                aria-hidden="true"
+                                className="pointer-events-none absolute left-[10%] top-[1px] h-4 w-[80%] rounded-[12px] bg-gradient-to-b from-[#FFD9B8] to-transparent transition-transform duration-200 group-hover:scale-x-105"
+                            />
+                            <span className="relative font-inter text-[14px] font-medium">Explore</span>
+                        </a>
+
+                        {/* Hamburger (mobile) */}
+                        <button
+                            type="button"
+                            aria-label={open ? "Close menu" : "Open menu"}
+                            onClick={() => setOpen((o) => !o)}
+                            className="flex h-9 w-9 items-center justify-center rounded-full text-[#1a1a1a] transition-colors hover:bg-black/5 md:hidden"
+                        >
+                            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
+                                {open ? (
+                                    <path d="M6 6l12 12M18 6L6 18" />
+                                ) : (
+                                    <><path d="M4 7h16" /><path d="M4 12h16" /><path d="M4 17h16" /></>
+                                )}
+                            </svg>
+                        </button>
+                    </div>
                 </div>
 
                 {/* Mobile menu panel */}

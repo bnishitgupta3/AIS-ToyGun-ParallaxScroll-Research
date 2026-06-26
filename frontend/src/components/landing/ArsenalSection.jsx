@@ -1,19 +1,17 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import BuyNowSheet from "@/components/landing/BuyNowSheet";
+import { useCart, useCartItem } from "@/lib/cart";
 
 /* Per-tile cart counter. Sits in the tile's bottom action row (replacing the
    redundant sub-label — the gun's category/tagline already live in the
    heading area above the gun). Always enabled on all 3 tiles for friction-
-   free multi-add (best for conversion in a 3-product, all-visible carousel).
-   stopPropagation on every click prevents the tile's gun-switch from firing.
+   free multi-add. stopPropagation on every click prevents the tile's
+   gun-switch from firing.
 
-   Visual:
-   - qty=0: ghost "+ Add" pill (accent-tinted at ~10% alpha, accent text)
-   - qty>0: filled stepper (accent fill, white text), same height/width so
-     the layout doesn't shift when qty changes. */
-function TileCartCounter({ accent }) {
-    const [qty, setQty] = useState(0);
+   Reads/writes through the global cart context (useCartItem) so the nav
+   badge and BuyNowSheet stay in sync. */
+function TileCartCounter({ accent, cartKey }) {
+    const { qty, inc, dec, set } = useCartItem(cartKey);
     const stop = (fn) => (e) => {
         e.stopPropagation();
         e.preventDefault();
@@ -25,7 +23,7 @@ function TileCartCounter({ accent }) {
             <button
                 type="button"
                 aria-label="Add to cart"
-                onClick={stop(() => setQty(1))}
+                onClick={stop(() => set(1))}
                 className="flex h-7 w-full items-center justify-center gap-1 rounded-full font-inter text-[10px] font-semibold uppercase tracking-[0.18em] transition"
                 style={{
                     background: `${accent}1a`, // ~10% alpha tint
@@ -54,7 +52,7 @@ function TileCartCounter({ accent }) {
             <button
                 type="button"
                 aria-label="Remove one from cart"
-                onClick={stop(() => setQty((q) => Math.max(0, q - 1)))}
+                onClick={stop(dec)}
                 className="grid h-6 w-6 place-items-center rounded-full text-base leading-none transition hover:bg-white/20"
             >
                 −
@@ -65,7 +63,7 @@ function TileCartCounter({ accent }) {
             <button
                 type="button"
                 aria-label="Add one to cart"
-                onClick={stop(() => setQty((q) => q + 1))}
+                onClick={stop(inc)}
                 className="grid h-6 w-6 place-items-center rounded-full text-base leading-none transition hover:bg-white/20"
             >
                 +
@@ -158,8 +156,10 @@ export const PRODUCTS = [
  * Clicking a thumbnail calls `onSelect(i)` → GSAP scroll-seek to that section.
  */
 export default function ArsenalSection({ arsenalRef, onSelect, activeIndex = 0 }) {
-    // Which product (if any) opened the Buy Now sheet — null = closed.
-    const [buyNowProduct, setBuyNowProduct] = useState(null);
+    // Buy Now opens the single global drawer (mounted in App.js) via the cart
+    // context. No per-section sheet instance — that caused multiple sheets in
+    // the DOM and was the source of the earlier "drawer auto-show" bug.
+    const { openDrawer } = useCart();
 
     // True once the section is pinned at the top of the viewport — at which
     // point the gun's entry animation has settled. Gates the HTML overlay so
@@ -254,7 +254,7 @@ export default function ArsenalSection({ arsenalRef, onSelect, activeIndex = 0 }
 
                         {/* Buy Now — themed orange. Opens the "coming soon"
                             sheet (right drawer on desktop, bottom sheet on mobile). */}
-                        <BuyNowButton onClick={() => setBuyNowProduct(p)} />
+                        <BuyNowButton onClick={() => openDrawer(p)} />
                     </div>
                 ))}
             </div>
@@ -357,7 +357,7 @@ export default function ArsenalSection({ arsenalRef, onSelect, activeIndex = 0 }
                         {/* Bottom action row: full-width cart counter, always
                             at full opacity so it reads as enabled on every
                             tile (which it is — clicks don't switch the gun). */}
-                        <TileCartCounter accent={p.accent} />
+                        <TileCartCounter accent={p.accent} cartKey={p.link} />
                     </div>
                 ))}
             </div>
@@ -367,12 +367,6 @@ export default function ArsenalSection({ arsenalRef, onSelect, activeIndex = 0 }
                 Sec · 02 / 05 · Arsenal
             </div>
 
-            {/* Buy Now sheet — single instance, opens for whichever weapon was tapped */}
-            <BuyNowSheet
-                open={!!buyNowProduct}
-                product={buyNowProduct}
-                onClose={() => setBuyNowProduct(null)}
-            />
         </section>
     );
 }

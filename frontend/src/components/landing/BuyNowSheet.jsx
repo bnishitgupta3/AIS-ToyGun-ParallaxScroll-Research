@@ -1,16 +1,34 @@
 import { useEffect } from "react";
 import { createPortal } from "react-dom";
 import { Link } from "react-router-dom";
+import { useCart, PRODUCT_LOOKUP } from "@/lib/cart";
 
-/* "Coming soon" panel — slides in from the RIGHT on desktop (md+) and from
-   the BOTTOM as a partial sheet on mobile (~70% of viewport). Mobile gets a
-   sheet (not a full takeover) so the underlying page context stays visible
-   behind a dim backdrop, and the panel is dismissible by tapping the
-   backdrop, the close button, or pressing ESC.
+/* "Coming soon" + cart-review panel — slides in from the RIGHT on desktop
+   (md+) and from the BOTTOM as a partial sheet on mobile (~70% of viewport).
+   Mobile gets a sheet (not a full takeover) so the underlying page context
+   stays visible behind a dim backdrop, dismissible by backdrop tap, close
+   button, or ESC.
 
-   Used by the Arsenal "Buy Now" button and the product-page Buy Now CTAs
-   until Shopify checkout is wired up. */
+   Single global instance mounted in App. Opened from anywhere by calling
+   useCart().openDrawer(product?).
+
+   ─── SHOPIFY SWAP ──────────────────────────────────────────────────────────
+   When Shopify is integrated:
+     • The line-item list below stays — only the data source changes (read
+       from the Shopify cart query instead of our local items map).
+     • The qty +/- buttons currently hit useCartItem(key); swap those calls
+       for cartLinesUpdate mutations on the Shopify cart.
+     • "Notify me at launch" (the placeholder CTA) becomes "Checkout" and
+       redirects to `cart.checkoutUrl`. */
 export default function BuyNowSheet({ open, product, onClose }) {
+    const { items, setQty, total } = useCart();
+    const hasItems = total > 0;
+    // Build a render list of { key, name, qty } from the items map.
+    const lines = Object.entries(items).map(([key, qty]) => ({
+        key,
+        qty,
+        ...(PRODUCT_LOOKUP[key] || { name: key.replace(/^\//, ""), sub: "" }),
+    }));
     // Lock body scroll while open; close on ESC. Adding "sheet-open" to body
     // lets global chrome (nav, section dots) hide itself via CSS.
     useEffect(() => {
@@ -78,45 +96,107 @@ export default function BuyNowSheet({ open, product, onClose }) {
 
                 <div className="flex h-full flex-col px-7 pb-10 pt-10 md:px-10 md:pt-16">
                     <span className="font-inter text-[11px] font-semibold uppercase tracking-[0.35em] text-[#f97316]">
-                        /// Almost here
+                        {hasItems ? "/// Your cart" : "/// Almost here"}
                     </span>
 
-                    <h2 className="font-instrument mt-3 text-[clamp(34px,6vw,52px)] leading-[0.95] tracking-tight text-[#1a1a1a]">
-                        Checkout is loading up.
+                    <h2 className="font-instrument mt-3 text-[clamp(28px,5.5vw,46px)] leading-[0.95] tracking-tight text-[#1a1a1a]">
+                        {hasItems
+                            ? total === 1
+                                ? "1 blaster ready."
+                                : `${total} blasters ready.`
+                            : "Checkout is loading up."}
                     </h2>
 
-                    <p className="mt-5 font-inter text-[15px] leading-relaxed text-[#1a1a1a]/65 sm:text-[16px]">
-                        We're plumbing in payments and dispatch right now. The {product?.name || "blaster"} will be one tap from your door very soon.
+                    <p className="mt-4 font-inter text-[14px] leading-relaxed text-[#1a1a1a]/65 sm:text-[15px]">
+                        {hasItems
+                            ? "We're plumbing in payments and dispatch right now. The moment checkout opens, you'll get a one-tap link to pay for everything in your cart."
+                            : `We're plumbing in payments and dispatch right now. The ${
+                                  product?.name || "blaster"
+                              } will be one tap from your door very soon.`}
                     </p>
 
-                    {/* Visual flourish — animated pressure meter, mirrors the
-                        teaser's anticipation language. */}
-                    <div className="mt-8 w-full max-w-[260px]">
-                        <div className="mb-2 flex items-center justify-between font-nokia text-[10px] uppercase tracking-[0.25em] text-[#1a1a1a]/45">
-                            <span>Pressure building</span>
-                            <span>2026</span>
-                        </div>
-                        <div className="h-1.5 w-full overflow-hidden rounded-full bg-[#1a1a1a]/10">
-                            <div className="buy-now-charge h-full rounded-full bg-[#f97316]" />
-                        </div>
-                    </div>
+                    {/* ── Cart line items (when present). On Shopify swap, replace
+                          this list with Shopify cart-line nodes and call
+                          cartLinesUpdate instead of setQty. ── */}
+                    {hasItems && (
+                        <ul className="mt-7 divide-y divide-[#1a1a1a]/10 rounded-2xl border border-[#1a1a1a]/10">
+                            {lines.map((line) => (
+                                <li
+                                    key={line.key}
+                                    className="flex items-center justify-between gap-3 px-4 py-3"
+                                >
+                                    <div className="min-w-0 flex-1">
+                                        <div className="truncate font-instrument text-[17px] leading-tight text-[#1a1a1a]">
+                                            {line.name}
+                                        </div>
+                                        {line.sub && (
+                                            <div className="font-inter text-[10px] font-medium uppercase tracking-[0.2em] text-[#1a1a1a]/45">
+                                                {line.sub}
+                                            </div>
+                                        )}
+                                    </div>
+                                    <div className="inline-flex items-center gap-0.5 rounded-full bg-[#1a1a1a]/[0.06] pl-0.5 pr-0.5">
+                                        <button
+                                            type="button"
+                                            aria-label={`Remove one ${line.name}`}
+                                            onClick={() => setQty(line.key, line.qty - 1)}
+                                            className="grid h-7 w-7 place-items-center rounded-full text-lg leading-none text-[#1a1a1a]/70 transition hover:bg-[#1a1a1a]/10 hover:text-[#1a1a1a]"
+                                        >
+                                            −
+                                        </button>
+                                        <span className="min-w-[1.5ch] text-center font-inter text-[13px] font-bold tabular-nums text-[#1a1a1a]">
+                                            {line.qty}
+                                        </span>
+                                        <button
+                                            type="button"
+                                            aria-label={`Add one ${line.name}`}
+                                            onClick={() => setQty(line.key, line.qty + 1)}
+                                            className="grid h-7 w-7 place-items-center rounded-full text-lg leading-none text-[#1a1a1a]/70 transition hover:bg-[#1a1a1a]/10 hover:text-[#1a1a1a]"
+                                        >
+                                            +
+                                        </button>
+                                    </div>
+                                </li>
+                            ))}
+                        </ul>
+                    )}
 
-                    <ul className="mt-9 space-y-3 font-inter text-[14px] text-[#1a1a1a]/75">
-                        <li className="flex items-start gap-2.5">
-                            <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-[#f97316]" />
-                            Early-access pricing for everyone on the list
-                        </li>
-                        <li className="flex items-start gap-2.5">
-                            <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-[#f97316]" />
-                            Free shipping across India on launch week
-                        </li>
-                        <li className="flex items-start gap-2.5">
-                            <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-[#f97316]" />
-                            First refills bundled, while stocks last
-                        </li>
-                    </ul>
+                    {/* ── Anticipation flourish (only when cart is empty —
+                          when there ARE items the focus belongs on the list) ── */}
+                    {!hasItems && (
+                        <>
+                            <div className="mt-8 w-full max-w-[260px]">
+                                <div className="mb-2 flex items-center justify-between font-nokia text-[10px] uppercase tracking-[0.25em] text-[#1a1a1a]/45">
+                                    <span>Pressure building</span>
+                                    <span>2026</span>
+                                </div>
+                                <div className="h-1.5 w-full overflow-hidden rounded-full bg-[#1a1a1a]/10">
+                                    <div className="buy-now-charge h-full rounded-full bg-[#f97316]" />
+                                </div>
+                            </div>
+
+                            <ul className="mt-9 space-y-3 font-inter text-[14px] text-[#1a1a1a]/75">
+                                <li className="flex items-start gap-2.5">
+                                    <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-[#f97316]" />
+                                    Early-access pricing for everyone on the list
+                                </li>
+                                <li className="flex items-start gap-2.5">
+                                    <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-[#f97316]" />
+                                    Free shipping across India on launch week
+                                </li>
+                                <li className="flex items-start gap-2.5">
+                                    <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-[#f97316]" />
+                                    First refills bundled, while stocks last
+                                </li>
+                            </ul>
+                        </>
+                    )}
 
                     <div className="mt-auto pt-10">
+                        {/* SHOPIFY SWAP: replace this Link with a button that
+                            redirects window.location to `cart.checkoutUrl` when
+                            hasItems, otherwise routes to /coming-soon for the
+                            email-capture flow. */}
                         <Link
                             to="/coming-soon"
                             onClick={onClose}
@@ -126,7 +206,9 @@ export default function BuyNowSheet({ open, product, onClose }) {
                                 aria-hidden="true"
                                 className="pointer-events-none absolute left-[10%] top-[1px] h-4 w-[80%] rounded-[12px] bg-gradient-to-b from-[#FFD9B8] to-transparent transition-transform duration-200 group-hover:scale-x-105"
                             />
-                            <span className="relative">Notify me at launch</span>
+                            <span className="relative">
+                                {hasItems ? "Notify me at checkout launch" : "Notify me at launch"}
+                            </span>
                         </Link>
                         <p className="mt-3 text-center font-inter text-[11px] uppercase tracking-[0.22em] text-[#1a1a1a]/40">
                             Powered by SONIQ · India · 2026

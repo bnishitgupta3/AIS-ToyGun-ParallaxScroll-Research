@@ -18,6 +18,8 @@ import ProductShowcase        from "@/pages/ProductShowcase";       // existing 
 import M416Showcase           from "@/pages/M416Showcase";
 import CrimsonBlasterShowcase from "@/pages/CrimsonBlasterShowcase";
 import RouteSeo              from "@/components/seo/RouteSeo";
+import BuyNowSheet           from "@/components/landing/BuyNowSheet";
+import { CartProvider, useCart } from "@/lib/cart";
 import { initAnalytics, trackPageview } from "@/lib/analytics";
 
 /* Analytics: init GA4 once (if a Measurement ID is configured) and report a
@@ -87,13 +89,23 @@ function BodyReveal() {
     return null;
 }
 
+/* Global cart drawer — one instance, mounted at app root. Every "Buy Now"
+   click and the nav cart icon converge on this. Lives inside CartProvider so
+   it can read the open/close state and the items list. */
+function GlobalBuyNowSheet() {
+    const { drawer, closeDrawer } = useCart();
+    return <BuyNowSheet open={drawer.open} product={drawer.product} onClose={closeDrawer} />;
+}
+
 function App() {
     return (
+        <CartProvider>
         <BrowserRouter basename={process.env.PUBLIC_URL}>
             <ScrollToTop />
             <BodyReveal />
             <RouteSeo />
             <Analytics />
+            <GlobalBuyNowSheet />
             <Routes>
                 {/* Home — full D2C landing page */}
                 <Route path="/"               element={<LandingPage />} />
@@ -122,6 +134,7 @@ function App() {
                 <Route path="*"              element={<NotFoundPage />} />
             </Routes>
         </BrowserRouter>
+        </CartProvider>
     );
 }
 
