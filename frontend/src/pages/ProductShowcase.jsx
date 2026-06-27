@@ -35,7 +35,7 @@ export default function ProductShowcase() {
         };
         raf = requestAnimationFrame(setup);
 
-        let ctx;
+        let mm;
         function buildTimeline(group) {
             // Initial state (defensive — also set declaratively in JSX)
             group.scale.setScalar(0.12);
@@ -49,64 +49,78 @@ export default function ProductShowcase() {
             gsap.set("#hero-eyebrow", { opacity: 1 });
             gsap.set("#scroll-hint", { opacity: 1 });
 
-            ctx = gsap.context(() => {
-                const tl = gsap.timeline({
-                    scrollTrigger: {
-                        trigger: sectionRef.current,
-                        start: "top top",
-                        end: "+=3200",
-                        pin: true,
-                        scrub: 1,
-                        anticipatePin: 1,
-                        invalidateOnRefresh: true,
-                    },
-                });
+            // Responsive scene params. On mobile (portrait phone), a full-
+            // scale gun overlaps the SpecsPanel content — render it smaller
+            // and push it further off-screen at settle so it clears the
+            // spec rows entirely. gsap.matchMedia auto-rebuilds + reverts
+            // when the viewport class changes.
+            mm = gsap.matchMedia();
+            mm.add(
+                { isDesktop: "(min-width: 768px)" },
+                (mmCtx) => {
+                    const { isDesktop } = mmCtx.conditions;
+                    const peakScale = isDesktop ? 1.0 : 0.55;
+                    const settleX = isDesktop ? 1.55 : 3.4;
+                    const settleScale = isDesktop ? 0.95 : 0.35;
 
-                // PHASE A — weighted zoom-in (snap, then settle). Hero text
-                // fades out FASTER than the gun grows so they never overlap
-                // (gun hits full scale at 0.28; text is gone by ~0.14).
-                tl.to(group.scale,    { x: 1, y: 1, z: 1, duration: 0.28, ease: "expo.out" }, 0)
-                  .to(group.position, { y: 0,            duration: 0.28, ease: "expo.out" }, 0)
-                  .to("#scroll-hint", { opacity: 0,       duration: 0.06, ease: "power2.out" }, 0)
-                  .to("#hero-eyebrow",{ opacity: 0, y: -16, duration: 0.10, ease: "power3.in" }, 0)
-                  .to("#hero-subline",{ opacity: 0, y: -16, duration: 0.10, ease: "power3.in" }, 0)
-                  .to("#hero-wordmark",
-                    { opacity: 0, y: -120, scale: 0.86, duration: 0.12, ease: "power4.in" },
-                    0);
-
-                // PHASE C — 360° spin (mechanical inOut)
-                tl.to(group.rotation,
-                    { y: Math.PI * 2, duration: 0.4, ease: "power4.inOut" },
-                    0.32);
-
-                // PHASE D — settle to the right (precise, weighted)
-                tl.to(group.position,
-                    { x: 1.55, duration: 0.3, ease: "expo.inOut" }, 0.55)
-                  .to(group.scale,
-                    { x: 0.95, y: 0.95, z: 0.95, duration: 0.3, ease: "expo.inOut" }, 0.55);
-
-                // PHASE E — specs panel snaps in
-                tl.to("#specs-panel",
-                    { opacity: 1, x: 0, duration: 0.22, ease: "expo.out" },
-                    0.78);
-
-                // PARALLAX shapes — scroll-tied tweens with per-element depth
-                gsap.utils.toArray(".parallax-shape").forEach((el) => {
-                    const depth = parseFloat(el.dataset.parallax || "0.4");
-                    gsap.to(el, {
-                        yPercent: -120 * depth,
-                        xPercent: (Math.random() - 0.5) * 40 * depth,
-                        rotate: (Math.random() - 0.5) * 60 * depth,
-                        ease: "none",
+                    const tl = gsap.timeline({
                         scrollTrigger: {
                             trigger: sectionRef.current,
                             start: "top top",
                             end: "+=3200",
-                            scrub: 1.4,
+                            pin: true,
+                            scrub: 1,
+                            anticipatePin: 1,
+                            invalidateOnRefresh: true,
                         },
                     });
-                });
-            }, sectionRef);
+
+                    // PHASE A — weighted zoom-in (snap, then settle). Hero
+                    // text fades out FASTER than the gun grows so they never
+                    // overlap (gun hits peak scale at 0.28; text gone by ~0.14).
+                    tl.to(group.scale,    { x: peakScale, y: peakScale, z: peakScale, duration: 0.28, ease: "expo.out" }, 0)
+                      .to(group.position, { y: 0,                                      duration: 0.28, ease: "expo.out" }, 0)
+                      .to("#scroll-hint", { opacity: 0,                                duration: 0.06, ease: "power2.out" }, 0)
+                      .to("#hero-eyebrow",{ opacity: 0, y: -16,                        duration: 0.10, ease: "power3.in" }, 0)
+                      .to("#hero-subline",{ opacity: 0, y: -16,                        duration: 0.10, ease: "power3.in" }, 0)
+                      .to("#hero-wordmark",
+                        { opacity: 0, y: -120, scale: 0.86, duration: 0.12, ease: "power4.in" },
+                        0);
+
+                    // PHASE C — 360° spin (mechanical inOut)
+                    tl.to(group.rotation,
+                        { y: Math.PI * 2, duration: 0.4, ease: "power4.inOut" },
+                        0.32);
+
+                    // PHASE D — settle off to the right; mobile pushes further
+                    tl.to(group.position,
+                        { x: settleX, duration: 0.3, ease: "expo.inOut" }, 0.55)
+                      .to(group.scale,
+                        { x: settleScale, y: settleScale, z: settleScale, duration: 0.3, ease: "expo.inOut" }, 0.55);
+
+                    // PHASE E — specs panel snaps in
+                    tl.to("#specs-panel",
+                        { opacity: 1, x: 0, duration: 0.22, ease: "expo.out" },
+                        0.78);
+
+                    // PARALLAX shapes — scroll-tied tweens with per-element depth
+                    gsap.utils.toArray(".parallax-shape").forEach((el) => {
+                        const depth = parseFloat(el.dataset.parallax || "0.4");
+                        gsap.to(el, {
+                            yPercent: -120 * depth,
+                            xPercent: (Math.random() - 0.5) * 40 * depth,
+                            rotate: (Math.random() - 0.5) * 60 * depth,
+                            ease: "none",
+                            scrollTrigger: {
+                                trigger: sectionRef.current,
+                                start: "top top",
+                                end: "+=3200",
+                                scrub: 1.4,
+                            },
+                        });
+                    });
+                },
+            );
 
             requestAnimationFrame(() => ScrollTrigger.refresh());
         }
@@ -114,7 +128,7 @@ export default function ProductShowcase() {
         return () => {
             cancelled = true;
             if (raf) cancelAnimationFrame(raf);
-            if (ctx) ctx.revert();
+            if (mm) mm.revert();
         };
     }, []);
 
