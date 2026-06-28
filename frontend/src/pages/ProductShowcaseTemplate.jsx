@@ -254,14 +254,32 @@ export default function ProductShowcaseTemplate({ product: rawProduct }) {
                             panel slides in. */}
                         <aside
                             id="specs-panel"
-                            className="pointer-events-auto absolute left-0 top-0 z-30 h-full w-full max-w-[440px] bg-[color:var(--bg)] px-6 pt-24 md:bg-transparent md:px-10 md:pt-28 lg:px-14"
+                            className="pointer-events-auto absolute left-0 top-0 z-30 h-full w-full max-w-[440px] overflow-y-auto bg-[color:var(--bg)] px-6 pt-24 md:bg-transparent md:px-10 md:pt-28 lg:px-14"
                             /* Match GSAP's initial state declaratively so the
                                panel renders hidden from frame 1. */
                             style={{ opacity: 0, transform: "translateX(-24px)" }}
                         >
                             <div className="flex h-full flex-col">
+                                {/* EV-style positioning badge — leads with the
+                                    "fully electric + automatic" claim before the
+                                    field spec sheet, so the differentiator lands
+                                    before the user reads numbers. */}
                                 <span
-                                    className="telemetry-label"
+                                    className="font-mono-tactical inline-flex items-center gap-2 self-start rounded-full border bg-opacity-10 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.22em]"
+                                    style={{
+                                        borderColor: product.accentColor + "4d",
+                                        backgroundColor: product.accentColor + "1a",
+                                        color: product.accentColor,
+                                    }}
+                                >
+                                    <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor">
+                                        <path d="M13 2L4.5 13h6L11 22l8.5-11h-6L13 2z" />
+                                    </svg>
+                                    Fully Electric · Automatic
+                                </span>
+
+                                <span
+                                    className="telemetry-label mt-5"
                                     style={{ color: product.accentColor, opacity: 1 }}
                                 >
                                     /// Field Spec Sheet
@@ -295,9 +313,24 @@ export default function ProductShowcaseTemplate({ product: rawProduct }) {
                                     ))}
                                 </ul>
 
-                                {/* Primary conversion cluster — replaces the
-                                    old Fire Test button. Sits right after the
-                                    user has finished reading the spec sheet. */}
+                                {/* Asterisk footnote — industry-standard
+                                    disclaimer for the play-time claim, same
+                                    pattern EVs use for range. Rendered only
+                                    when at least one spec value contains *. */}
+                                {product.specs.some((s) => /\*/.test(s.value)) && (
+                                    <p className="mt-3 text-[11px] leading-relaxed text-zinc-500">
+                                        *Play time measured under ideal
+                                        conditions: full charge, full tank,
+                                        continuous trigger use at room
+                                        temperature. Actual play time varies
+                                        with usage, ambient temperature, and
+                                        refill frequency.
+                                    </p>
+                                )}
+
+                                {/* Primary conversion cluster — Buy Now (primary)
+                                    + Add to Cart (secondary) at the point of
+                                    highest intent: right after the spec sheet. */}
                                 <div className="mt-8">
                                     <ProductActions
                                         product={product}
