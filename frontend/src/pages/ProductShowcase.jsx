@@ -143,12 +143,7 @@ export default function ProductShowcase() {
                 >
                     <ParallaxBackground />
 
-                    {/* 3D canvas — hidden on mobile (max-md) via opacity:0 to
-                        keep the gun from blocking the SpecsPanel's text rows
-                        through its transparent gaps. The canvas still mounts
-                        so modelRef populates and GSAP's timeline builds; we
-                        just don't paint pixels on phones. */}
-                    <div className="absolute inset-0 z-10 max-md:pointer-events-none max-md:opacity-0">
+                    <div className="absolute inset-0 z-10">
                         {!PRERENDER && (
                             <WaterGunScene modelRef={modelRef} isFiring={false} />
                         )}

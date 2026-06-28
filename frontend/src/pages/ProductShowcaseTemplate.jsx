@@ -181,12 +181,8 @@ export default function ProductShowcaseTemplate({ product: rawProduct }) {
                     <div className="relative h-screen w-full overflow-hidden">
                         <ParallaxBackground />
 
-                        {/* 3-D canvas layer (skipped during prerender). On
-                            mobile (max-md) we render it invisibly so the gun
-                            doesn't overlap the SpecsPanel text — the canvas
-                            still mounts so modelRef populates and GSAP's
-                            timeline builds. */}
-                        <div className="absolute inset-0 z-10 max-md:pointer-events-none max-md:opacity-0">
+                        {/* 3-D canvas layer (skipped during prerender) */}
+                        <div className="absolute inset-0 z-10">
                             {!PRERENDER && (
                                 <GenericGunScene
                                     key={product.modelUrl}
@@ -252,10 +248,13 @@ export default function ProductShowcaseTemplate({ product: rawProduct }) {
                             </div>
                         </div>
 
-                        {/* Specs panel */}
+                        {/* Specs panel. On mobile, an opaque background covers
+                            the 3D gun behind it so the gun shows during entry
+                            but doesn't bleed through the spec rows once the
+                            panel slides in. */}
                         <aside
                             id="specs-panel"
-                            className="pointer-events-auto absolute left-0 top-0 z-30 h-full w-full max-w-[440px] px-6 pt-24 md:px-10 md:pt-28 lg:px-14"
+                            className="pointer-events-auto absolute left-0 top-0 z-30 h-full w-full max-w-[440px] bg-[color:var(--bg)] px-6 pt-24 md:bg-transparent md:px-10 md:pt-28 lg:px-14"
                             /* Match GSAP's initial state declaratively so the
                                panel renders hidden from frame 1. */
                             style={{ opacity: 0, transform: "translateX(-24px)" }}

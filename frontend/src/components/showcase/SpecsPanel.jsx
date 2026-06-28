@@ -16,7 +16,10 @@ export default function SpecsPanel() {
         <aside
             id="specs-panel"
             data-testid="specs-panel"
-            className="pointer-events-auto absolute left-0 top-0 z-30 h-full w-full max-w-[440px] px-6 pt-24 md:px-10 md:pt-28 lg:px-14"
+            /* On mobile, an opaque background covers the 3D gun behind the
+               panel so the gun stays visible during the hero/entry phase but
+               doesn't bleed through the spec rows once the panel slides in. */
+            className="pointer-events-auto absolute left-0 top-0 z-30 h-full w-full max-w-[440px] bg-[color:var(--bg)] px-6 pt-24 md:bg-transparent md:px-10 md:pt-28 lg:px-14"
             /* Match GSAP's initial state declaratively so the panel renders
                hidden from frame 1 — otherwise it briefly shows before
                useEffect's gsap.set hides it (FOUC on every page load). */
