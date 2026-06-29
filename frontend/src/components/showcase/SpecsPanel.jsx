@@ -21,14 +21,17 @@ export default function SpecsPanel() {
             data-testid="specs-panel"
             /* On mobile, an opaque background covers the 3D gun behind the
                panel so the gun stays visible during the hero/entry phase but
-               doesn't bleed through the spec rows once the panel slides in. */
-            className="pointer-events-auto absolute left-0 top-0 z-30 h-full w-full max-w-[440px] overflow-y-auto bg-[color:var(--bg)] px-6 pt-24 md:bg-transparent md:px-10 md:pt-28 lg:px-14"
+               doesn't bleed through the spec rows once the panel slides in.
+               No overflow scroll — the rhythm below is tuned to fit one
+               viewport, and the column is vertically centred so it sits well
+               on tall and short screens alike. */
+            className="pointer-events-auto absolute left-0 top-0 z-30 flex h-full w-full max-w-[440px] flex-col justify-center bg-[color:var(--bg)] px-6 pt-16 md:bg-transparent md:px-10 md:pt-20 lg:px-14"
             /* Match GSAP's initial state declaratively so the panel renders
                hidden from frame 1 — otherwise it briefly shows before
                useEffect's gsap.set hides it (FOUC on every page load). */
             style={{ opacity: 0, transform: "translateX(-24px)" }}
         >
-            <div className="flex h-full flex-col">
+            <div className="flex flex-col">
                 {/* Lead positioning badge — EV-style. Establishes that the
                     MP5K is fully electric + automatic up front, before specs. */}
                 <span className="font-mono-tactical inline-flex items-center gap-2 self-start rounded-full border border-[color:var(--accent)]/30 bg-[color:var(--accent)]/10 px-3 py-1 text-[10px] font-bold uppercase tracking-[0.22em] text-[color:var(--accent)]">
@@ -39,13 +42,13 @@ export default function SpecsPanel() {
                 </span>
 
                 <span
-                    className="font-mono-tactical mt-5 text-xs font-bold uppercase tracking-[0.32em] text-[color:var(--accent)]"
+                    className="font-mono-tactical mt-4 text-xs font-bold uppercase tracking-[0.32em] text-[color:var(--accent)]"
                     data-testid="specs-overline"
                 >
                     /// Field Spec Sheet
                 </span>
                 <h2
-                    className="font-display mt-4 text-4xl sm:text-5xl"
+                    className="font-display mt-3 text-3xl sm:text-4xl"
                     data-testid="specs-title"
                 >
                     Built for
@@ -54,18 +57,18 @@ export default function SpecsPanel() {
                     <br />
                     <span className="text-[color:var(--accent)]">Battle.</span>
                 </h2>
-                <p className="mt-5 max-w-[34ch] text-sm leading-relaxed text-zinc-600">
+                <p className="mt-3 max-w-[34ch] text-sm leading-relaxed text-zinc-600">
                     Zero pumping, zero priming. Just pull the trigger. An
                     electric drive delivers full-auto fire from a 300 ml tank
                     with the consistency only a motor can give.
                 </p>
 
-                <ul className="mt-8 space-y-0">
+                <ul className="mt-5 space-y-0">
                     {specs.map((s) => (
                         <li
                             key={s.id}
                             data-testid={s.id}
-                            className="spec-row flex items-baseline justify-between py-3.5"
+                            className="spec-row flex items-baseline justify-between py-2.5"
                         >
                             <span className="telemetry-label text-zinc-500">
                                 {s.label}
@@ -78,22 +81,22 @@ export default function SpecsPanel() {
                 </ul>
 
                 {/* Asterisk footnote — industry-standard disclaimer for the
-                    play-time claim. Same pattern EVs use for range. */}
-                <p className="mt-3 text-[11px] leading-relaxed text-zinc-500">
-                    *Play time measured under ideal conditions: full charge,
-                    full tank, continuous trigger use at room temperature.
-                    Actual play time varies with usage, ambient temperature,
-                    and refill frequency.
+                    play-time claim. Same pattern EVs use for range. Kept to a
+                    tight two lines so the panel never needs to scroll. */}
+                <p className="mt-3 text-[11px] leading-snug text-zinc-500">
+                    *Tested under ideal conditions (full charge, full tank,
+                    continuous use at room temperature). Actual play time
+                    varies with use, temperature and refill rate.
                 </p>
 
                 {/* Primary conversion cluster — Buy Now (primary) + Add to Cart
                     (secondary) sit at the point of highest intent: right after
                     the user has read the spec sheet. */}
-                <div className="mt-8">
+                <div className="mt-6">
                     <ProductActions product={MP5K} accent="var(--accent)" />
                 </div>
 
-                <div className="mt-auto pb-8 pt-10">
+                <div className="mt-6">
                     <div className="font-mono-tactical text-[10px] uppercase tracking-[0.32em] text-zinc-400">
                         Unit · 7B-014 ·{" "}
                         <span className="text-[color:var(--accent)]">

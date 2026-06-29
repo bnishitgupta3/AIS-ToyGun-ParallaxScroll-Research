@@ -37,9 +37,12 @@ export default function ProductShowcase() {
 
         let ctx;
         function buildTimeline(group) {
-            // Initial state (defensive — also set declaratively in JSX)
-            group.scale.setScalar(0.12);
-            group.position.set(0, -2.5, 0);
+            // Initial state. Start the gun low but already on-screen (a peek
+            // at the bottom of the frame) rather than a tiny invisible dot far
+            // below it — so the very first scroll grows a gun that's already
+            // visible instead of spawning one out of nowhere.
+            group.scale.setScalar(0.42);
+            group.position.set(0, -1.85, 0);
             group.rotation.set(0, 0, 0);
 
             gsap.set("#specs-panel", { opacity: 0, x: -24 });
@@ -62,16 +65,18 @@ export default function ProductShowcase() {
                     },
                 });
 
-                // PHASE A — weighted zoom-in (snap, then settle). Hero text
-                // fades out FASTER than the gun grows so they never overlap
-                // (gun hits full scale at 0.28; text is gone by ~0.14).
-                tl.to(group.scale,    { x: 1, y: 1, z: 1, duration: 0.28, ease: "expo.out" }, 0)
-                  .to(group.position, { y: 0,            duration: 0.28, ease: "expo.out" }, 0)
-                  .to("#scroll-hint", { opacity: 0,       duration: 0.06, ease: "power2.out" }, 0)
-                  .to("#hero-eyebrow",{ opacity: 0, y: -16, duration: 0.10, ease: "power3.in" }, 0)
-                  .to("#hero-subline",{ opacity: 0, y: -16, duration: 0.10, ease: "power3.in" }, 0)
+                // PHASE A — smooth zoom-in. power2.out spreads the growth
+                // evenly across the scroll (expo.out front-loaded ~63% of the
+                // motion into the first 10%, which popped). Hero text fades
+                // out FAST and early so it's clear before the gun reaches
+                // centre (text gone by ~0.09; gun hits full scale at 0.30).
+                tl.to(group.scale,    { x: 1, y: 1, z: 1, duration: 0.30, ease: "power2.out" }, 0)
+                  .to(group.position, { y: 0,            duration: 0.30, ease: "power2.out" }, 0)
+                  .to("#scroll-hint", { opacity: 0,       duration: 0.05, ease: "power2.out" }, 0)
+                  .to("#hero-eyebrow",{ opacity: 0, y: -16, duration: 0.08, ease: "power2.in" }, 0)
+                  .to("#hero-subline",{ opacity: 0, y: -16, duration: 0.08, ease: "power2.in" }, 0)
                   .to("#hero-wordmark",
-                    { opacity: 0, y: -120, scale: 0.86, duration: 0.12, ease: "power4.in" },
+                    { opacity: 0, y: -120, scale: 0.86, duration: 0.09, ease: "power2.in" },
                     0);
 
                 // PHASE C — 360° spin (mechanical inOut)

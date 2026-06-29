@@ -75,8 +75,12 @@ export default function ProductShowcaseTemplate({ product: rawProduct }) {
         raf = requestAnimationFrame(setup);
 
         function buildTimeline(group) {
-            group.scale.setScalar(0.12);
-            group.position.set(0, -2.5, 0);
+            // Start the gun low but already on-screen (a peek at the bottom of
+            // the frame) rather than a tiny invisible dot far below it — so the
+            // very first scroll grows a gun that's already visible instead of
+            // spawning one out of nowhere.
+            group.scale.setScalar(0.42);
+            group.position.set(0, -1.85, 0);
             group.rotation.set(0, 0, 0);
 
             gsap.set("#specs-panel",   { opacity: 0, x: -24 });
@@ -101,16 +105,18 @@ export default function ProductShowcaseTemplate({ product: rawProduct }) {
                     },
                 });
 
-                /* Phase A — heavy zoom-in: snaps fast, settles slow. Hero
-                   wordmark + sub fade out FASTER than the gun grows so they
-                   never overlap (gun hits full scale at 0.28; text gone by ~0.14). */
-                tl.to(group.scale,    { x: 1, y: 1, z: 1, duration: 0.28, ease: "expo.out" }, 0)
-                  .to(group.position, { y: 0,            duration: 0.28, ease: "expo.out" }, 0)
-                  .to("#scroll-hint",  { opacity: 0,      duration: 0.06, ease: "power2.out" }, 0)
-                  .to("#hero-eyebrow", { opacity: 0, y: -16, duration: 0.10, ease: "power3.in" }, 0)
-                  .to("#hero-subline", { opacity: 0, y: -16, duration: 0.10, ease: "power3.in" }, 0)
+                /* Phase A — smooth zoom-in. power2.out spreads the growth
+                   evenly across the scroll (expo.out front-loaded ~63% of the
+                   motion into the first 10%, which popped). Hero text fades
+                   out FAST and early so it's clear before the gun reaches
+                   centre (text gone by ~0.09; gun hits full scale at 0.30). */
+                tl.to(group.scale,    { x: 1, y: 1, z: 1, duration: 0.30, ease: "power2.out" }, 0)
+                  .to(group.position, { y: 0,            duration: 0.30, ease: "power2.out" }, 0)
+                  .to("#scroll-hint",  { opacity: 0,      duration: 0.05, ease: "power2.out" }, 0)
+                  .to("#hero-eyebrow", { opacity: 0, y: -16, duration: 0.08, ease: "power2.in" }, 0)
+                  .to("#hero-subline", { opacity: 0, y: -16, duration: 0.08, ease: "power2.in" }, 0)
                   .to("#hero-wordmark",
-                    { opacity: 0, y: -120, scale: 0.86, duration: 0.12, ease: "power4.in" },
+                    { opacity: 0, y: -120, scale: 0.86, duration: 0.09, ease: "power2.in" },
                     0);
 
                 /* Phase C — 360° showcase spin: power4.inOut = mechanical */
@@ -254,12 +260,15 @@ export default function ProductShowcaseTemplate({ product: rawProduct }) {
                             panel slides in. */}
                         <aside
                             id="specs-panel"
-                            className="pointer-events-auto absolute left-0 top-0 z-30 h-full w-full max-w-[440px] overflow-y-auto bg-[color:var(--bg)] px-6 pt-24 md:bg-transparent md:px-10 md:pt-28 lg:px-14"
+                            /* No overflow scroll — the rhythm is tuned to fit
+                               one viewport, and the column is vertically centred
+                               so it sits well on tall and short screens alike. */
+                            className="pointer-events-auto absolute left-0 top-0 z-30 flex h-full w-full max-w-[440px] flex-col justify-center bg-[color:var(--bg)] px-6 pt-16 md:bg-transparent md:px-10 md:pt-20 lg:px-14"
                             /* Match GSAP's initial state declaratively so the
                                panel renders hidden from frame 1. */
                             style={{ opacity: 0, transform: "translateX(-24px)" }}
                         >
-                            <div className="flex h-full flex-col">
+                            <div className="flex flex-col">
                                 {/* EV-style positioning badge — leads with the
                                     "fully electric + automatic" claim before the
                                     field spec sheet, so the differentiator lands
@@ -279,12 +288,12 @@ export default function ProductShowcaseTemplate({ product: rawProduct }) {
                                 </span>
 
                                 <span
-                                    className="telemetry-label mt-5"
+                                    className="telemetry-label mt-4"
                                     style={{ color: product.accentColor, opacity: 1 }}
                                 >
                                     /// Field Spec Sheet
                                 </span>
-                                <h2 className="font-display mt-4 text-4xl text-zinc-900 sm:text-5xl">
+                                <h2 className="font-display mt-3 text-3xl text-zinc-900 sm:text-4xl">
                                     {product.specsTitle[0]}
                                     <br />
                                     {product.specsTitle[1]}
@@ -293,15 +302,15 @@ export default function ProductShowcaseTemplate({ product: rawProduct }) {
                                         {product.specsTitle[2]}
                                     </span>
                                 </h2>
-                                <p className="mt-5 max-w-[34ch] text-sm leading-relaxed text-zinc-600">
+                                <p className="mt-3 max-w-[34ch] text-sm leading-relaxed text-zinc-600">
                                     {product.specsDescription}
                                 </p>
 
-                                <ul className="mt-8 space-y-0">
+                                <ul className="mt-5 space-y-0">
                                     {product.specs.map((s) => (
                                         <li
                                             key={s.label}
-                                            className="spec-row flex items-baseline justify-between py-3.5"
+                                            className="spec-row flex items-baseline justify-between py-2.5"
                                         >
                                             <span className="telemetry-label text-zinc-500">
                                                 {s.label}
@@ -318,27 +327,26 @@ export default function ProductShowcaseTemplate({ product: rawProduct }) {
                                     pattern EVs use for range. Rendered only
                                     when at least one spec value contains *. */}
                                 {product.specs.some((s) => /\*/.test(s.value)) && (
-                                    <p className="mt-3 text-[11px] leading-relaxed text-zinc-500">
-                                        *Play time measured under ideal
-                                        conditions: full charge, full tank,
-                                        continuous trigger use at room
-                                        temperature. Actual play time varies
-                                        with usage, ambient temperature, and
-                                        refill frequency.
+                                    <p className="mt-3 text-[11px] leading-snug text-zinc-500">
+                                        *Tested under ideal conditions (full
+                                        charge, full tank, continuous use at
+                                        room temperature). Actual play time
+                                        varies with use, temperature and refill
+                                        rate.
                                     </p>
                                 )}
 
                                 {/* Primary conversion cluster — Buy Now (primary)
                                     + Add to Cart (secondary) at the point of
                                     highest intent: right after the spec sheet. */}
-                                <div className="mt-8">
+                                <div className="mt-6">
                                     <ProductActions
                                         product={product}
                                         accent={product.accentColor}
                                     />
                                 </div>
 
-                                <div className="mt-auto pt-10">
+                                <div className="mt-6">
                                     <div className="telemetry-label text-zinc-400">
                                         Unit · {product.unitLabel}
                                     </div>
