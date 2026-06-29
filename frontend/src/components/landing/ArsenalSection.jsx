@@ -187,7 +187,7 @@ export default function ArsenalSection({ arsenalRef, onSelect, activeIndex = 0 }
         >
             {/* ── TOP heading area — eyebrow + product name (ABOVE the gun) ── */}
             <div
-                className="pointer-events-none absolute left-1/2 top-20 z-20 flex -translate-x-1/2 flex-col items-center text-center transition-opacity duration-500 md:top-24"
+                className="pointer-events-none absolute left-1/2 top-28 z-20 flex -translate-x-1/2 flex-col items-center text-center transition-opacity duration-500 md:top-24"
                 style={{ opacity: entered ? 1 : 0 }}
             >
                 <span className="font-inter text-xs font-semibold uppercase tracking-[0.4em] text-[#f97316]">
