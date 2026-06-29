@@ -57,18 +57,17 @@ export default function SpecsPanel() {
                     <br />
                     <span className="text-[color:var(--accent)]">Battle.</span>
                 </h2>
-                <p className="mt-3 max-w-[34ch] text-sm leading-relaxed text-zinc-600">
-                    Zero pumping, zero priming. Just pull the trigger. An
-                    electric drive delivers full-auto fire from a 300 ml tank
-                    with the consistency only a motor can give.
+                <p className="mt-2 max-w-[34ch] text-sm leading-relaxed text-zinc-600">
+                    Zero pumping, zero priming — just pull the trigger. An
+                    electric drive delivers full-auto fire from a 300 ml tank.
                 </p>
 
-                <ul className="mt-5 space-y-0">
+                <ul className="mt-4 space-y-0">
                     {specs.map((s) => (
                         <li
                             key={s.id}
                             data-testid={s.id}
-                            className="spec-row flex items-baseline justify-between py-2.5"
+                            className="spec-row flex items-baseline justify-between py-2"
                         >
                             <span className="telemetry-label text-zinc-500">
                                 {s.label}
@@ -80,23 +79,23 @@ export default function SpecsPanel() {
                     ))}
                 </ul>
 
-                {/* Asterisk footnote — industry-standard disclaimer for the
-                    play-time claim. Same pattern EVs use for range. Kept to a
-                    tight two lines so the panel never needs to scroll. */}
-                <p className="mt-3 text-[11px] leading-snug text-zinc-500">
-                    *Tested under ideal conditions (full charge, full tank,
-                    continuous use at room temperature). Actual play time
-                    varies with use, temperature and refill rate.
+                {/* Asterisk footnote — subtle fine-print disclaimer, the way
+                    brands hedge a headline number. Deliberately small and
+                    low-contrast; framed as "up to / optimal" so it covers
+                    real-world play (no one holds the trigger non-stop). */}
+                <p className="mt-3 text-[10px] leading-snug text-zinc-400">
+                    *Up to 45 min under optimal conditions. Real-world play
+                    time varies with usage, temperature and refills.
                 </p>
 
                 {/* Primary conversion cluster — Buy Now (primary) + Add to Cart
                     (secondary) sit at the point of highest intent: right after
                     the user has read the spec sheet. */}
-                <div className="mt-6">
+                <div className="mt-5">
                     <ProductActions product={MP5K} accent="var(--accent)" />
                 </div>
 
-                <div className="mt-6">
+                <div className="mt-4">
                     <div className="font-mono-tactical text-[10px] uppercase tracking-[0.32em] text-zinc-400">
                         Unit · 7B-014 ·{" "}
                         <span className="text-[color:var(--accent)]">

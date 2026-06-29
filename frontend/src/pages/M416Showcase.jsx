@@ -19,9 +19,8 @@ const M416_PRODUCT = {
     ],
     specsTitle: ["Engineered for", "Maximum", "Range."],
     specsDescription:
-        "Zero pumping, zero priming. The M416 Water X is fully electric — " +
-        "pull the trigger and the motor delivers continuous, automatic fire " +
-        "from a 300 ml tank. Pure trigger play, every shot.",
+        "Zero pumping, zero priming — just pull the trigger. The motor " +
+        "delivers full-auto fire from a 300 ml tank.",
     version:     "v1.0.0 · M416-WX",
     unitLabel:   "7B-416 · In stock",
     homeLink:    "/",

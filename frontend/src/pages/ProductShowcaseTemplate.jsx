@@ -75,12 +75,13 @@ export default function ProductShowcaseTemplate({ product: rawProduct }) {
         raf = requestAnimationFrame(setup);
 
         function buildTimeline(group) {
-            // Start the gun low but already on-screen (a peek at the bottom of
-            // the frame) rather than a tiny invisible dot far below it — so the
-            // very first scroll grows a gun that's already visible instead of
-            // spawning one out of nowhere.
-            group.scale.setScalar(0.42);
-            group.position.set(0, -1.85, 0);
+            // Park the gun just below the frame at rest so the hero stays clean
+            // and the "Scroll to Engage" hint (bottom-centre) isn't covered by
+            // it. It's sized up from the old tiny dot and the Phase-A ease is
+            // gentle, so the very first scroll lifts it into view quickly and
+            // smoothly instead of popping.
+            group.scale.setScalar(0.3);
+            group.position.set(0, -2.45, 0);
             group.rotation.set(0, 0, 0);
 
             gsap.set("#specs-panel",   { opacity: 0, x: -24 });
@@ -302,15 +303,15 @@ export default function ProductShowcaseTemplate({ product: rawProduct }) {
                                         {product.specsTitle[2]}
                                     </span>
                                 </h2>
-                                <p className="mt-3 max-w-[34ch] text-sm leading-relaxed text-zinc-600">
+                                <p className="mt-2 max-w-[34ch] text-sm leading-relaxed text-zinc-600">
                                     {product.specsDescription}
                                 </p>
 
-                                <ul className="mt-5 space-y-0">
+                                <ul className="mt-4 space-y-0">
                                     {product.specs.map((s) => (
                                         <li
                                             key={s.label}
-                                            className="spec-row flex items-baseline justify-between py-2.5"
+                                            className="spec-row flex items-baseline justify-between py-2"
                                         >
                                             <span className="telemetry-label text-zinc-500">
                                                 {s.label}
@@ -327,26 +328,24 @@ export default function ProductShowcaseTemplate({ product: rawProduct }) {
                                     pattern EVs use for range. Rendered only
                                     when at least one spec value contains *. */}
                                 {product.specs.some((s) => /\*/.test(s.value)) && (
-                                    <p className="mt-3 text-[11px] leading-snug text-zinc-500">
-                                        *Tested under ideal conditions (full
-                                        charge, full tank, continuous use at
-                                        room temperature). Actual play time
-                                        varies with use, temperature and refill
-                                        rate.
+                                    <p className="mt-3 text-[10px] leading-snug text-zinc-400">
+                                        *Up to 45 min under optimal conditions.
+                                        Real-world play time varies with usage,
+                                        temperature and refills.
                                     </p>
                                 )}
 
                                 {/* Primary conversion cluster — Buy Now (primary)
                                     + Add to Cart (secondary) at the point of
                                     highest intent: right after the spec sheet. */}
-                                <div className="mt-6">
+                                <div className="mt-5">
                                     <ProductActions
                                         product={product}
                                         accent={product.accentColor}
                                     />
                                 </div>
 
-                                <div className="mt-6">
+                                <div className="mt-4">
                                     <div className="telemetry-label text-zinc-400">
                                         Unit · {product.unitLabel}
                                     </div>
