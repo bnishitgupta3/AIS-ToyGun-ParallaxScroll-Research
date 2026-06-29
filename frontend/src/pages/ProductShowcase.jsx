@@ -37,12 +37,13 @@ export default function ProductShowcase() {
 
         let ctx;
         function buildTimeline(group) {
-            // Initial state. Start the gun low but already on-screen (a peek
-            // at the bottom of the frame) rather than a tiny invisible dot far
-            // below it — so the very first scroll grows a gun that's already
-            // visible instead of spawning one out of nowhere.
-            group.scale.setScalar(0.42);
-            group.position.set(0, -1.85, 0);
+            // Initial state. Park the gun just below the frame at rest so the
+            // hero stays clean and the "Scroll to Engage" hint (bottom-centre)
+            // isn't covered by it. It's sized up from the old tiny dot and the
+            // Phase-A ease is gentle, so the very first scroll lifts it into
+            // view quickly and smoothly instead of popping.
+            group.scale.setScalar(0.3);
+            group.position.set(0, -2.45, 0);
             group.rotation.set(0, 0, 0);
 
             gsap.set("#specs-panel", { opacity: 0, x: -24 });
