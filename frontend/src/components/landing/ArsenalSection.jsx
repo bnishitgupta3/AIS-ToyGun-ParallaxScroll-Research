@@ -233,11 +233,11 @@ export default function ArsenalSection({ arsenalRef, onSelect, activeIndex = 0 }
                 </div>
             </div>
 
-            {/* ── BELOW the gun — View Details + Add to Cart (stacked per weapon).
-                   Fixed offset (not %) so it stays just above the spec strip with
-                   a small, consistent gap on any viewport height. ── */}
+            {/* ── PRIMARY CTA row — View Details + Buy Now (per weapon).
+                   Sits at the bottom as the terminal action: pick a gun from
+                   the tiles above, read the specs, then buy down here. ── */}
             <div
-                className="absolute bottom-[12.75rem] left-1/2 z-20 h-12 -translate-x-1/2 transition-opacity duration-500"
+                className="absolute bottom-10 left-1/2 z-20 h-12 -translate-x-1/2 transition-opacity duration-500"
                 style={{ opacity: entered ? 1 : 0 }}
             >
                 {PRODUCTS.map((p, i) => (
@@ -345,9 +345,10 @@ export default function ArsenalSection({ arsenalRef, onSelect, activeIndex = 0 }
                 ))}
             </div>
 
-            {/* ── Bottom thumbnail navigation ── */}
+            {/* ── Thumbnail navigation / quick-add — sits ABOVE the spec strip
+                   as the gun "menu"; the CTA row lives at the bottom. ── */}
             <div
-                className="absolute bottom-10 left-1/2 z-30 flex -translate-x-1/2 items-center gap-3 transition-opacity duration-500 sm:gap-4"
+                className="absolute bottom-[12.75rem] left-1/2 z-30 flex -translate-x-1/2 items-center gap-3 transition-opacity duration-500 sm:gap-4"
                 style={{ opacity: entered ? 1 : 0 }}
             >
                 {PRODUCTS.map((p, i) => (
