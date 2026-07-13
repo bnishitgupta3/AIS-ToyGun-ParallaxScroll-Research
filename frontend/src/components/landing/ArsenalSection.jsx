@@ -129,6 +129,10 @@ export const PRODUCTS = [
         link: "/product/crimson",
         accent: "#ef4444",
         sub: "Gel Blaster",
+        /* Not launched yet — shown as a teaser everywhere (faded tile, no
+           cart, "Coming Soon" badge, Notify-me CTA). Flip to false / remove
+           on launch day and the buy paths light up automatically. */
+        comingSoon: true,
         stats: [
             { label: "Range", value: "18 m" },
             { label: "Shots / Refill", value: "350" },
@@ -215,6 +219,15 @@ export default function ArsenalSection({ arsenalRef, onSelect, activeIndex = 0 }
                             <p className="mt-2 font-inter text-[11px] font-medium uppercase tracking-[0.28em] text-[#1a1a1a]/50">
                                 {p.tagline}
                             </p>
+                            {p.comingSoon && (
+                                <span
+                                    className="mt-3 inline-flex items-center gap-1.5 rounded-full px-3 py-1 font-inter text-[10px] font-bold uppercase tracking-[0.3em] text-white"
+                                    style={{ background: p.accent }}
+                                >
+                                    <span className="inline-block h-1.5 w-1.5 rounded-full bg-white/90" />
+                                    Coming Soon
+                                </span>
+                            )}
                         </div>
                     ))}
                 </div>
@@ -237,24 +250,45 @@ export default function ArsenalSection({ arsenalRef, onSelect, activeIndex = 0 }
                             pointerEvents: i === activeIndex ? "auto" : "none",
                         }}
                     >
-                        {/* View Details — clean dark outline */}
-                        <Link
-                            to={p.link}
-                            className="group inline-flex items-center gap-2 rounded-full border border-[#1a1a1a]/30 px-7 py-2.5 font-inter text-[12px] font-semibold uppercase tracking-[0.2em] text-[#1a1a1a] transition-all hover:border-[#1a1a1a] hover:bg-[#1a1a1a] hover:text-white"
-                        >
-                            View Details
-                            <svg
-                                width="13" height="13" viewBox="0 0 24 24" fill="none"
-                                stroke="currentColor" strokeWidth="2.5"
-                                className="transition-transform group-hover:translate-x-0.5"
+                        {p.comingSoon ? (
+                            /* Pre-launch: no buy path. A single themed CTA sends
+                               the visitor to the teaser page to get notified. */
+                            <Link
+                                to={p.link}
+                                className="group inline-flex items-center gap-2 rounded-full px-7 py-2.5 font-inter text-[12px] font-semibold uppercase tracking-[0.2em] text-white shadow-[inset_0_-4px_4px_rgba(255,255,255,0.28)] transition-all hover:brightness-110"
+                                style={{ background: p.accent }}
                             >
-                                <path d="M5 12h14M13 5l7 7-7 7" />
-                            </svg>
-                        </Link>
+                                Get Notified
+                                <svg
+                                    width="13" height="13" viewBox="0 0 24 24" fill="none"
+                                    stroke="currentColor" strokeWidth="2.5"
+                                    className="transition-transform group-hover:translate-x-0.5"
+                                >
+                                    <path d="M5 12h14M13 5l7 7-7 7" />
+                                </svg>
+                            </Link>
+                        ) : (
+                            <>
+                                {/* View Details — clean dark outline */}
+                                <Link
+                                    to={p.link}
+                                    className="group inline-flex items-center gap-2 rounded-full border border-[#1a1a1a]/30 px-7 py-2.5 font-inter text-[12px] font-semibold uppercase tracking-[0.2em] text-[#1a1a1a] transition-all hover:border-[#1a1a1a] hover:bg-[#1a1a1a] hover:text-white"
+                                >
+                                    View Details
+                                    <svg
+                                        width="13" height="13" viewBox="0 0 24 24" fill="none"
+                                        stroke="currentColor" strokeWidth="2.5"
+                                        className="transition-transform group-hover:translate-x-0.5"
+                                    >
+                                        <path d="M5 12h14M13 5l7 7-7 7" />
+                                    </svg>
+                                </Link>
 
-                        {/* Buy Now — themed orange. Opens the "coming soon"
-                            sheet (right drawer on desktop, bottom sheet on mobile). */}
-                        <BuyNowButton onClick={() => openDrawer(p)} />
+                                {/* Buy Now — themed orange. Opens the "coming soon"
+                                    sheet (right drawer on desktop, bottom sheet on mobile). */}
+                                <BuyNowButton onClick={() => openDrawer(p)} />
+                            </>
+                        )}
                     </div>
                 ))}
             </div>
@@ -354,10 +388,20 @@ export default function ArsenalSection({ arsenalRef, onSelect, activeIndex = 0 }
                             </div>
                         </div>
 
-                        {/* Bottom action row: full-width cart counter, always
-                            at full opacity so it reads as enabled on every
-                            tile (which it is — clicks don't switch the gun). */}
-                        <TileCartCounter accent={p.accent} cartKey={p.link} />
+                        {/* Bottom action row. Launched products get the cart
+                            counter; a coming-soon product gets a static
+                            "Coming Soon" pill instead — no cart path exists for
+                            an unlaunched SKU. */}
+                        {p.comingSoon ? (
+                            <div
+                                className="flex h-7 w-full items-center justify-center rounded-full font-inter text-[9px] font-bold uppercase tracking-[0.18em]"
+                                style={{ background: `${p.accent}1a`, color: p.accent }}
+                            >
+                                Coming Soon
+                            </div>
+                        ) : (
+                            <TileCartCounter accent={p.accent} cartKey={p.link} />
+                        )}
                     </div>
                 ))}
             </div>

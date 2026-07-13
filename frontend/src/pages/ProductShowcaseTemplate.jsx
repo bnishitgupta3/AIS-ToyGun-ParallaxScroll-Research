@@ -16,6 +16,7 @@ import LandingNav from "@/components/landing/LandingNav";
 import GenericGunScene from "@/components/scene/GenericGunScene";
 import ParallaxBackground from "@/components/showcase/ParallaxBackground";
 import ProductActions from "@/components/showcase/ProductActions";
+import NotifyMe from "@/components/showcase/NotifyMe";
 import AlsoInArsenal from "@/components/showcase/AlsoInArsenal";
 import { useGLTF } from "@react-three/drei";
 import { asset } from "@/lib/asset";
@@ -242,6 +243,16 @@ export default function ProductShowcaseTemplate({ product: rawProduct }) {
                                 <span className="h-px w-12 bg-zinc-900/30" />
                             </div>
 
+                            {product.comingSoon && (
+                                <span
+                                    className="mt-6 inline-flex items-center gap-2 rounded-full px-4 py-1.5 font-mono-tactical text-[11px] font-bold uppercase tracking-[0.3em] text-white"
+                                    style={{ background: product.accentColor }}
+                                >
+                                    <span className="inline-block h-1.5 w-1.5 rounded-full bg-white/90" />
+                                    Coming Soon
+                                </span>
+                            )}
+
                             <div
                                 id="scroll-hint"
                                 className="absolute bottom-10 left-1/2 flex -translate-x-1/2 flex-col items-center gap-2"
@@ -335,19 +346,36 @@ export default function ProductShowcaseTemplate({ product: rawProduct }) {
                                     </p>
                                 )}
 
-                                {/* Primary conversion cluster — Buy Now (primary)
-                                    + Add to Cart (secondary) at the point of
-                                    highest intent: right after the spec sheet. */}
+                                {/* Primary cluster. Launched products get Buy
+                                    Now + Add to Cart at the point of highest
+                                    intent (right after the spec sheet); a
+                                    pre-launch product gets the Notify-me
+                                    capture instead — no buy path exists yet. */}
                                 <div className="mt-5">
-                                    <ProductActions
-                                        product={product}
-                                        accent={product.accentColor}
-                                    />
+                                    {product.comingSoon ? (
+                                        <NotifyMe
+                                            productName={product.name}
+                                            accent={product.accentColor}
+                                        />
+                                    ) : (
+                                        <ProductActions
+                                            product={product}
+                                            accent={product.accentColor}
+                                        />
+                                    )}
                                 </div>
 
                                 <div className="mt-4">
                                     <div className="telemetry-label text-zinc-400">
                                         Unit · {product.unitLabel}
+                                        {product.comingSoon && (
+                                            <>
+                                                {" · "}
+                                                <span style={{ color: product.accentColor }}>
+                                                    Coming soon
+                                                </span>
+                                            </>
+                                        )}
                                     </div>
                                 </div>
                             </div>
@@ -392,15 +420,25 @@ export default function ProductShowcaseTemplate({ product: rawProduct }) {
                             </div>
 
                             <div className="md:col-span-5 md:flex md:items-end md:pl-10">
-                                {/* Closing CTAs — Buy Now + Add to Cart. Pricing
-                                    block was removed pre-launch; swap in a
-                                    price row here once checkout ships. */}
+                                {/* Closing CTAs — Buy Now + Add to Cart for
+                                    launched products; Notify-me capture for a
+                                    pre-launch one. Pricing block removed
+                                    pre-launch; swap in a price row here once
+                                    checkout ships. */}
                                 <div className="w-full">
-                                    <ProductActions
-                                        product={product}
-                                        accent={product.accentColor}
-                                        variant="dark"
-                                    />
+                                    {product.comingSoon ? (
+                                        <NotifyMe
+                                            productName={product.name}
+                                            accent={product.accentColor}
+                                            variant="dark"
+                                        />
+                                    ) : (
+                                        <ProductActions
+                                            product={product}
+                                            accent={product.accentColor}
+                                            variant="dark"
+                                        />
+                                    )}
                                 </div>
                             </div>
                         </div>

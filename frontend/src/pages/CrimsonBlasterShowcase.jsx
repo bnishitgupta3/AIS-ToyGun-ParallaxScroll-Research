@@ -23,9 +23,13 @@ const CRIMSON_PRODUCT = {
         "The Crimson Blaster fires hydrogel rounds at 11 rounds per second " +
         "with a 10,000-bead hopper that keeps the pressure on.",
     version:     "v1.0.0 · Crimson-MB",
-    unitLabel:   "7B-CMB · In stock",
+    unitLabel:   "7B-CMB",
     homeLink:    "/",
     currentLink: "/product/crimson",
+    /* Not launched yet — the template renders this as a teaser: "Coming Soon"
+       badge, specs shown as a preview, and a Notify-me capture in place of the
+       Buy Now / Add to Cart actions. Remove on launch day. */
+    comingSoon:  true,
 };
 
 export default function CrimsonBlasterShowcase() {
