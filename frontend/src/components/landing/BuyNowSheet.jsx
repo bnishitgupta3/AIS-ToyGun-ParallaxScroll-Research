@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { createPortal } from "react-dom";
-import { Link } from "react-router-dom";
 import { useCart, PRODUCT_LOOKUP } from "@/lib/cart";
+import NotifyMe from "@/components/showcase/NotifyMe";
 
 /* "Coming soon" + cart-review panel — slides in from the RIGHT on desktop
    (md+) and from the BOTTOM as a partial sheet on mobile (~70% of viewport).
@@ -193,23 +193,16 @@ export default function BuyNowSheet({ open, product, onClose }) {
                     )}
 
                     <div className="mt-auto pt-10">
-                        {/* SHOPIFY SWAP: replace this Link with a button that
-                            redirects window.location to `cart.checkoutUrl` when
-                            hasItems, otherwise routes to /coming-soon for the
-                            email-capture flow. */}
-                        <Link
-                            to="/coming-soon"
-                            onClick={onClose}
-                            className="group relative inline-flex w-full items-center justify-center gap-2 overflow-hidden rounded-full bg-[#f97316] px-7 py-3.5 font-inter text-[13px] font-semibold uppercase tracking-[0.18em] text-white shadow-[inset_0_-4px_4px_rgba(255,255,255,0.39)] transition-all hover:brightness-110"
-                        >
-                            <span
-                                aria-hidden="true"
-                                className="pointer-events-none absolute left-[10%] top-[1px] h-4 w-[80%] rounded-[12px] bg-gradient-to-b from-[#FFD9B8] to-transparent transition-transform duration-200 group-hover:scale-x-105"
-                            />
-                            <span className="relative">
-                                {hasItems ? "Notify me at checkout launch" : "Notify me at launch"}
-                            </span>
-                        </Link>
+                        {/* Inline email capture — collects the launch/checkout
+                            waitlist straight into Formspree (no redirect to the
+                            coming-soon page). SHOPIFY SWAP: once checkout ships,
+                            swap this for a "Checkout" button that sends
+                            window.location to `cart.checkoutUrl` when hasItems. */}
+                        <NotifyMe
+                            productName={product?.name || (hasItems ? "checkout" : "launch")}
+                            source={hasItems ? "checkout-launch" : "buy-now-launch"}
+                            accent="#f97316"
+                        />
                         <p className="mt-3 text-center font-inter text-[11px] uppercase tracking-[0.22em] text-[#1a1a1a]/40">
                             Powered by SONIQ · India · 2026
                         </p>

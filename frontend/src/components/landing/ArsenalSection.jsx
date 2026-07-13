@@ -1,6 +1,12 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useCart, useCartItem } from "@/lib/cart";
+import NotifyMe from "@/components/showcase/NotifyMe";
+
+/* Formspree `source` label per product, so Arsenal signups group with the
+   product-page ones (e.g. "launch-crimson-blaster"). */
+const launchSource = (name) =>
+    "launch-" + (name || "product").toLowerCase().replace(/[^a-z0-9]+/g, "-");
 
 /* Per-tile cart counter. Sits in the tile's bottom action row (replacing the
    redundant sub-label — the gun's category/tagline already live in the
@@ -251,22 +257,15 @@ export default function ArsenalSection({ arsenalRef, onSelect, activeIndex = 0 }
                         }}
                     >
                         {p.comingSoon ? (
-                            /* Pre-launch: no buy path. A single themed CTA sends
-                               the visitor to the teaser page to get notified. */
-                            <Link
-                                to={p.link}
-                                className="group inline-flex items-center gap-2 rounded-full px-7 py-2.5 font-inter text-[12px] font-semibold uppercase tracking-[0.2em] text-white shadow-[inset_0_-4px_4px_rgba(255,255,255,0.28)] transition-all hover:brightness-110"
-                                style={{ background: p.accent }}
-                            >
-                                Get Notified
-                                <svg
-                                    width="13" height="13" viewBox="0 0 24 24" fill="none"
-                                    stroke="currentColor" strokeWidth="2.5"
-                                    className="transition-transform group-hover:translate-x-0.5"
-                                >
-                                    <path d="M5 12h14M13 5l7 7-7 7" />
-                                </svg>
-                            </Link>
+                            /* Pre-launch: no buy path. Capture the email inline
+                               (no redirect) — same Formspree submit as the
+                               teaser page and the standalone coming-soon page. */
+                            <NotifyMe
+                                compact
+                                productName={p.name}
+                                source={launchSource(p.name)}
+                                accent={p.accent}
+                            />
                         ) : (
                             <>
                                 {/* View Details — clean dark outline */}
