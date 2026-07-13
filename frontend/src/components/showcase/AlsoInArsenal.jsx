@@ -152,7 +152,7 @@ export default function AlsoInArsenal({ currentLink }) {
                                     className="inline-flex items-center gap-1 font-inter text-[12px] font-semibold uppercase tracking-[0.2em] text-[#1a1a1a] transition hover:gap-2"
                                     style={{ color: p.accent }}
                                 >
-                                    {p.comingSoon ? "View teaser" : "View product"}
+                                    {p.comingSoon ? "Experience it" : "View product"}
                                     <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                                         <path d="M5 12h14M13 5l7 7-7 7" />
                                     </svg>

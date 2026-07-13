@@ -324,7 +324,14 @@ export default function ArsenalSection({ arsenalRef, onSelect, activeIndex = 0 }
                                         key={s.label}
                                         className="flex flex-col items-center px-3 sm:px-5"
                                     >
-                                        <span className="whitespace-nowrap font-instrument text-[18px] leading-none text-[#1a1a1a] sm:text-[23px]">
+                                        <span
+                                            className="whitespace-nowrap font-instrument text-[18px] leading-none text-[#1a1a1a] sm:text-[23px]"
+                                            style={
+                                                p.comingSoon
+                                                    ? { filter: "blur(6px)", userSelect: "none" }
+                                                    : undefined
+                                            }
+                                        >
                                             {s.value}
                                         </span>
                                         <span className="mt-1 whitespace-nowrap font-inter text-[8px] font-semibold uppercase tracking-[0.16em] text-[#1a1a1a]/55 sm:text-[9px]">

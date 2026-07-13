@@ -327,12 +327,28 @@ export default function ProductShowcaseTemplate({ product: rawProduct }) {
                                             <span className="telemetry-label text-zinc-500">
                                                 {s.label}
                                             </span>
-                                            <span className="telemetry-value text-lg text-zinc-900">
+                                            <span
+                                                className="telemetry-value text-lg text-zinc-900"
+                                                style={
+                                                    product.comingSoon
+                                                        ? { filter: "blur(6px)", userSelect: "none" }
+                                                        : undefined
+                                                }
+                                            >
                                                 {s.value}
                                             </span>
                                         </li>
                                     ))}
                                 </ul>
+
+                                {/* Pre-launch: specs are blurred as a teaser —
+                                    this caption makes the blur read as
+                                    intentional rather than a rendering glitch. */}
+                                {product.comingSoon && (
+                                    <p className="mt-3 font-mono-tactical text-[10px] font-bold uppercase tracking-[0.28em] text-zinc-400">
+                                        Full specs revealed at launch
+                                    </p>
+                                )}
 
                                 {/* Asterisk footnote — industry-standard
                                     disclaimer for the play-time claim, same

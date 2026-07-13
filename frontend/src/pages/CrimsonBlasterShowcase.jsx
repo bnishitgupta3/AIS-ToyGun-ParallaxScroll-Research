@@ -19,9 +19,8 @@ const CRIMSON_PRODUCT = {
     ],
     specsTitle: ["Built to", "Dominate the", "Field."],
     specsDescription:
-        "Crimson digital-camo shell with an integrated muffler barrel. " +
-        "The Crimson Blaster fires hydrogel rounds at 11 rounds per second " +
-        "with a 10,000-bead hopper that keeps the pressure on.",
+        "Crimson digital-camo shell, integrated muffler barrel, and a " +
+        "10,000-bead hopper. The full spec drops at launch.",
     version:     "v1.0.0 · Crimson-MB",
     unitLabel:   "7B-CMB",
     homeLink:    "/",

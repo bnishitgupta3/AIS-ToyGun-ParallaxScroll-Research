@@ -41,6 +41,13 @@ const clamp01 = (v) => (v < 0 ? 0 : v > 1 ? 1 : v);
 const focusScale   = (f) => 0.32 + 0.68 * Math.pow(f, 1.3);  // 1.0 front → ~0.43 sides
 const focusOpacity = (f) => 0.28 + 0.72 * Math.pow(f, 1.8);  // 1.0 front → ~0.34 sides
 
+/* Pre-launch guns render permanently dimmed — even when swung to the front
+   slot — so an un-launched product reads as a faded "coming soon" teaser.
+   Index matches the model order below == the Arsenal PRODUCTS order:
+   [0] MP5K, [1] M416, [2] Crimson (pre-launch). Flip 2 → false on launch. */
+const COMING_SOON      = [false, false, true];
+const COMING_SOON_FADE = 0.32;  // multiplier on target opacity for a teaser gun
+
 const clamp = (v, a, b) => (v < a ? a : v > b ? b : v);
 
 /* ── Responsive layout from viewport aspect ──
@@ -142,7 +149,8 @@ function LandingScene({ model1Ref, model2Ref, model3Ref, mouseRef, scrollRef }) 
             const tY = lerp(hY, 0,  entry);
             const tZ = lerp(0,  cZ, entry);
             const tS = lerp(0.85, cS, entry) * R.scale;    // hero gun a touch smaller; arsenal unaffected
-            const tO = lerp(1,  cO, entry);  // fully opaque in hero, fades on the arc
+            let   tO = lerp(1,  cO, entry);  // fully opaque in hero, fades on the arc
+            if (COMING_SOON[i]) tO *= COMING_SOON_FADE;  // teaser guns stay dimmed
             let   tRotY = lerp(0, cRotY, entry);
             let   tRotX = 0;
 
