@@ -20,11 +20,23 @@ export default function HeroVideo() {
        so the initial page load downloads just clip 1 (~3.6 MB), not ~17 MB. */
     const [loadSecond, setLoadSecond] = useState(false);
 
-    /* Kick off the first clip */
+    /* Kick off the first clip. `autoPlay` on the element is the primary
+       trigger; this is a belt-and-braces retry for browsers that ignore the
+       programmatic call while the element is mid-mount. */
     useEffect(() => {
         refs[0].current?.play().catch(() => {});
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
+
+    /* Retry play() once the active clip actually has data. On a cold (uncached)
+       first load the mount-time play() can be rejected/interrupted before any
+       media has buffered; without this retry the video would silently stay
+       paused until a hard reload served it from cache. Fires on `canplay`. */
+    const onCanPlay = (i) => () => {
+        if (i !== active) return;
+        const v = refs[i].current;
+        if (v && v.paused) v.play().catch(() => {});
+    };
 
     /* Scroll-driven fade-out (gone by ~80% of the first viewport) */
     useEffect(() => {
@@ -81,9 +93,11 @@ export default function HeroVideo() {
                     ref={refs[i]}
                     /* Clip 1 loads immediately; clip 2 only once clip 1 is playing */
                     src={i === 0 || loadSecond ? src : undefined}
+                    autoPlay={i === 0}
                     muted
                     playsInline
                     preload={i === 0 ? "auto" : "none"}
+                    onCanPlay={onCanPlay(i)}
                     onTimeUpdate={onTimeUpdate(i)}
                     className="absolute inset-0 h-full w-full object-cover transition-opacity duration-700 ease-in-out"
                     style={{ opacity: active === i ? 1 : 0 }}
