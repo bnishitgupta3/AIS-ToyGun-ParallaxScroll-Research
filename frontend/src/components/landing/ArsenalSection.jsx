@@ -239,9 +239,10 @@ export default function ArsenalSection({ arsenalRef, onSelect, activeIndex = 0 }
                 </div>
             </div>
 
-            {/* ── PRIMARY CTA row — View Details + Buy Now (per weapon).
+            {/* ── PRIMARY CTA row — Experience it + Buy Now (per weapon); for a
+                   pre-launch gun, inline email capture + an "Experience it" link.
                    Sits at the bottom as the terminal action: pick a gun from
-                   the tiles above, read the specs, then buy down here. ── */}
+                   the tiles above, read the specs, then act down here. ── */}
             <div
                 className="absolute bottom-10 left-1/2 z-20 h-12 -translate-x-1/2 transition-opacity duration-500"
                 style={{ opacity: entered ? 1 : 0 }}
@@ -257,23 +258,40 @@ export default function ArsenalSection({ arsenalRef, onSelect, activeIndex = 0 }
                         }}
                     >
                         {p.comingSoon ? (
-                            /* Pre-launch: no buy path. Capture the email inline
-                               (no redirect) — same Formspree submit as the
-                               teaser page and the standalone coming-soon page. */
-                            <NotifyMe
-                                compact
-                                productName={p.name}
-                                source={launchSource(p.name)}
-                                accent={p.accent}
-                            />
+                            /* Pre-launch: no buy path. Primary action is the
+                               inline email capture (no redirect); a secondary
+                               "Experience it" link invites them into the 3D
+                               teaser page. */
+                            <div className="flex flex-col items-center gap-2.5">
+                                <NotifyMe
+                                    compact
+                                    productName={p.name}
+                                    source={launchSource(p.name)}
+                                    accent={p.accent}
+                                />
+                                <Link
+                                    to={p.link}
+                                    className="group inline-flex items-center gap-1.5 font-inter text-[11px] font-semibold uppercase tracking-[0.2em] transition hover:gap-2.5"
+                                    style={{ color: p.accent }}
+                                >
+                                    Experience it
+                                    <svg
+                                        width="12" height="12" viewBox="0 0 24 24" fill="none"
+                                        stroke="currentColor" strokeWidth="2.5"
+                                    >
+                                        <path d="M5 12h14M13 5l7 7-7 7" />
+                                    </svg>
+                                </Link>
+                            </div>
                         ) : (
                             <>
-                                {/* View Details — clean dark outline */}
+                                {/* Experience it — clean dark outline. Leads into
+                                    the immersive 3D product page. */}
                                 <Link
                                     to={p.link}
                                     className="group inline-flex items-center gap-2 rounded-full border border-[#1a1a1a]/30 px-7 py-2.5 font-inter text-[12px] font-semibold uppercase tracking-[0.2em] text-[#1a1a1a] transition-all hover:border-[#1a1a1a] hover:bg-[#1a1a1a] hover:text-white"
                                 >
-                                    View Details
+                                    Experience it
                                     <svg
                                         width="13" height="13" viewBox="0 0 24 24" fill="none"
                                         stroke="currentColor" strokeWidth="2.5"
