@@ -24,10 +24,15 @@ import { isPrerendering } from "@/lib/isPrerendering";
 
 const PRERENDER = isPrerendering();
 
-/* Preload all product models so switching pages feels instant */
-useGLTF.preload(asset("/assets/watergun.glb"));
-useGLTF.preload(asset("/assets/m416-watergun.glb"));
-useGLTF.preload(asset("/assets/crimson-blaster.glb"));
+/* All product models, for the deferred cross-sell preload below. The CURRENT
+   page's model streams in via Suspense on mount; the OTHER models are preloaded
+   only after a beat (see the effect in the component) so they don't compete
+   with this page's first paint. */
+const ALL_MODELS = [
+    asset("/assets/watergun.glb"),
+    asset("/assets/m416-watergun.glb"),
+    asset("/assets/crimson-blaster.glb"),
+];
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -62,6 +67,17 @@ export default function ProductShowcaseTemplate({ product: rawProduct }) {
        ("coming-soon") in one shared form. e.g. "launch-crimson-blaster". */
     const notifySource =
         "launch-" + (product.name || "product").toLowerCase().replace(/[^a-z0-9]+/g, "-");
+
+    /* Warm the OTHER product models after this page has painted, so cross-sell
+       navigation stays snappy without slowing this page's first load. */
+    useEffect(() => {
+        const t = setTimeout(() => {
+            ALL_MODELS.forEach((u) => {
+                if (u !== product.modelUrl) useGLTF.preload(u);
+            });
+        }, 1500);
+        return () => clearTimeout(t);
+    }, [product.modelUrl]);
 
     const sectionRef        = useRef(null);
     const modelRef          = useRef(null);
@@ -351,7 +367,7 @@ export default function ProductShowcaseTemplate({ product: rawProduct }) {
                                     this caption makes the blur read as
                                     intentional rather than a rendering glitch. */}
                                 {product.comingSoon && (
-                                    <p className="mt-3 font-mono-tactical text-[10px] font-bold uppercase tracking-[0.28em] text-zinc-400">
+                                    <p className="mt-1.5 font-mono-tactical text-[10px] font-bold uppercase tracking-[0.28em] text-zinc-400">
                                         Full specs revealed at launch
                                     </p>
                                 )}

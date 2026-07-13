@@ -1,4 +1,4 @@
-import { Suspense, useRef } from "react";
+import { Suspense, useRef, useState, useEffect } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import {
     useGLTF,
@@ -10,10 +10,10 @@ import GenericGunModel from "./GenericGunModel";
 import NeutralEnvironment from "./NeutralEnvironment";
 import { asset } from "@/lib/asset";
 
-/* Pre-warm all three models so Arsenal transitions feel instant */
+/* Pre-warm the HERO gun immediately. The two Arsenal-only guns (~14 MB) are
+   preloaded + mounted after first paint (see the deferred mount in
+   LandingCanvas below) so the hero wins the initial bandwidth. */
 useGLTF.preload(asset("/assets/watergun.glb"));
-useGLTF.preload(asset("/assets/m416-watergun.glb"));
-useGLTF.preload(asset("/assets/crimson-blaster.glb"));
 
 /* World-space layout constants — MUST match LandingPage. */
 export const HERO_GUN_X = 2.4;   // model1's X during the hero (renders in right column)
@@ -73,13 +73,12 @@ function responsiveLayout(width, height) {
 }
 
 /* ── Scene graph — must live inside <Canvas> ── */
-function LandingScene({ model1Ref, model2Ref, model3Ref, mouseRef, scrollRef }) {
+function LandingScene({ model1Ref, model2Ref, model3Ref, mouseRef, scrollRef, secondaryReady }) {
     const { size } = useThree();
-    /* On (re)mount the gun groups start at origin (0,0,0). Without this, the
-       first frames would DAMP them from centre to their hero poses — making
-       e.g. the Crimson gun visibly fly across the hero when you return to the
-       homepage. We snap straight to target on the first fully-loaded frame. */
-    const firstFrame = useRef(true);
+    /* Each gun snaps straight to its target on the FIRST frame it's processed
+       (tracked per-object via userData.placed), then damps. This means a gun
+       that mounts late (the two Arsenal guns are deferred for load perf) drops
+       into place instead of flying in from the origin (0,0,0). */
     /*
      * BUTTERY CAROUSEL CORE
      * ─────────────────────
@@ -115,13 +114,13 @@ function LandingScene({ model1Ref, model2Ref, model3Ref, mouseRef, scrollRef }) 
         // clamp dt so a tab-switch frame-spike can't teleport the guns
         const d = Math.min(dt, 1 / 30);
 
-        // First fully-loaded frame snaps to target; afterwards we damp.
-        const snap = firstFrame.current;
-        const ap = (cur, tgt) => (snap ? tgt : damp(cur, tgt, DAMP_LAMBDA, d));
-
         for (let i = 0; i < guns.length; i++) {
             const g = guns[i];
             if (!g) continue;
+
+            // Snap this gun to target on its first processed frame, then damp.
+            const snapThis = !g.userData.placed;
+            const ap = (cur, tgt) => (snapThis ? tgt : damp(cur, tgt, DAMP_LAMBDA, d));
 
             /* — Carousel pose for slot i — */
             const phi  = (i - activePos) * SLOT_ANGLE;
@@ -178,10 +177,9 @@ function LandingScene({ model1Ref, model2Ref, model3Ref, mouseRef, scrollRef }) 
                     for (let k = 0; k < mats.length; k++) mats[k].opacity = op;
                 }
             });
-        }
 
-        // Once all three guns exist and have been placed, leave snap mode.
-        if (snap && guns.every(Boolean)) firstFrame.current = false;
+            g.userData.placed = true;
+        }
     });
 
     return (
@@ -211,19 +209,26 @@ function LandingScene({ model1Ref, model2Ref, model3Ref, mouseRef, scrollRef }) 
                 </Suspense>
             </group>
 
-            {/* Product 2 – M416 Water X  (arsenal slot 1) */}
-            <group ref={model2Ref}>
-                <Suspense fallback={null}>
-                    <GenericGunModel url={asset("/assets/m416-watergun.glb")} targetSize={2.8} />
-                </Suspense>
-            </group>
+            {/* Products 2 & 3 (M416, Crimson) — Arsenal-only guns, mounted after
+                first paint (secondaryReady) so they don't slow the hero load.
+                They snap into their parked poses when they appear. */}
+            {secondaryReady && (
+                <>
+                    {/* Product 2 – M416 Water X  (arsenal slot 1) */}
+                    <group ref={model2Ref}>
+                        <Suspense fallback={null}>
+                            <GenericGunModel url={asset("/assets/m416-watergun.glb")} targetSize={2.8} />
+                        </Suspense>
+                    </group>
 
-            {/* Product 3 – Crimson Blaster  (arsenal slot 2) */}
-            <group ref={model3Ref}>
-                <Suspense fallback={null}>
-                    <GenericGunModel url={asset("/assets/crimson-blaster.glb")} targetSize={2.8} />
-                </Suspense>
-            </group>
+                    {/* Product 3 – Crimson Blaster  (arsenal slot 2) */}
+                    <group ref={model3Ref}>
+                        <Suspense fallback={null}>
+                            <GenericGunModel url={asset("/assets/crimson-blaster.glb")} targetSize={2.8} />
+                        </Suspense>
+                    </group>
+                </>
+            )}
 
             {/* Grounded contact shadow under the active model area */}
             <ContactShadows
@@ -240,6 +245,30 @@ function LandingScene({ model1Ref, model2Ref, model3Ref, mouseRef, scrollRef }) 
 }
 
 export default function LandingCanvas({ model1Ref, model2Ref, model3Ref, mouseRef, scrollRef }) {
+    /* Defer the two Arsenal guns (~14 MB) so the hero + first gun win the
+       initial bandwidth. Mount them after a short beat, or immediately on the
+       first scroll (whichever comes first) — always well before the user
+       reaches the Arsenal carousel. Preload the models as we flip so they warm
+       just before mounting. */
+    const [secondaryReady, setSecondaryReady] = useState(false);
+    useEffect(() => {
+        let done = false;
+        const ready = () => {
+            if (done) return;
+            done = true;
+            useGLTF.preload(asset("/assets/m416-watergun.glb"));
+            useGLTF.preload(asset("/assets/crimson-blaster.glb"));
+            setSecondaryReady(true);
+            window.removeEventListener("scroll", ready);
+        };
+        const t = setTimeout(ready, 1200);
+        window.addEventListener("scroll", ready, { passive: true });
+        return () => {
+            clearTimeout(t);
+            window.removeEventListener("scroll", ready);
+        };
+    }, []);
+
     return (
         <Canvas
             camera={{ position: [0, 0.15, 7.5], fov: 40 }}
@@ -260,6 +289,7 @@ export default function LandingCanvas({ model1Ref, model2Ref, model3Ref, mouseRe
                 model3Ref={model3Ref}
                 mouseRef={mouseRef}
                 scrollRef={scrollRef}
+                secondaryReady={secondaryReady}
             />
         </Canvas>
     );
