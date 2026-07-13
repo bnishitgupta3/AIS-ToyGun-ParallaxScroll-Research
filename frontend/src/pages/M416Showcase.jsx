@@ -11,7 +11,7 @@ const M416_PRODUCT = {
     accentDeep:  "#1d4ed8",
     specs: [
         { label: "PLAY TIME",     value: "45 min*" },
-        { label: "RANGE",         value: "7–9 m" },
+        { label: "RANGE",         value: "7-9 m" },
         { label: "FIRE RATE",     value: "4 shots/sec" },
         { label: "BATTERY",       value: "3.7V Rechargeable" },
         { label: "TANK CAPACITY", value: "300 ml" },
@@ -19,7 +19,7 @@ const M416_PRODUCT = {
     ],
     specsTitle: ["Engineered for", "Maximum", "Range."],
     specsDescription:
-        "Zero pumping, zero priming — just pull the trigger. The motor " +
+        "Zero pumping, zero priming. Just pull the trigger. The motor " +
         "delivers full-auto fire from a 300 ml tank.",
     version:     "v1.0.0 · M416-WX",
     unitLabel:   "7B-416 · In stock",

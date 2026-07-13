@@ -63,7 +63,7 @@ export default function ComingSoonPage() {
                     </h1>
 
                     <p className="mt-5 max-w-md font-inter text-[15px] leading-relaxed text-[#1a1a1a]/65 sm:text-[17px]">
-                        Holi mornings, rooftop ambushes, backyard showdowns — a
+                        Holi mornings, rooftop ambushes, backyard showdowns. A
                         whole new way to play is charging up, and every season just
                         got a lot wetter.
                     </p>

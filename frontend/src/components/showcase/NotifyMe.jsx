@@ -67,7 +67,7 @@ export default function NotifyMe({
                     <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.6">
                         <path d="M20 6 9 17l-5-5" />
                     </svg>
-                    You're on the list — see you at launch.
+                    You're on the list. See you at launch.
                 </div>
             );
         }
@@ -119,7 +119,7 @@ export default function NotifyMe({
                         dark ? "text-white/70" : "text-zinc-600"
                     }`}
                 >
-                    We'll email you the moment it drops — with early-access
+                    We'll email you the moment it drops, with early-access
                     offers first. ✓
                 </p>
             </div>

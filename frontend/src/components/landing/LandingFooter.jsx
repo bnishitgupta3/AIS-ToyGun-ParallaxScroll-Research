@@ -64,7 +64,7 @@ export default function LandingFooter() {
                             /// Drop Alerts
                         </span>
                         <p className="mt-2 text-sm text-zinc-500">
-                            New drops, limited colorways, and early access — first in your inbox.
+                            New drops, limited colorways, and early access. First in your inbox.
                         </p>
                         <form
                             onSubmit={(e) => {
@@ -135,7 +135,6 @@ export default function LandingFooter() {
                         <Link to="/404" className="text-zinc-700 transition-colors hover:text-orange-400">
                             404
                         </Link>
-                        <span>Built · React · R3F · GSAP</span>
                     </div>
                 </div>
             </div>

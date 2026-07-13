@@ -108,7 +108,7 @@ export const PRODUCTS = [
         accent: "#f97316",
         sub: "Water Gun",
         stats: [
-            { label: "Range", value: "8–10 m" },
+            { label: "Range", value: "8-10 m" },
             { label: "Tank", value: "300 ml" },
             { label: "Fire Rate", value: "5 /s" },
             { label: "Play Time", value: "45 min*" },
@@ -122,7 +122,7 @@ export const PRODUCTS = [
         accent: "#0871E7",
         sub: "Water Gun",
         stats: [
-            { label: "Range", value: "7–9 m" },
+            { label: "Range", value: "7-9 m" },
             { label: "Tank", value: "300 ml" },
             { label: "Fire Rate", value: "4 /s" },
             { label: "Play Time", value: "45 min*" },

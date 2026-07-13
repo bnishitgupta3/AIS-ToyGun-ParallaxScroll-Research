@@ -17,7 +17,7 @@ const STATS = [
 const VALUES = [
     {
         title: "Precision engineering",
-        body: "Every component is CNC-checked and stress-tested. We build instruments of play — designed to last, designed to delight.",
+        body: "Every component is CNC-checked and stress-tested. We build instruments of play, designed to last, designed to delight.",
     },
     {
         title: "Engineered to thrill",

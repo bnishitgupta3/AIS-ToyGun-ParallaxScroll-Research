@@ -40,7 +40,7 @@ const DEFAULTS = {
     accentColor:       "#ff5a1f",
     accentDeep:        "#d63f0a",
     specs: [
-        { label: "RANGE",        value: "10–12m" },
+        { label: "RANGE",        value: "10-12m" },
         { label: "CAPACITY",     value: "500 Beads" },
         { label: "RATE OF FIRE", value: "8 r/s" },
         { label: "BATTERY",      value: "7.4V Li-Po" },

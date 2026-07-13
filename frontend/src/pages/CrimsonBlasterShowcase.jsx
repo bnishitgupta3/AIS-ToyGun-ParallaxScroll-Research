@@ -10,7 +10,7 @@ const CRIMSON_PRODUCT = {
     accentColor: "#ef4444",   // tactical red
     accentDeep:  "#b91c1c",
     specs: [
-        { label: "RANGE",        value: "20–25m" },
+        { label: "RANGE",        value: "20-25m" },
         { label: "CAPACITY",     value: "10,000 Beads" },
         { label: "RATE OF FIRE", value: "11 r/s" },
         { label: "BATTERY",      value: "7.4V 1200mAh" },

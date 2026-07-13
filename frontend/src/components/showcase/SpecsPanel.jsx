@@ -5,7 +5,7 @@ import ProductActions from "@/components/showcase/ProductActions";
    the test conditions in a footnote below the table). */
 const specs = [
     { label: "PLAY TIME",     value: "45 min*",        id: "spec-playtime" },
-    { label: "RANGE",         value: "8–10 m",         id: "spec-range" },
+    { label: "RANGE",         value: "8-10 m",         id: "spec-range" },
     { label: "FIRE RATE",     value: "5 shots/sec",    id: "spec-rate" },
     { label: "BATTERY",       value: "3.7V Rechargeable", id: "spec-battery" },
     { label: "TANK CAPACITY", value: "300 ml",         id: "spec-capacity" },
@@ -58,7 +58,7 @@ export default function SpecsPanel() {
                     <span className="text-[color:var(--accent)]">Battle.</span>
                 </h2>
                 <p className="mt-2 max-w-[34ch] text-sm leading-relaxed text-zinc-600">
-                    Zero pumping, zero priming — just pull the trigger. An
+                    Zero pumping, zero priming. Just pull the trigger. An
                     electric drive delivers full-auto fire from a 300 ml tank.
                 </p>
 
