@@ -1,15 +1,15 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
+import { postSignup } from "@/lib/notify";
 
 /* Pre-launch "Notify me at launch" capture.
    Used anywhere a product is flagged `comingSoon` in place of the Buy Now /
    Add to Cart actions.
 
-   Posts to the SAME Formspree form the standalone coming-soon teaser uses, so
-   every early-access signup lands in one place. The `source` field tells the
-   submissions apart (the coming-soon teaser sends "coming-soon"; the product
-   teasers send e.g. "launch-crimson-blaster"). */
-
-const FORMSPREE_ENDPOINT = "https://formspree.io/f/mwvjgyor";
+   Posts (via lib/notify) to the SAME Formspree form the standalone coming-soon
+   teaser uses, so every early-access signup lands in one place. The `source`
+   field tells the submissions apart (the coming-soon teaser sends
+   "coming-soon"; the product teasers send e.g. "launch-crimson-blaster"). */
 
 export default function NotifyMe({
     productName = "this drop",
@@ -30,25 +30,10 @@ export default function NotifyMe({
         setStatus("submitting");
         setErrorMsg("");
         try {
-            const res = await fetch(FORMSPREE_ENDPOINT, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    Accept: "application/json",
-                },
-                body: JSON.stringify({ email, source, product: productName }),
-            });
-            if (res.ok) {
-                setStatus("success");
-            } else {
-                const data = await res.json().catch(() => ({}));
-                const msg =
-                    data && data.errors && data.errors[0] && data.errors[0].message;
-                setErrorMsg(msg || "Something went wrong. Please try again.");
-                setStatus("error");
-            }
-        } catch (_) {
-            setErrorMsg("Network error. Please check your connection and try again.");
+            await postSignup({ email, source, product: productName });
+            setStatus("success");
+        } catch (err) {
+            setErrorMsg(err.message || "Network error. Please try again.");
             setStatus("error");
         }
     }
@@ -97,6 +82,12 @@ export default function NotifyMe({
                 {status === "error" && (
                     <p className="mt-1.5 font-inter text-[11px] text-red-500">{errorMsg}</p>
                 )}
+                <p className="mt-1.5 font-inter text-[9px] leading-none text-zinc-400">
+                    No spam.{" "}
+                    <Link to="/privacy" className="underline underline-offset-2 hover:text-zinc-600">
+                        Privacy Policy
+                    </Link>
+                </p>
             </div>
         );
     }
@@ -177,6 +168,21 @@ export default function NotifyMe({
             {status === "error" && (
                 <p className="mt-2 font-inter text-[12px] text-red-500">{errorMsg}</p>
             )}
+            <p
+                className={`mt-2 font-inter text-[11px] leading-snug ${
+                    dark ? "text-white/40" : "text-zinc-400"
+                }`}
+            >
+                We'll only email you about the launch. See our{" "}
+                <Link
+                    to="/privacy"
+                    className="underline underline-offset-2 hover:opacity-80"
+                    style={{ color: accent }}
+                >
+                    Privacy Policy
+                </Link>
+                .
+            </p>
         </form>
     );
 }

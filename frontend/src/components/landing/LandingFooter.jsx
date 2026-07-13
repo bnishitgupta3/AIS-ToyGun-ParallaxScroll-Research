@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import { postSignup } from "@/lib/notify";
 
 const NAV_LINKS = {
     Products: [
@@ -28,7 +29,22 @@ const SOCIALS = ["TK", "IG", "YT", "X"];
 
 export default function LandingFooter() {
     const [email, setEmail] = useState("");
-    const [submitted, setSubmitted] = useState(false);
+    const [status, setStatus] = useState("idle"); // idle | submitting | success | error
+    const [errorMsg, setErrorMsg] = useState("");
+
+    async function handleDropAlerts(e) {
+        e.preventDefault();
+        if (!email || status === "submitting") return;
+        setStatus("submitting");
+        setErrorMsg("");
+        try {
+            await postSignup({ email, source: "footer-drops" });
+            setStatus("success");
+        } catch (err) {
+            setErrorMsg(err.message || "Network error. Please try again.");
+            setStatus("error");
+        }
+    }
 
     return (
         <footer id="footer" className="relative z-10 w-full border-t border-zinc-800 bg-zinc-950">
@@ -66,36 +82,42 @@ export default function LandingFooter() {
                         <p className="mt-2 text-sm text-zinc-500">
                             New drops, limited colorways, and early access. First in your inbox.
                         </p>
-                        <form
-                            onSubmit={(e) => {
-                                e.preventDefault();
-                                if (email) setSubmitted(true);
-                            }}
-                            className="mt-5 flex gap-3"
-                        >
-                            {submitted ? (
-                                <p className="font-mono-tactical text-sm text-orange-400">
-                                    You're on the list. ✓
-                                </p>
-                            ) : (
-                                <>
-                                    <input
-                                        type="email"
-                                        value={email}
-                                        onChange={(e) => setEmail(e.target.value)}
-                                        placeholder="your@email.com"
-                                        className="flex-1 rounded-full border border-zinc-700 bg-zinc-900 px-5 py-3 font-mono-tactical text-sm text-white placeholder-zinc-600 outline-none transition-colors focus:border-orange-500"
-                                        required
-                                    />
-                                    <button
-                                        type="submit"
-                                        className="rounded-full bg-orange-500 px-6 py-3 font-mono-tactical text-[11px] font-bold uppercase tracking-[0.2em] text-black transition-all hover:bg-orange-400"
-                                    >
-                                        Join
-                                    </button>
-                                </>
-                            )}
-                        </form>
+                        {status === "success" ? (
+                            <p className="mt-5 font-mono-tactical text-sm text-orange-400">
+                                You're on the list. ✓
+                            </p>
+                        ) : (
+                            <form onSubmit={handleDropAlerts} className="mt-5 flex gap-3" noValidate>
+                                <input
+                                    type="email"
+                                    value={email}
+                                    onChange={(e) => setEmail(e.target.value)}
+                                    placeholder="your@email.com"
+                                    disabled={status === "submitting"}
+                                    className="flex-1 rounded-full border border-zinc-700 bg-zinc-900 px-5 py-3 font-mono-tactical text-sm text-white placeholder-zinc-600 outline-none transition-colors focus:border-orange-500 disabled:opacity-60"
+                                    required
+                                />
+                                <button
+                                    type="submit"
+                                    disabled={status === "submitting"}
+                                    className="rounded-full bg-orange-500 px-6 py-3 font-mono-tactical text-[11px] font-bold uppercase tracking-[0.2em] text-black transition-all hover:bg-orange-400 disabled:opacity-70"
+                                >
+                                    {status === "submitting" ? "…" : "Join"}
+                                </button>
+                            </form>
+                        )}
+                        {status === "error" && (
+                            <p className="mt-2 font-inter text-[12px] text-red-400">{errorMsg}</p>
+                        )}
+                        {status !== "success" && (
+                            <p className="mt-2 font-inter text-[11px] leading-snug text-zinc-600">
+                                No spam. See our{" "}
+                                <Link to="/privacy" className="text-zinc-500 underline underline-offset-2 hover:text-orange-400">
+                                    Privacy Policy
+                                </Link>
+                                .
+                            </p>
+                        )}
                     </div>
                 </div>
 

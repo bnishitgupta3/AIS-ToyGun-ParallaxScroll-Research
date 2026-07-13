@@ -244,7 +244,7 @@ export default function ArsenalSection({ arsenalRef, onSelect, activeIndex = 0 }
                    Sits at the bottom as the terminal action: pick a gun from
                    the tiles above, read the specs, then act down here. ── */}
             <div
-                className="absolute bottom-10 left-1/2 z-20 h-12 -translate-x-1/2 transition-opacity duration-500"
+                className="absolute bottom-14 left-1/2 z-20 h-12 -translate-x-1/2 transition-opacity duration-500"
                 style={{ opacity: entered ? 1 : 0 }}
             >
                 {PRODUCTS.map((p, i) => (

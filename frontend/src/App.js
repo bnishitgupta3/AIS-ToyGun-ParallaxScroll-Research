@@ -19,17 +19,23 @@ import M416Showcase           from "@/pages/M416Showcase";
 import CrimsonBlasterShowcase from "@/pages/CrimsonBlasterShowcase";
 import RouteSeo              from "@/components/seo/RouteSeo";
 import BuyNowSheet           from "@/components/landing/BuyNowSheet";
+import CookieConsent         from "@/components/CookieConsent";
 import { CartProvider, useCart } from "@/lib/cart";
-import { initAnalytics, trackPageview } from "@/lib/analytics";
+import { trackPageview } from "@/lib/analytics";
 
-/* Analytics: init GA4 once (if a Measurement ID is configured) and report a
-   page_view on every SPA route change. */
+/* Analytics: report a page_view on SPA route changes. GA4 itself is loaded
+   only after the visitor accepts cookies (see <CookieConsent>), and the
+   initial page_view is fired there on accept — so here we skip the first run
+   and only track SUBSEQUENT navigations, avoiding a double count. If consent
+   is denied, trackPageview is a no-op (gtag never loads). */
 function Analytics() {
     const { pathname } = useLocation();
+    const first = useRef(true);
     useEffect(() => {
-        initAnalytics();
-    }, []);
-    useEffect(() => {
+        if (first.current) {
+            first.current = false;
+            return;
+        }
         trackPageview(pathname);
     }, [pathname]);
     return null;
@@ -105,6 +111,7 @@ function App() {
             <BodyReveal />
             <RouteSeo />
             <Analytics />
+            <CookieConsent />
             <GlobalBuyNowSheet />
             <Routes>
                 {/* Home — full D2C landing page */}
