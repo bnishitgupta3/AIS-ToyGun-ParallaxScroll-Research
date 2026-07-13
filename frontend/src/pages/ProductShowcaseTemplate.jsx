@@ -57,6 +57,12 @@ const DEFAULTS = {
 export default function ProductShowcaseTemplate({ product: rawProduct }) {
     const product = { ...DEFAULTS, ...rawProduct };
 
+    /* Formspree `source` label for the launch-notify signups, so this
+       product's captures are distinguishable from the coming-soon teaser's
+       ("coming-soon") in one shared form. e.g. "launch-crimson-blaster". */
+    const notifySource =
+        "launch-" + (product.name || "product").toLowerCase().replace(/[^a-z0-9]+/g, "-");
+
     const sectionRef        = useRef(null);
     const modelRef          = useRef(null);
     /* FOUC handled globally via body.loading + <BodyReveal /> in App.js */
@@ -371,6 +377,7 @@ export default function ProductShowcaseTemplate({ product: rawProduct }) {
                                     {product.comingSoon ? (
                                         <NotifyMe
                                             productName={product.name}
+                                            source={notifySource}
                                             accent={product.accentColor}
                                         />
                                     ) : (
@@ -445,6 +452,7 @@ export default function ProductShowcaseTemplate({ product: rawProduct }) {
                                     {product.comingSoon ? (
                                         <NotifyMe
                                             productName={product.name}
+                                            source={notifySource}
                                             accent={product.accentColor}
                                             variant="dark"
                                         />
