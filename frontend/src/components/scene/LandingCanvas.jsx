@@ -184,12 +184,10 @@ function LandingScene({ model1Ref, model2Ref, model3Ref, mouseRef, scrollRef, se
 
     return (
         <>
-            {/* Neutral, even lighting — shows the asset at its true brightness.
-                NeutralEnvironment provides soft IBL so PBR/metal reads correctly;
-                a low ambient + one gentle key light add minimal form. */}
+            {/* Neutral IBL only — soft, even RoomEnvironment lighting so PBR/
+                metal reads at its true brightness, with NO added key/fill light
+                (removes the extra highlights/hotspots on the guns). */}
             <NeutralEnvironment intensity={1.1} />
-            <ambientLight intensity={0.55} />
-            <directionalLight position={[3, 6, 5]} intensity={0.5} color="#ffffff" />
 
             {/* Slow, out-of-focus particles behind the guns — premium depth */}
             <Sparkles

@@ -16,10 +16,9 @@ export default function WaterGunScene({ modelRef, isFiring }) {
             gl={{ antialias: true, alpha: true, toneMapping: THREE.NeutralToneMapping }}
             style={{ background: "transparent" }}
         >
-            {/* Neutral, even lighting — shows the asset at its true brightness */}
+            {/* Neutral IBL only — shows the asset at its true brightness with
+                no added key/fill light (no extra highlights or hotspots). */}
             <NeutralEnvironment intensity={1.1} />
-            <ambientLight intensity={0.55} />
-            <directionalLight position={[3, 6, 5]} intensity={0.5} color="#ffffff" />
 
             <Suspense fallback={null}>
                 <group ref={modelRef}>
