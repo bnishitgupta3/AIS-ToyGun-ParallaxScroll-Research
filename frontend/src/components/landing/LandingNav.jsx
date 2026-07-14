@@ -6,7 +6,7 @@ import { useCart } from "@/lib/cart";
 const SECTION_LINKS = [
     { label: "Arsenal",    target: "#arsenal" },
     { label: "Mission",    target: "#mission" },
-    { label: "Field Test", target: "#field-test" },
+    // { label: "Field Test", target: "#field-test" }, // hidden until UGC videos are ready
 ];
 
 /* Real page routes */

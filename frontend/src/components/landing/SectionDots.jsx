@@ -8,7 +8,7 @@ const SECTIONS = [
     { id: "hero", label: "Top" },
     { id: "arsenal", label: "Arsenal" },
     { id: "mission", label: "Mission" },
-    { id: "field-test", label: "Field Test" },
+    // { id: "field-test", label: "Field Test" }, // hidden until UGC videos are ready
     { id: "footer", label: "Connect" },
 ];
 

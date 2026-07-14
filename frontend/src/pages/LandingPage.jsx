@@ -11,7 +11,8 @@ import HeroVideo      from "@/components/landing/HeroVideo";
 import HeroSection    from "@/components/landing/HeroSection";
 import ArsenalSection from "@/components/landing/ArsenalSection";
 import MissionSection from "@/components/landing/MissionSection";
-import FieldTestSection from "@/components/landing/FieldTestSection";
+// Hidden until real UGC videos are ready — see section 4 in the render below.
+// import FieldTestSection from "@/components/landing/FieldTestSection";
 import LandingFooter  from "@/components/landing/LandingFooter";
 import SectionDots    from "@/components/landing/SectionDots";
 import { isPrerendering } from "@/lib/isPrerendering";
@@ -289,8 +290,11 @@ export default function LandingPage() {
                 {/* 3 — MISSION (dark contrast section) */}
                 <MissionSection missionRef={missionRef} />
 
-                {/* 4 — FIELD TEST */}
-                <FieldTestSection />
+                {/* 4 — FIELD TEST (UGC) — hidden until real creator videos are
+                    ready. To restore: uncomment <FieldTestSection /> below and
+                    its import, and re-add the "Field Test" entries in
+                    LandingNav (SECTION_LINKS) and SectionDots (SECTIONS). */}
+                {/* <FieldTestSection /> */}
 
                 {/* 5 — FOOTER */}
                 <LandingFooter />
