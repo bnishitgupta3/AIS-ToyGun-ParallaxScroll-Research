@@ -3,7 +3,7 @@ import { useLocation } from "react-router-dom";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { ScrollToPlugin } from "gsap/ScrollToPlugin";
-import { scrollToSection } from "@/lib/scrollToSection";
+import { scrollToSection, registerSectionResolver } from "@/lib/scrollToSection";
 import { useProgress } from "@react-three/drei";
 
 import LandingCanvas, { HERO_GUN_X, GUN_SPACING } from "@/components/scene/LandingCanvas";
@@ -234,6 +234,30 @@ export default function LandingPage() {
                 arsenalST.current = st;
             }); // end gsap.context
 
+            /* Pin-aware section positions for the nav / dots. The Arsenal is
+               pinned, so Mission/Footer live far below their naive DOM offset;
+               derive their real scrollY from the pin's start/end. */
+            registerSectionResolver((target) => {
+                const st = arsenalST.current;
+                const id = String(target).replace(/^#/, "");
+                if (id === "hero") return 0;
+                if (!st) return null; // fall back to element position
+                if (id === "arsenal") return st.start;
+                if (id === "mission") return st.end;
+                if (id === "footer") {
+                    const footer = document.getElementById("footer");
+                    const mission = document.getElementById("mission");
+                    if (footer && mission) {
+                        return (
+                            st.end +
+                            (footer.getBoundingClientRect().top -
+                                mission.getBoundingClientRect().top)
+                        );
+                    }
+                }
+                return null;
+            });
+
             requestAnimationFrame(() => ScrollTrigger.refresh());
         }
 
@@ -241,6 +265,7 @@ export default function LandingPage() {
             cancelled = true;
             if (raf) cancelAnimationFrame(raf);
             if (ctx) ctx.revert();
+            registerSectionResolver(null);
         };
     }, []);
 
