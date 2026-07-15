@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useCart } from "@/lib/cart";
+import { scrollToSection } from "@/lib/scrollToSection";
 
 /* Homepage section anchors (smooth-scroll on home, route-then-scroll elsewhere) */
 const SECTION_LINKS = [
@@ -60,7 +61,7 @@ export default function LandingNav() {
         e.preventDefault();
         setOpen(false);
         if (location.pathname === "/") {
-            document.querySelector(target)?.scrollIntoView({ behavior: "smooth" });
+            scrollToSection(target);
         } else {
             navigate("/", { state: { scrollTo: target } });
         }

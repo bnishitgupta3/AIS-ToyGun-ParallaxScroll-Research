@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { scrollToSection } from "@/lib/scrollToSection";
 
 /* Vertical section dots — a right-edge scrollspy. Each dot maps to a section
    on the landing page; clicking jumps there. It stays hidden over the hero and
@@ -45,8 +46,7 @@ export default function SectionDots() {
         };
     }, []);
 
-    const go = (id) =>
-        document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
+    const go = (id) => scrollToSection("#" + id);
 
     return (
         <div

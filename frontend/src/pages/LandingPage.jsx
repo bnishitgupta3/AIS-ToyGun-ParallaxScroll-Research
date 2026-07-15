@@ -3,6 +3,7 @@ import { useLocation } from "react-router-dom";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { ScrollToPlugin } from "gsap/ScrollToPlugin";
+import { scrollToSection } from "@/lib/scrollToSection";
 import { useProgress } from "@react-three/drei";
 
 import LandingCanvas, { HERO_GUN_X, GUN_SPACING } from "@/components/scene/LandingCanvas";
@@ -145,7 +146,7 @@ export default function LandingPage() {
         const target = location.state?.scrollTo;
         if (!target) return;
         const id = setTimeout(() => {
-            document.querySelector(target)?.scrollIntoView({ behavior: "smooth" });
+            scrollToSection(target);
             window.history.replaceState({}, ""); // don't re-scroll on back/refresh
         }, 700);
         return () => clearTimeout(id);
