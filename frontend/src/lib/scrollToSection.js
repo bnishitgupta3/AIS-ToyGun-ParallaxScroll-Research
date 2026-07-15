@@ -1,45 +1,18 @@
-import gsap from "gsap";
-import { ScrollToPlugin } from "gsap/ScrollToPlugin";
+/* Jump to a landing-page section.
 
-gsap.registerPlugin(ScrollToPlugin);
+   We scroll INSTANTLY, on purpose. The Arsenal is pinned by GSAP ScrollTrigger
+   for ~3.4 viewport-heights; animating a scroll *through* it scrubs the 3D gun
+   carousel on every frame, which is very heavy and makes a smooth scroll crawl
+   (and visually stall mid-carousel). An instant jump to the section's true
+   document position is fast and reliable — and it lands correctly because the
+   pin's spacer means each section's getBoundingClientRect position is its real
+   scroll target. (Native smooth scroll is separately a no-op here anyway, since
+   ScrollTrigger hijacks the scroll.)
 
-/* Smooth-scroll to a landing-page section.
-
-   Two gotchas this handles:
-
-   1. Native scrollIntoView({behavior:"smooth"}) is a no-op on the landing page
-      — GSAP ScrollTrigger (which pins the Arsenal) hijacks the scroll — so we
-      scroll via ScrollToPlugin (same mechanism as the Arsenal tile nav).
-
-   2. The Arsenal is PINNED for ~3.4 viewport-heights. Any section AFTER it
-      (Mission, Footer) has a real scroll position far below its naive DOM
-      offset, so resolving the target from the element lands you inside the
-      pinned Arsenal instead. LandingPage registers a pin-aware resolver (built
-      from the ScrollTrigger's start/end) via registerSectionResolver so the
-      numbers are correct. On pages without the pin (no resolver) we fall back
-      to the element's document position. */
-
-let sectionResolver = null;
-
-/* LandingPage calls this after its ScrollTrigger is built. Pass null on
-   unmount. The resolver maps a target ("#mission") to a numeric scrollY, or
-   returns null/undefined to defer to the element fallback. */
-export function registerSectionResolver(fn) {
-    sectionResolver = fn;
-}
-
+   `target` is a selector ("#mission") or an element. */
 export function scrollToSection(target) {
-    let y = sectionResolver ? sectionResolver(target) : null;
-
-    if (y == null) {
-        const el = typeof target === "string" ? document.querySelector(target) : target;
-        if (!el) return;
-        y = el.getBoundingClientRect().top + window.scrollY;
-    }
-
-    gsap.to(window, {
-        duration: 1,
-        scrollTo: { y, autoKill: false },
-        ease: "power3.inOut",
-    });
+    const el = typeof target === "string" ? document.querySelector(target) : target;
+    if (!el) return;
+    const y = Math.round(el.getBoundingClientRect().top + window.scrollY);
+    window.scrollTo(0, y);
 }
