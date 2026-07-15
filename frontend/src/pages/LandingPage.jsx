@@ -138,18 +138,41 @@ export default function LandingPage() {
 
     /* ── Cross-page section nav ──
        When the global navbar sends us here from another route (e.g. /about →
-       "Mission"), it passes the target anchor via router state. Scroll to it
-       once the layout / ScrollTrigger have settled (and after ScrollToTop has
-       reset to the top). */
+       "Mission"), it passes the target anchor via router state. We must wait
+       for the Arsenal PIN to be built before scrolling: until then the pin's
+       spacer doesn't exist, so a section after the Arsenal (Mission/Footer)
+       still sits at its naive DOM offset — scrolling there lands you inside
+       the pinned carousel. Poll for arsenalST (set once the guns load and the
+       timeline is built), then refresh + scroll. */
     const location = useLocation();
     useEffect(() => {
         const target = location.state?.scrollTo;
         if (!target) return;
-        const id = setTimeout(() => {
-            scrollToSection(target);
+        let cancelled = false;
+        let tries = 0;
+        const attempt = () => {
+            if (cancelled) return;
+            // Wait for the pin (or bail after ~6s so we never hang).
+            if (!arsenalST.current && tries < 60) {
+                tries += 1;
+                setTimeout(attempt, 100);
+                return;
+            }
+            ScrollTrigger.refresh(); // rebuild pin spacer so positions are final
+            // A short beat lets the refreshed layout settle before we measure
+            // the target's position (setTimeout, not rAF — rAF is unreliable
+            // in some embedded browsers).
+            setTimeout(() => {
+                if (!cancelled) scrollToSection(target);
+            }, 60);
             window.history.replaceState({}, ""); // don't re-scroll on back/refresh
-        }, 700);
-        return () => clearTimeout(id);
+        };
+        // Small initial delay so ScrollToTop's reset-to-0 lands first.
+        const id = setTimeout(attempt, 200);
+        return () => {
+            cancelled = true;
+            clearTimeout(id);
+        };
     }, [location.state]);
 
     /* ── GSAP scroll orchestration ── */
