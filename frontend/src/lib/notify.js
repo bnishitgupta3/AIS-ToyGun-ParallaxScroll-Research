@@ -11,18 +11,17 @@
 
 export const FORMSPREE_ENDPOINT = "https://formspree.io/f/mwvjgyor";
 
-export async function postSignup({ email, source, product }) {
+/* Post an arbitrary payload to Formspree. Used by every form on the site
+   (email signups AND the contact message form). Throws on failure with a
+   readable message. */
+export async function postToFormspree(payload) {
     const res = await fetch(FORMSPREE_ENDPOINT, {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
             Accept: "application/json",
         },
-        body: JSON.stringify({
-            email,
-            source,
-            ...(product ? { product } : {}),
-        }),
+        body: JSON.stringify(payload),
     });
     if (!res.ok) {
         const data = await res.json().catch(() => ({}));
@@ -31,4 +30,8 @@ export async function postSignup({ email, source, product }) {
         throw new Error(msg || "Something went wrong. Please try again.");
     }
     return true;
+}
+
+export async function postSignup({ email, source, product }) {
+    return postToFormspree({ email, source, ...(product ? { product } : {}) });
 }

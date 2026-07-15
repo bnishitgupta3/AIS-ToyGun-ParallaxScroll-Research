@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { Mail, ShieldCheck, Briefcase, PhoneCall, Send } from "lucide-react";
 import LandingNav from "@/components/landing/LandingNav";
 import LandingFooter from "@/components/landing/LandingFooter";
+import { postToFormspree } from "@/lib/notify";
 
 const EASE = [0.16, 1, 0.3, 1];
 
@@ -43,16 +44,26 @@ export default function ContactPage() {
 
     const [form, setForm] = useState({ name: "", email: "", message: "" });
     const set = (k) => (e) => setForm((f) => ({ ...f, [k]: e.target.value }));
+    const [status, setStatus] = useState("idle"); // idle | submitting | success | error
+    const [errorMsg, setErrorMsg] = useState("");
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        const subject = encodeURIComponent(
-            `Website enquiry from ${form.name || "a visitor"}`,
-        );
-        const body = encodeURIComponent(
-            `Name: ${form.name}\nEmail: ${form.email}\n\n${form.message}`,
-        );
-        window.location.href = `mailto:support@soniqtoys.in?subject=${subject}&body=${body}`;
+        if (status === "submitting") return;
+        setStatus("submitting");
+        setErrorMsg("");
+        try {
+            await postToFormspree({
+                name: form.name,
+                email: form.email,
+                message: form.message,
+                source: "contact",
+            });
+            setStatus("success");
+        } catch (err) {
+            setErrorMsg(err.message || "Network error. Please try again.");
+            setStatus("error");
+        }
     };
 
     return (
@@ -122,48 +133,77 @@ export default function ContactPage() {
                             Send us a message
                         </h2>
                         <p className="mt-2 font-inter text-[13px] text-[#1a1a1a]/55">
-                            Opens in your email app, prefilled and ready to send.
+                            Fill it in and hit send. We typically reply within one
+                            business day.
                         </p>
 
-                        <form onSubmit={handleSubmit} className="mt-6 flex flex-col gap-4">
-                            <div className="flex flex-col gap-4 sm:flex-row">
-                                <input
-                                    type="text"
-                                    required
-                                    value={form.name}
-                                    onChange={set("name")}
-                                    placeholder="Your name"
-                                    className="w-full flex-1 rounded-xl border border-black/15 bg-white/70 px-4 py-3 font-inter text-[14px] text-[#1a1a1a] placeholder-[#1a1a1a]/35 outline-none transition-colors focus:border-[#f97316]"
-                                />
-                                <input
-                                    type="email"
-                                    required
-                                    value={form.email}
-                                    onChange={set("email")}
-                                    placeholder="you@email.com"
-                                    className="w-full flex-1 rounded-xl border border-black/15 bg-white/70 px-4 py-3 font-inter text-[14px] text-[#1a1a1a] placeholder-[#1a1a1a]/35 outline-none transition-colors focus:border-[#f97316]"
-                                />
+                        {status === "success" ? (
+                            <div className="mt-6 rounded-2xl border border-[#f97316]/30 bg-[#f97316]/[0.06] p-6">
+                                <div className="font-mono-tactical text-[11px] font-bold uppercase tracking-[0.3em] text-[#f97316]">
+                                    Message sent
+                                </div>
+                                <p className="mt-2 font-inter text-[14px] leading-relaxed text-[#1a1a1a]/70">
+                                    Thanks for reaching out{form.name ? `, ${form.name}` : ""}.
+                                    We've got your message and will get back to you soon.
+                                </p>
                             </div>
-                            <textarea
-                                required
-                                rows={5}
-                                value={form.message}
-                                onChange={set("message")}
-                                placeholder="How can we help?"
-                                className="w-full resize-none rounded-xl border border-black/15 bg-white/70 px-4 py-3 font-inter text-[14px] text-[#1a1a1a] placeholder-[#1a1a1a]/35 outline-none transition-colors focus:border-[#f97316]"
-                            />
-                            <button
-                                type="submit"
-                                className="group relative inline-flex items-center justify-center gap-2 self-start overflow-hidden rounded-full bg-[#f97316] px-7 py-3 font-inter text-[13px] font-semibold uppercase tracking-[0.15em] text-white shadow-[inset_0_-4px_4px_rgba(255,255,255,0.39)] transition-all hover:brightness-110"
-                            >
-                                <span
-                                    aria-hidden="true"
-                                    className="pointer-events-none absolute left-[10%] top-[1px] h-4 w-[80%] rounded-[12px] bg-gradient-to-b from-[#FFD9B8] to-transparent transition-transform duration-200 group-hover:scale-x-105"
+                        ) : (
+                            <form onSubmit={handleSubmit} className="mt-6 flex flex-col gap-4" noValidate>
+                                <div className="flex flex-col gap-4 sm:flex-row">
+                                    <input
+                                        type="text"
+                                        required
+                                        value={form.name}
+                                        onChange={set("name")}
+                                        placeholder="Your name"
+                                        disabled={status === "submitting"}
+                                        className="w-full flex-1 rounded-xl border border-black/15 bg-white/70 px-4 py-3 font-inter text-[14px] text-[#1a1a1a] placeholder-[#1a1a1a]/35 outline-none transition-colors focus:border-[#f97316] disabled:opacity-60"
+                                    />
+                                    <input
+                                        type="email"
+                                        required
+                                        value={form.email}
+                                        onChange={set("email")}
+                                        placeholder="you@email.com"
+                                        disabled={status === "submitting"}
+                                        className="w-full flex-1 rounded-xl border border-black/15 bg-white/70 px-4 py-3 font-inter text-[14px] text-[#1a1a1a] placeholder-[#1a1a1a]/35 outline-none transition-colors focus:border-[#f97316] disabled:opacity-60"
+                                    />
+                                </div>
+                                <textarea
+                                    required
+                                    rows={5}
+                                    value={form.message}
+                                    onChange={set("message")}
+                                    placeholder="How can we help?"
+                                    disabled={status === "submitting"}
+                                    className="w-full resize-none rounded-xl border border-black/15 bg-white/70 px-4 py-3 font-inter text-[14px] text-[#1a1a1a] placeholder-[#1a1a1a]/35 outline-none transition-colors focus:border-[#f97316] disabled:opacity-60"
                                 />
-                                <Send size={15} strokeWidth={2.4} className="relative" />
-                                <span className="relative">Send message</span>
-                            </button>
-                        </form>
+                                {status === "error" && (
+                                    <p className="font-inter text-[13px] text-red-500">{errorMsg}</p>
+                                )}
+                                <button
+                                    type="submit"
+                                    disabled={status === "submitting"}
+                                    className="group relative inline-flex items-center justify-center gap-2 self-start overflow-hidden rounded-full bg-[#f97316] px-7 py-3 font-inter text-[13px] font-semibold uppercase tracking-[0.15em] text-white shadow-[inset_0_-4px_4px_rgba(255,255,255,0.39)] transition-all hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-70"
+                                >
+                                    <span
+                                        aria-hidden="true"
+                                        className="pointer-events-none absolute left-[10%] top-[1px] h-4 w-[80%] rounded-[12px] bg-gradient-to-b from-[#FFD9B8] to-transparent transition-transform duration-200 group-hover:scale-x-105"
+                                    />
+                                    <Send size={15} strokeWidth={2.4} className="relative" />
+                                    <span className="relative">
+                                        {status === "submitting" ? "Sending…" : "Send message"}
+                                    </span>
+                                </button>
+                                <p className="font-inter text-[11px] leading-snug text-[#1a1a1a]/45">
+                                    By sending, you agree to our{" "}
+                                    <Link to="/privacy" className="text-[#f97316] underline underline-offset-2">
+                                        Privacy Policy
+                                    </Link>
+                                    .
+                                </p>
+                            </form>
+                        )}
                     </motion.div>
                 </div>
 
