@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import { useCart, PRODUCT_LOOKUP } from "@/lib/cart";
 import NotifyMe from "@/components/showcase/NotifyMe";
@@ -45,6 +45,20 @@ export default function BuyNowSheet({ open, product, onClose }) {
         };
     }, [open, onClose]);
 
+    /* Keep the sheet mounted-but-hidden when fully closed. On Android the
+       translate-off-screen alone left a white sliver/rectangle peeking at the
+       bottom (dynamic-viewport quirk); once the slide-out finishes we also flag
+       it `visibility: hidden` so it's guaranteed gone. */
+    const [visible, setVisible] = useState(open);
+    useEffect(() => {
+        if (open) {
+            setVisible(true);
+            return;
+        }
+        const t = setTimeout(() => setVisible(false), 350); // after slide-out
+        return () => clearTimeout(t);
+    }, [open]);
+
     // Portal into <body> so `position: fixed` escapes any ancestor that creates
     // a containing block (e.g. SpecsPanel uses `transform: translateX(-24px)`
     // for its slide-in; any transformed ancestor traps fixed-positioned
@@ -71,6 +85,7 @@ export default function BuyNowSheet({ open, product, onClose }) {
                 aria-label="Buy Now"
                 className={`absolute left-0 right-0 bottom-0 max-h-[78vh] overflow-y-auto rounded-t-3xl bg-white shadow-2xl transition-transform duration-300 ease-out
                     md:left-auto md:right-0 md:top-0 md:bottom-0 md:h-full md:max-h-none md:w-[440px] md:rounded-l-3xl md:rounded-tr-none
+                    ${!visible ? "invisible" : ""}
                     ${
                         open
                             ? "translate-y-0 md:translate-x-0"

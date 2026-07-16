@@ -1,36 +1,47 @@
 import { useEffect, useState } from "react";
 import { scrollToSection } from "@/lib/scrollToSection";
 
-/* Vertical section dots — a right-edge scrollspy. Each dot maps to a section
-   on the landing page; clicking jumps there. It stays hidden over the hero and
-   only fades in once the Arsenal section reaches the upper viewport, remaining
-   through to the footer. */
-const SECTIONS = [
-    { id: "hero", label: "Top" },
-    { id: "arsenal", label: "Arsenal" },
-    { id: "mission", label: "Mission" },
-    // { id: "field-test", label: "Field Test" }, // hidden until UGC videos are ready
-    { id: "footer", label: "Connect" },
-];
+/* Vertical section dots — a right-edge scrollspy. Each dot maps to a section;
+   clicking jumps there. Hidden over the FIRST section, fades in once the second
+   section reaches the upper viewport, and stays through the last one.
 
-export default function SectionDots() {
-    const [activeId, setActiveId] = useState("arsenal");
+   `variant` picks the section set: the homepage, or a product page (the pinned
+   showcase → cross-sell → deploy footer). Section sets are module-level so
+   their identity is stable across renders. */
+const SECTION_SETS = {
+    home: [
+        { id: "hero", label: "Top" },
+        { id: "arsenal", label: "Arsenal" },
+        { id: "mission", label: "Mission" },
+        // { id: "field-test", label: "Field Test" }, // hidden until UGC videos are ready
+        { id: "footer", label: "Connect" },
+    ],
+    product: [
+        { id: "scroll-section", label: "Showcase" },
+        { id: "also-arsenal", label: "Arsenal" },
+        { id: "deploy", label: "Deploy" },
+    ],
+};
+
+export default function SectionDots({ variant = "home" }) {
+    const sections = SECTION_SETS[variant] || SECTION_SETS.home;
+    const [activeId, setActiveId] = useState(sections[0].id);
     const [visible, setVisible] = useState(false);
 
     useEffect(() => {
-        // Reading 4 rects per scroll is cheap, and React bails on unchanged
-        // state, so we update directly on scroll (no rAF throttle needed).
+        // Reveal the dots once the SECOND section nears (i.e. once the visitor
+        // has scrolled past the first/opening section).
+        const revealId = sections[1] ? sections[1].id : null;
         const update = () => {
             const vh = window.innerHeight;
             const refY = vh * 0.45; // reference line ~45% down the viewport
 
-            // Show only from the Arsenal onward (hidden over the hero).
-            const arsenal = document.getElementById("arsenal");
-            setVisible(arsenal ? arsenal.getBoundingClientRect().top <= vh * 0.5 : false);
+            const revealEl = revealId && document.getElementById(revealId);
+            setVisible(revealEl ? revealEl.getBoundingClientRect().top <= vh * 0.5 : false);
 
             // Active = the last section whose top has crossed the reference line.
-            let current = SECTIONS[0].id;
-            for (const s of SECTIONS) {
+            let current = sections[0].id;
+            for (const s of sections) {
                 const el = document.getElementById(s.id);
                 if (el && el.getBoundingClientRect().top <= refY) current = s.id;
             }
@@ -44,7 +55,7 @@ export default function SectionDots() {
             window.removeEventListener("scroll", update);
             window.removeEventListener("resize", update);
         };
-    }, []);
+    }, [sections]);
 
     const go = (id) => scrollToSection("#" + id);
 
@@ -55,7 +66,7 @@ export default function SectionDots() {
                 visible ? "opacity-100" : "pointer-events-none opacity-0"
             }`}
         >
-            {SECTIONS.map((s) => {
+            {sections.map((s) => {
                 const active = s.id === activeId;
                 return (
                     <button

@@ -72,7 +72,7 @@ export default function AlsoInArsenal({ currentLink }) {
     const others = PRODUCTS.filter((p) => p.link !== currentLink);
 
     return (
-        <section className="relative w-full bg-[#F3F4ED] py-20 md:py-28">
+        <section id="also-arsenal" className="relative w-full bg-[#F3F4ED] py-20 md:py-28">
             <div className="mx-auto max-w-6xl px-6 md:px-12">
                 <div className="flex flex-col items-start gap-3 md:flex-row md:items-end md:justify-between">
                     <div>

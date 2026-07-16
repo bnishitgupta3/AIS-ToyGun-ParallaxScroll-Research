@@ -171,21 +171,41 @@ export default function ArsenalSection({ arsenalRef, onSelect, activeIndex = 0 }
     // the DOM and was the source of the earlier "drawer auto-show" bug.
     const { openDrawer } = useCart();
 
-    // True once the section is pinned at the top of the viewport — at which
-    // point the gun's entry animation has settled. Gates the HTML overlay so
-    // the buttons + spec strip don't briefly overlap the in-flight gun on
-    // initial scroll into the section.
+    // True once the section is well into view — the HTML overlay (heading,
+    // buttons, tiles, spec strip) fades in then. The old check relied solely on
+    // a scroll listener + getBoundingClientRect().top <= 0, which on some
+    // devices never fired, leaving ALL the overlay content invisible while the
+    // 3D guns still rendered. An IntersectionObserver is the reliable primary
+    // signal now, with the scroll check as a backup.
     const [entered, setEntered] = useState(false);
     useEffect(() => {
         const section = arsenalRef?.current;
         if (!section) return;
-        const update = () => {
-            const top = section.getBoundingClientRect().top;
-            if (top <= 0) setEntered(true);
+        let done = false;
+        const flip = () => {
+            if (done) return;
+            done = true;
+            setEntered(true);
         };
-        update();
-        window.addEventListener("scroll", update, { passive: true });
-        return () => window.removeEventListener("scroll", update);
+        const onScroll = () => {
+            if (section.getBoundingClientRect().top <= window.innerHeight * 0.4) flip();
+        };
+        let io = null;
+        if (typeof IntersectionObserver !== "undefined") {
+            io = new IntersectionObserver(
+                (entries) => { if (entries.some((e) => e.isIntersecting)) flip(); },
+                { threshold: 0.4 },
+            );
+            io.observe(section);
+        }
+        onScroll();
+        window.addEventListener("scroll", onScroll, { passive: true });
+        window.addEventListener("resize", onScroll);
+        return () => {
+            window.removeEventListener("scroll", onScroll);
+            window.removeEventListener("resize", onScroll);
+            if (io) io.disconnect();
+        };
     }, [arsenalRef]);
 
     return (

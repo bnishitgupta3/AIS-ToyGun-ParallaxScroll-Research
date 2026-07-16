@@ -8,6 +8,7 @@ import SpecsPanel from "@/components/showcase/SpecsPanel";
 import ParallaxBackground from "@/components/showcase/ParallaxBackground";
 import FooterCTA from "@/components/showcase/FooterCTA";
 import AlsoInArsenal from "@/components/showcase/AlsoInArsenal";
+import SectionDots from "@/components/landing/SectionDots";
 import { isPrerendering } from "@/lib/isPrerendering";
 
 gsap.registerPlugin(ScrollTrigger);
@@ -140,6 +141,10 @@ export default function ProductShowcase() {
             <div>
             {/* Global navbar */}
             <LandingNav />
+
+            {/* Right-edge section dots (hidden over the showcase, appear at the
+                cross-sell + deploy sections). */}
+            <SectionDots variant="product" />
 
             {/* PINNED SCROLL SECTION */}
             <section

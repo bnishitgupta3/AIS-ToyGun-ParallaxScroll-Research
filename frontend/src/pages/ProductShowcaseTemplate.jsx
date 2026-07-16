@@ -13,6 +13,7 @@ import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 import LandingNav from "@/components/landing/LandingNav";
+import SectionDots from "@/components/landing/SectionDots";
 import GenericGunScene from "@/components/scene/GenericGunScene";
 import ParallaxBackground from "@/components/showcase/ParallaxBackground";
 import ProductActions from "@/components/showcase/ProductActions";
@@ -213,6 +214,10 @@ export default function ProductShowcaseTemplate({ product: rawProduct }) {
             <div>
                 {/* ── Global navbar ── */}
                 <LandingNav />
+
+                {/* Right-edge section dots (hidden over the showcase; appear at
+                    the cross-sell + deploy sections). */}
+                <SectionDots variant="product" />
 
                 {/* ── Pinned scroll section ── */}
                 <section
@@ -443,7 +448,7 @@ export default function ProductShowcaseTemplate({ product: rawProduct }) {
                 <AlsoInArsenal currentLink={product.currentLink} />
 
                 {/* ── Footer / CTA (dark) ── */}
-                <section className="relative w-full bg-[color:var(--ink)] text-white">
+                <section id="deploy" className="relative w-full bg-[color:var(--ink)] text-white">
                     <div className="mx-auto max-w-7xl px-6 py-24 md:px-12 md:py-32">
                         <div className="grid grid-cols-1 gap-10 md:grid-cols-12">
                             <div className="md:col-span-7">

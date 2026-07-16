@@ -5,6 +5,7 @@ const MP5K = { name: "MP5K", link: "/product/mp5k" };
 export default function FooterCTA() {
     return (
         <section
+            id="deploy"
             data-testid="footer-cta"
             className="relative w-full bg-[color:var(--ink)] text-white"
         >
