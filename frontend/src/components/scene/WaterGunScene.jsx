@@ -12,8 +12,13 @@ export default function WaterGunScene({ modelRef, isFiring }) {
     return (
         <Canvas
             camera={{ position: [0, 0.2, 6.2], fov: 35 }}
-            dpr={[1, 2]}
-            gl={{ antialias: true, alpha: true, toneMapping: THREE.NeutralToneMapping }}
+            dpr={[1, 1.5]}
+            gl={{
+                antialias: true,
+                alpha: true,
+                powerPreference: "high-performance",
+                toneMapping: THREE.NeutralToneMapping,
+            }}
             style={{ background: "transparent" }}
         >
             {/* Neutral IBL only — shows the asset at its true brightness with
@@ -32,7 +37,7 @@ export default function WaterGunScene({ modelRef, isFiring }) {
 
             <ContactShadows
                 position={[0, -1.6, 0]}
-                resolution={1024}
+                resolution={512}
                 scale={10}
                 blur={2}
                 opacity={0.5}

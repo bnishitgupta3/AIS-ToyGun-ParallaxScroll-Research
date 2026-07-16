@@ -168,15 +168,32 @@ function LandingScene({ model1Ref, model2Ref, model3Ref, mouseRef, scrollRef, se
             const ns = ap(g.scale.x, tS);
             g.scale.setScalar(ns);
 
-            /* — Fade the non-focused guns (like the 40% thumbnails) — */
+            /* — Fade the non-focused guns (like the 40% thumbnails) —
+               Cache each gun's material list once (traversing the scene graph
+               every frame was a big cost) and only write opacity when it
+               actually changes, so a settled gun costs nothing here. */
             const op = ap(g.userData.op ?? 1, tO);
             g.userData.op = op;
-            g.traverse((o) => {
-                if (o.isMesh && o.material) {
-                    const mats = Array.isArray(o.material) ? o.material : [o.material];
-                    for (let k = 0; k < mats.length; k++) mats[k].opacity = op;
-                }
-            });
+            let mats = g.userData.mats;
+            if (!mats || mats.length === 0) {
+                mats = [];
+                g.traverse((o) => {
+                    if (o.isMesh && o.material) {
+                        const list = Array.isArray(o.material) ? o.material : [o.material];
+                        for (let k = 0; k < list.length; k++) mats.push(list[k]);
+                    }
+                });
+                g.userData.mats = mats;
+                g.userData.appliedOp = undefined; // apply now that we have mats
+            }
+            if (
+                mats.length &&
+                (g.userData.appliedOp === undefined ||
+                    Math.abs(op - g.userData.appliedOp) > 0.002)
+            ) {
+                for (let k = 0; k < mats.length; k++) mats[k].opacity = op;
+                g.userData.appliedOp = op;
+            }
 
             g.userData.placed = true;
         }
@@ -189,10 +206,11 @@ function LandingScene({ model1Ref, model2Ref, model3Ref, mouseRef, scrollRef, se
                 (removes the extra highlights/hotspots on the guns). */}
             <NeutralEnvironment intensity={1.1} />
 
-            {/* Slow, out-of-focus particles behind the guns — premium depth */}
+            {/* Slow, out-of-focus particles behind the guns — premium depth.
+                Trimmed count for cheaper per-frame animation. */}
             <Sparkles
                 position={[0, 0, -4]}
-                count={50}
+                count={20}
                 scale={12}
                 size={2}
                 speed={0.2}
@@ -228,10 +246,12 @@ function LandingScene({ model1Ref, model2Ref, model3Ref, mouseRef, scrollRef, se
                 </>
             )}
 
-            {/* Grounded contact shadow under the active model area */}
+            {/* Grounded contact shadow under the active model area.
+                512 resolution (from 1024) — 4x fewer pixels to re-render each
+                frame, visually near-identical under the soft blur. */}
             <ContactShadows
                 position={[0, -1.6, 0]}
-                resolution={1024}
+                resolution={512}
                 scale={10}
                 blur={2}
                 opacity={0.5}
@@ -270,8 +290,16 @@ export default function LandingCanvas({ model1Ref, model2Ref, model3Ref, mouseRe
     return (
         <Canvas
             camera={{ position: [0, 0.15, 7.5], fov: 40 }}
-            dpr={[1, 2]}
-            gl={{ antialias: true, alpha: true, toneMapping: THREE.NeutralToneMapping }}
+            /* Cap devicePixelRatio at 1.5: on a 2x Retina screen this is ~1.8x
+               fewer pixels to shade every frame — the single biggest smoothness
+               win — with barely perceptible sharpness loss under antialiasing. */
+            dpr={[1, 1.5]}
+            gl={{
+                antialias: true,
+                alpha: true,
+                powerPreference: "high-performance",
+                toneMapping: THREE.NeutralToneMapping,
+            }}
             style={{
                 position: "fixed",
                 top: 0, left: 0,

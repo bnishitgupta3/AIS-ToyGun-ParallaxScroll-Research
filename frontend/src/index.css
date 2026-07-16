@@ -217,6 +217,25 @@ body.sheet-open .section-dots {
     box-shadow: 0 12px 28px -10px rgba(255, 90, 31, 0.55);
 }
 
+/* ── Reduced motion ──
+   Honour the OS "reduce motion" setting: collapse CSS transitions/animations
+   and looping effects so motion-sensitive visitors get a calm, static page.
+   (The hero video also stops autoplaying under this setting — see HeroVideo.) */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.001ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.001ms !important;
+        scroll-behavior: auto !important;
+    }
+    .buy-now-charge {
+        animation: none !important;
+        width: 60%;
+    }
+}
+
 .spec-row {
     border-top: 1px solid var(--line);
 }
