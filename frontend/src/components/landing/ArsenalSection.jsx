@@ -215,6 +215,26 @@ export default function ArsenalSection({ arsenalRef, onSelect, activeIndex = 0 }
             className="arsenal-track relative w-full overflow-hidden"
             style={{ height: "100vh" }}
         >
+            {/* "Coming Soon" stamped directly ON the gun (centre) for a
+                pre-launch product, so it's unmistakable the gun isn't buyable
+                yet — the badge above the gun was reading as "available". */}
+            <div
+                className="pointer-events-none absolute inset-x-0 top-1/2 z-20 flex -translate-y-1/2 justify-center transition-opacity duration-500"
+                style={{
+                    opacity:
+                        entered && PRODUCTS[activeIndex] && PRODUCTS[activeIndex].comingSoon
+                            ? 1
+                            : 0,
+                }}
+            >
+                <span
+                    className="-rotate-[7deg] rounded-2xl border-2 border-white/90 px-6 py-2.5 font-mono-tactical text-[15px] font-bold uppercase tracking-[0.32em] text-white shadow-[0_12px_34px_-8px_rgba(0,0,0,0.55)] sm:text-lg"
+                    style={{ background: (PRODUCTS[activeIndex] || {}).accent || "#ef4444" }}
+                >
+                    Coming Soon
+                </span>
+            </div>
+
             {/* ── TOP heading area — eyebrow + product name (ABOVE the gun) ── */}
             <div
                 className="pointer-events-none absolute left-1/2 top-28 z-20 flex -translate-x-1/2 flex-col items-center text-center transition-opacity duration-500 md:top-24"
@@ -245,15 +265,6 @@ export default function ArsenalSection({ arsenalRef, onSelect, activeIndex = 0 }
                             <p className="mt-2 font-inter text-[11px] font-medium uppercase tracking-[0.28em] text-[#1a1a1a]/50">
                                 {p.tagline}
                             </p>
-                            {p.comingSoon && (
-                                <span
-                                    className="mt-3 inline-flex items-center gap-1.5 rounded-full px-3 py-1 font-inter text-[10px] font-bold uppercase tracking-[0.3em] text-white"
-                                    style={{ background: p.accent }}
-                                >
-                                    <span className="inline-block h-1.5 w-1.5 rounded-full bg-white/90" />
-                                    Coming Soon
-                                </span>
-                            )}
                         </div>
                     ))}
                 </div>

@@ -104,6 +104,17 @@ export default function SpecsPanel() {
                     </div>
                 </div>
             </div>
+
+            {/* Scroll cue on the details view — there's more below (the rest of
+                the Arsenal + deploy). Sits above the mobile browser chrome. */}
+            <div className="pointer-events-none absolute bottom-16 left-1/2 flex -translate-x-1/2 flex-col items-center gap-1">
+                <span className="font-mono-tactical text-[9px] uppercase tracking-[0.3em] text-zinc-400">
+                    Scroll for more
+                </span>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="animate-bounce text-zinc-400">
+                    <path d="M6 9l6 6 6-6" />
+                </svg>
+            </div>
         </aside>
     );
 }

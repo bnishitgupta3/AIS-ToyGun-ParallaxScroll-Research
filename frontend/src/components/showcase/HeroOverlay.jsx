@@ -40,7 +40,7 @@ export default function HeroOverlay() {
             <div
                 id="scroll-hint"
                 data-testid="scroll-hint"
-                className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2"
+                className="absolute bottom-16 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2"
             >
                 <span className="font-mono-tactical text-[10px] uppercase tracking-[0.32em] text-zinc-500">
                     Scroll to Engage

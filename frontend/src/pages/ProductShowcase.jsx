@@ -64,7 +64,10 @@ export default function ProductShowcase() {
                     scrollTrigger: {
                         trigger: sectionRef.current,
                         start: "top top",
-                        end: "+=3200",
+                        // Mobile is far more scroll-sensitive (~1.1 viewport
+                        // heights vs 2.2 on desktop) so the details are only a
+                        // few swipes away, not ~10.
+                        end: () => "+=" + Math.round(window.innerHeight * (window.innerWidth < 768 ? 1.1 : 2.2)),
                         pin: true,
                         scrub: 1,
                         anticipatePin: 1,
@@ -116,7 +119,7 @@ export default function ProductShowcase() {
                         scrollTrigger: {
                             trigger: sectionRef.current,
                             start: "top top",
-                            end: "+=3200",
+                            end: () => "+=" + Math.round(window.innerHeight * (window.innerWidth < 768 ? 1.1 : 2.2)),
                             scrub: 1.4,
                         },
                     });
