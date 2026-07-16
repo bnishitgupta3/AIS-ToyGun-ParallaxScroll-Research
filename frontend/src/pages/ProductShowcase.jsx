@@ -37,12 +37,17 @@ export default function ProductShowcase() {
 
         let ctx;
         function buildTimeline(group) {
-            // Initial state. Park the gun just below the frame at rest so the
-            // hero stays clean and the "Scroll to Engage" hint (bottom-centre)
-            // isn't covered by it. It's sized up from the old tiny dot and the
-            // Phase-A ease is gentle, so the very first scroll lifts it into
-            // view quickly and smoothly instead of popping.
-            group.scale.setScalar(0.3);
+            // Responsive fit. The gun is sized for desktop; on narrow/portrait
+            // phones it overflowed both edges (and, pushed right at rest, peeked
+            // past the specs panel). Shrink to fit the viewport, and on mobile
+            // keep it CENTRED at rest — the full-width opaque panel covers it.
+            const aspect  = window.innerWidth / Math.max(1, window.innerHeight);
+            const fit     = Math.min(1, Math.max(0.55, aspect * 1.15));
+            const settleX = window.innerWidth < 768 ? 0 : 1.55;
+
+            // Park the gun just below the frame at rest so the hero stays clean
+            // and the "Scroll to Engage" hint isn't covered by it.
+            group.scale.setScalar(0.3 * fit);
             group.position.set(0, -2.45, 0);
             group.rotation.set(0, 0, 0);
 
@@ -71,25 +76,28 @@ export default function ProductShowcase() {
                 // motion into the first 10%, which popped). Hero text fades
                 // out FAST and early so it's clear before the gun reaches
                 // centre (text gone by ~0.09; gun hits full scale at 0.30).
-                tl.to(group.scale,    { x: 1, y: 1, z: 1, duration: 0.30, ease: "power2.out" }, 0)
+                tl.to(group.scale,    { x: fit, y: fit, z: fit, duration: 0.30, ease: "power2.out" }, 0)
                   .to(group.position, { y: 0,            duration: 0.30, ease: "power2.out" }, 0)
-                  .to("#scroll-hint", { opacity: 0,       duration: 0.05, ease: "power2.out" }, 0)
                   .to("#hero-eyebrow",{ opacity: 0, y: -16, duration: 0.08, ease: "power2.in" }, 0)
                   .to("#hero-subline",{ opacity: 0, y: -16, duration: 0.08, ease: "power2.in" }, 0)
                   .to("#hero-wordmark",
                     { opacity: 0, y: -120, scale: 0.86, duration: 0.09, ease: "power2.in" },
                     0);
 
+                // Keep the "Scroll to Engage" hint visible through the whole
+                // demo and only fade it just before the spec sheet slides in.
+                tl.to("#scroll-hint", { opacity: 0, duration: 0.06, ease: "power2.in" }, 0.72);
+
                 // PHASE C — 360° spin (mechanical inOut)
                 tl.to(group.rotation,
                     { y: Math.PI * 2, duration: 0.4, ease: "power4.inOut" },
                     0.32);
 
-                // PHASE D — settle to the right (precise, weighted)
+                // PHASE D — settle (right on desktop; centred on mobile)
                 tl.to(group.position,
-                    { x: 1.55, duration: 0.3, ease: "expo.inOut" }, 0.55)
+                    { x: settleX, duration: 0.3, ease: "expo.inOut" }, 0.55)
                   .to(group.scale,
-                    { x: 0.95, y: 0.95, z: 0.95, duration: 0.3, ease: "expo.inOut" }, 0.55);
+                    { x: 0.95 * fit, y: 0.95 * fit, z: 0.95 * fit, duration: 0.3, ease: "expo.inOut" }, 0.55);
 
                 // PHASE E — specs panel snaps in
                 tl.to("#specs-panel",
