@@ -92,10 +92,12 @@ export default function ProductShowcase() {
                 // demo and only fade it just before the spec sheet slides in.
                 tl.to("#scroll-hint", { opacity: 0, duration: 0.06, ease: "power2.in" }, 0.72);
 
-                // PHASE C — 360° spin (mechanical inOut)
+                // PHASE C — 360° spin (mechanical inOut). Starts at 0.26 (was
+                // 0.32) so it begins the instant the gun looks full-size,
+                // overlapping the zoom's tail — no dead scroll gap in between.
                 tl.to(group.rotation,
-                    { y: Math.PI * 2, duration: 0.4, ease: "power4.inOut" },
-                    0.32);
+                    { y: Math.PI * 2, duration: 0.44, ease: "power4.inOut" },
+                    0.26);
 
                 // PHASE D — settle (right on desktop; centred on mobile)
                 tl.to(group.position,

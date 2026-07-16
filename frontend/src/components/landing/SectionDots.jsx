@@ -1,51 +1,79 @@
 import { useEffect, useState } from "react";
-import { scrollToSection } from "@/lib/scrollToSection";
 
-/* Vertical section dots — a right-edge scrollspy. Each dot maps to a section;
-   clicking jumps there. Hidden over the FIRST section, fades in once the second
-   section reaches the upper viewport, and stays through the last one.
+/* Vertical section dots — a right-edge scrollspy. Clicking jumps to a section.
 
-   `variant` picks the section set: the homepage, or a product page (the pinned
-   showcase → cross-sell → deploy footer). Section sets are module-level so
-   their identity is stable across renders. */
+   `variant` picks the set:
+   • "home"    — hero → arsenal → mission → footer (element-based; hidden over
+                 the hero, revealed from the Arsenal on).
+   • "product" — Experience → Details → Arsenal → Deploy. Experience and Details
+                 are two moments INSIDE the pinned showcase (the gun demo, then
+                 the spec sheet), so they target scroll POSITIONS (a fraction of
+                 the pin distance) rather than DOM elements. Visible throughout,
+                 including while the gun is scrolling.
+
+   A section is `{ key, label, id? , y? }`: give `id` for an element target, or
+   `y()` for a scroll-position target. */
+
+const productPinDist = () =>
+    Math.round(window.innerHeight * (window.innerWidth < 768 ? 1.1 : 2.2));
+
 const SECTION_SETS = {
-    home: [
-        { id: "hero", label: "Top" },
-        { id: "arsenal", label: "Arsenal" },
-        { id: "mission", label: "Mission" },
-        // { id: "field-test", label: "Field Test" }, // hidden until UGC videos are ready
-        { id: "footer", label: "Connect" },
-    ],
-    product: [
-        { id: "scroll-section", label: "Showcase" },
-        { id: "also-arsenal", label: "Arsenal" },
-        { id: "deploy", label: "Deploy" },
-    ],
+    home: {
+        alwaysVisible: false,
+        revealId: "arsenal",
+        sections: [
+            { key: "hero", id: "hero", label: "Top" },
+            { key: "arsenal", id: "arsenal", label: "Arsenal" },
+            { key: "mission", id: "mission", label: "Mission" },
+            { key: "footer", id: "footer", label: "Connect" },
+        ],
+    },
+    product: {
+        alwaysVisible: true,
+        sections: [
+            { key: "experience", label: "Experience", y: () => 0 },
+            { key: "details", label: "Details", y: () => Math.round(productPinDist() * 0.8) },
+            { key: "also-arsenal", id: "also-arsenal", label: "Arsenal" },
+            { key: "deploy", id: "deploy", label: "Deploy" },
+        ],
+    },
 };
 
 export default function SectionDots({ variant = "home" }) {
-    const sections = SECTION_SETS[variant] || SECTION_SETS.home;
-    const [activeId, setActiveId] = useState(sections[0].id);
-    const [visible, setVisible] = useState(false);
+    const cfg = SECTION_SETS[variant] || SECTION_SETS.home;
+    const sections = cfg.sections;
+    const [activeKey, setActiveKey] = useState(sections[0].key);
+    const [visible, setVisible] = useState(!!cfg.alwaysVisible);
 
     useEffect(() => {
-        // Reveal the dots once the SECOND section nears (i.e. once the visitor
-        // has scrolled past the first/opening section).
-        const revealId = sections[1] ? sections[1].id : null;
+        // Absolute document scroll position that brings a section to the top.
+        const targetY = (s) => {
+            if (typeof s.y === "function") return s.y();
+            const el = document.getElementById(s.id);
+            return el ? el.getBoundingClientRect().top + window.scrollY : Infinity;
+        };
+
         const update = () => {
             const vh = window.innerHeight;
-            const refY = vh * 0.45; // reference line ~45% down the viewport
 
-            const revealEl = revealId && document.getElementById(revealId);
-            setVisible(revealEl ? revealEl.getBoundingClientRect().top <= vh * 0.5 : false);
-
-            // Active = the last section whose top has crossed the reference line.
-            let current = sections[0].id;
-            for (const s of sections) {
-                const el = document.getElementById(s.id);
-                if (el && el.getBoundingClientRect().top <= refY) current = s.id;
+            if (cfg.alwaysVisible) {
+                setVisible(true);
+            } else if (cfg.revealId) {
+                const el = document.getElementById(cfg.revealId);
+                setVisible(el ? el.getBoundingClientRect().top <= vh * 0.5 : false);
             }
-            setActiveId(current);
+
+            // Active = the last section whose target the scroll has reached.
+            // Element targets use a ~45%-into-view reference line (as before);
+            // in-pin position targets (Experience/Details) activate when the
+            // scroll actually reaches them, so the dot matches the demo phase.
+            const y = window.scrollY;
+            let current = sections[0].key;
+            for (const s of sections) {
+                const ref = typeof s.y === "function" ? y + 2 : y + vh * 0.45;
+                if (targetY(s) <= ref) current = s.key;
+            }
+            setActiveKey(current);
         };
 
         update();
@@ -55,9 +83,18 @@ export default function SectionDots({ variant = "home" }) {
             window.removeEventListener("scroll", update);
             window.removeEventListener("resize", update);
         };
-    }, [sections]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [variant]);
 
-    const go = (id) => scrollToSection("#" + id);
+    const go = (s) => {
+        let y = null;
+        if (typeof s.y === "function") y = s.y();
+        else {
+            const el = document.getElementById(s.id);
+            if (el) y = el.getBoundingClientRect().top + window.scrollY;
+        }
+        if (y != null) window.scrollTo(0, Math.round(y));
+    };
 
     return (
         <div
@@ -67,12 +104,12 @@ export default function SectionDots({ variant = "home" }) {
             }`}
         >
             {sections.map((s) => {
-                const active = s.id === activeId;
+                const active = s.key === activeKey;
                 return (
                     <button
-                        key={s.id}
+                        key={s.key}
                         type="button"
-                        onClick={() => go(s.id)}
+                        onClick={() => go(s)}
                         aria-label={`Go to ${s.label}`}
                         aria-current={active ? "true" : undefined}
                         className="group relative flex items-center justify-center p-1.5"

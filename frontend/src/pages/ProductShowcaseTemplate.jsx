@@ -159,10 +159,13 @@ export default function ProductShowcaseTemplate({ product: rawProduct }) {
                    to scroll. */
                 tl.to("#scroll-hint", { opacity: 0, duration: 0.06, ease: "power2.in" }, 0.72);
 
-                /* Phase C — 360° showcase spin: power4.inOut = mechanical */
+                /* Phase C — 360° showcase spin. Starts at 0.26 (was 0.32) so it
+                   kicks in the moment the gun looks full-size, overlapping the
+                   tail of the zoom — no dead "keep scrolling but nothing moves"
+                   gap between the zoom finishing and the spin starting. */
                 tl.to(group.rotation,
-                    { y: Math.PI * 2, duration: 0.4, ease: "power4.inOut" },
-                    0.32);
+                    { y: Math.PI * 2, duration: 0.44, ease: "power4.inOut" },
+                    0.26);
 
                 /* Phase D — settle (to the right on desktop; stays centred on
                    mobile, where the panel covers it). */
@@ -438,18 +441,19 @@ export default function ProductShowcaseTemplate({ product: rawProduct }) {
                                         )}
                                     </div>
                                 </div>
-                            </div>
 
-                            {/* Scroll cue on the details view — more below (the
-                                rest of the Arsenal + deploy). Sits above the
-                                mobile browser chrome. */}
-                            <div className="pointer-events-none absolute bottom-16 left-1/2 flex -translate-x-1/2 flex-col items-center gap-1">
-                                <span className="font-mono-tactical text-[9px] uppercase tracking-[0.3em] text-zinc-400">
-                                    Scroll for more
-                                </span>
-                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="animate-bounce text-zinc-400">
-                                    <path d="M6 9l6 6 6-6" />
-                                </svg>
+                                {/* Scroll cue on the details view — more below
+                                    (rest of the Arsenal + deploy). In the content
+                                    flow (below the unit line) so it never
+                                    overlaps it. */}
+                                <div className="pointer-events-none mt-5 flex items-center gap-1.5 text-zinc-400">
+                                    <span className="font-mono-tactical text-[9px] uppercase tracking-[0.3em]">
+                                        Scroll for more
+                                    </span>
+                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="animate-bounce">
+                                        <path d="M6 9l6 6 6-6" />
+                                    </svg>
+                                </div>
                             </div>
                         </aside>
 
