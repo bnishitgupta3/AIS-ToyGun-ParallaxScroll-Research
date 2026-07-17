@@ -25,15 +25,20 @@ export default function WaterGunScene({ modelRef, isFiring }) {
                 no added key/fill light (no extra highlights or hotspots). */}
             <NeutralEnvironment intensity={1.1} />
 
-            <Suspense fallback={null}>
-                <group ref={modelRef}>
+            {/* The ref'd group is OUTSIDE Suspense so it mounts immediately —
+                the scroll-timeline/pin builds right away instead of waiting for
+                the ~7 MB model to download (which locked scrolling for seconds
+                on the MP5K page). The model itself streams into the already-
+                parked group via the inner Suspense once it resolves. */}
+            <group ref={modelRef}>
+                <Suspense fallback={null}>
                     <WaterGunModel
                         isFiring={isFiring}
                         onNozzleResolved={setNozzle}
                     />
                     <WaterStream origin={nozzle} active={isFiring} />
-                </group>
-            </Suspense>
+                </Suspense>
+            </group>
 
             <ContactShadows
                 position={[0, -1.6, 0]}

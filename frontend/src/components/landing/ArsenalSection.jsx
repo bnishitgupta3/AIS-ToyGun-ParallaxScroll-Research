@@ -171,12 +171,19 @@ export default function ArsenalSection({ arsenalRef, onSelect, activeIndex = 0 }
     // the DOM and was the source of the earlier "drawer auto-show" bug.
     const { openDrawer } = useCart();
 
-    // True once the section is well into view — the HTML overlay (heading,
-    // buttons, tiles, spec strip) fades in then. The old check relied solely on
-    // a scroll listener + getBoundingClientRect().top <= 0, which on some
-    // devices never fired, leaving ALL the overlay content invisible while the
-    // 3D guns still rendered. An IntersectionObserver is the reliable primary
-    // signal now, with the scroll check as a backup.
+    // True once the section is essentially PINNED (its top has reached the top
+    // of the viewport) — only then does the HTML overlay (heading, buttons,
+    // tiles, spec strip) fade in. It must NOT reveal during the entry sweep:
+    // the hero gun flies in from the right toward centre across that sweep, and
+    // if the text is already painted it gets visibly passed over and then
+    // "settles" (the hover regression). We gate on top <= ~5% vh.
+    //
+    // Two independent signals for cross-device robustness (a scroll-only
+    // top<=0 check never fired on some devices, leaving the overlay invisible):
+    //   • IntersectionObserver with a negative bottom rootMargin, so the 100vh
+    //     section only counts as "intersecting" once its top nears the very top
+    //     of the viewport (i.e. fully pinned) — mirrors the scroll check.
+    //   • a passive scroll listener as backup.
     const [entered, setEntered] = useState(false);
     useEffect(() => {
         const section = arsenalRef?.current;
@@ -188,13 +195,13 @@ export default function ArsenalSection({ arsenalRef, onSelect, activeIndex = 0 }
             setEntered(true);
         };
         const onScroll = () => {
-            if (section.getBoundingClientRect().top <= window.innerHeight * 0.4) flip();
+            if (section.getBoundingClientRect().top <= window.innerHeight * 0.05) flip();
         };
         let io = null;
         if (typeof IntersectionObserver !== "undefined") {
             io = new IntersectionObserver(
                 (entries) => { if (entries.some((e) => e.isIntersecting)) flip(); },
-                { threshold: 0.4 },
+                { rootMargin: "0px 0px -95% 0px", threshold: 0 },
             );
             io.observe(section);
         }
