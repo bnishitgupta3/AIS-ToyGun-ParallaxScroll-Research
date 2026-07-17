@@ -29,10 +29,13 @@ const SECTION_SETS = {
         ],
     },
     product: {
-        alwaysVisible: true,
+        // Hidden on the opening gun-name screen; revealed once the visitor
+        // scrolls a little into the demo (past where the hero name fades).
+        revealY: () => Math.round(productPinDist() * 0.12),
         sections: [
-            { key: "experience", label: "Experience", y: () => 0 },
-            { key: "details", label: "Details", y: () => Math.round(productPinDist() * 0.8) },
+            // `y` = where a click scrolls to; `activeY` = when the dot lights up.
+            { key: "experience", label: "Experience", y: () => Math.round(productPinDist() * 0.2), activeY: () => 0 },
+            { key: "details", label: "Details", y: () => Math.round(productPinDist() * 0.95), activeY: () => Math.round(productPinDist() * 0.78) },
             { key: "also-arsenal", id: "also-arsenal", label: "Arsenal" },
             { key: "deploy", id: "deploy", label: "Deploy" },
         ],
@@ -55,9 +58,14 @@ export default function SectionDots({ variant = "home" }) {
 
         const update = () => {
             const vh = window.innerHeight;
+            const y = window.scrollY;
 
             if (cfg.alwaysVisible) {
                 setVisible(true);
+            } else if (cfg.revealY) {
+                // Scroll-position reveal (product): hidden on the opening
+                // gun-name screen, shown once scrolled into the demo.
+                setVisible(y > cfg.revealY());
             } else if (cfg.revealId) {
                 const el = document.getElementById(cfg.revealId);
                 setVisible(el ? el.getBoundingClientRect().top <= vh * 0.5 : false);
@@ -65,13 +73,16 @@ export default function SectionDots({ variant = "home" }) {
 
             // Active = the last section whose target the scroll has reached.
             // Element targets use a ~45%-into-view reference line (as before);
-            // in-pin position targets (Experience/Details) activate when the
-            // scroll actually reaches them, so the dot matches the demo phase.
-            const y = window.scrollY;
+            // in-pin position targets (Experience/Details) activate at their
+            // own `activeY` so the dot matches the demo phase (spec sheet, etc.).
             let current = sections[0].key;
             for (const s of sections) {
-                const ref = typeof s.y === "function" ? y + 2 : y + vh * 0.45;
-                if (targetY(s) <= ref) current = s.key;
+                const isPos = typeof s.y === "function";
+                const t = isPos
+                    ? (typeof s.activeY === "function" ? s.activeY() : s.y())
+                    : targetY(s);
+                const ref = isPos ? y + 2 : y + vh * 0.45;
+                if (t <= ref) current = s.key;
             }
             setActiveKey(current);
         };
