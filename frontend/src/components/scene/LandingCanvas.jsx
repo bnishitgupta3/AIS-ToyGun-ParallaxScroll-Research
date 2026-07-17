@@ -300,10 +300,22 @@ export default function LandingCanvas({ model1Ref, model2Ref, model3Ref, mouseRe
                 powerPreference: "high-performance",
                 toneMapping: THREE.NeutralToneMapping,
             }}
+            /* Don't re-measure the canvas on scroll. Combined with the constant
+               100vh height below, this stops iOS Safari's toolbar show/hide (a
+               scroll side-effect) from resizing the WebGL drawing buffer mid-
+               scroll — which was jittering the contact shadow and flickering
+               the bottom band. */
+            resize={{ scroll: false }}
             style={{
                 position: "fixed",
                 top: 0, left: 0,
-                width: "100%", height: "100%",
+                /* height MUST be 100vh, not 100%. On iOS Safari `height:100%`
+                   on a fixed element tracks the *visual* viewport, which grows/
+                   shrinks as the bottom toolbar collapses/expands during scroll;
+                   that resized the canvas every frame and made the ground shadow
+                   flicker at the bottom. `100vh` is the constant large-viewport
+                   height there, so the buffer size stays put through the swing. */
+                width: "100%", height: "100vh",
                 zIndex: 1,
                 background: "transparent",
                 pointerEvents: "none",
