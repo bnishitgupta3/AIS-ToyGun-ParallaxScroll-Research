@@ -41,6 +41,7 @@ const DEFAULTS = {
     modelUrl:          asset("/assets/watergun.glb"),
     name:              "SONIQ Toys",
     code:              "SONIQ·001",
+    category:          "Water Gun",
     tagline:           "Electric Water Gun",
     eyebrow:           "/// SONIQ Toys · 2026",
     accentColor:       "#ff5a1f",
@@ -252,13 +253,32 @@ export default function ProductShowcaseTemplate({ product: rawProduct }) {
                             id="hero-overlay"
                             className="pointer-events-none absolute inset-0 z-20 flex flex-col items-center justify-center text-center"
                         >
-                            <span
+                            {/* Eyebrow + prominent CATEGORY badge. The category
+                                (Water Gun / Gel Blaster) is the single most
+                                useful "what is this" cue on the opening screen,
+                                so it's a solid accent pill, not fine print. Both
+                                live inside #hero-eyebrow so the existing timeline
+                                fades them out together as the gun zooms in. */}
+                            <div
                                 id="hero-eyebrow"
-                                className="font-mono-tactical mb-6 text-xs font-bold uppercase tracking-[0.5em]"
-                                style={{ color: product.accentColor }}
+                                className="mb-6 flex flex-col items-center gap-3"
                             >
-                                {product.eyebrow}
-                            </span>
+                                <span
+                                    className="font-mono-tactical text-xs font-bold uppercase tracking-[0.5em]"
+                                    style={{ color: product.accentColor }}
+                                >
+                                    {product.eyebrow}
+                                </span>
+                                {product.category && (
+                                    <span
+                                        className="inline-flex items-center gap-2 rounded-full px-4 py-1.5 font-inter text-[12px] font-bold uppercase tracking-[0.28em] text-white shadow-[0_8px_20px_-8px_rgba(0,0,0,0.5)] sm:text-[13px]"
+                                        style={{ background: product.accentColor }}
+                                    >
+                                        <span className="inline-block h-1.5 w-1.5 rounded-full bg-white/90" />
+                                        {product.category}
+                                    </span>
+                                )}
+                            </div>
 
                             <h1
                                 id="hero-wordmark"

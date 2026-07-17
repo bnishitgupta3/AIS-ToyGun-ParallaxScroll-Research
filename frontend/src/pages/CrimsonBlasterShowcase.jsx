@@ -5,6 +5,7 @@ const CRIMSON_PRODUCT = {
     modelUrl:    asset("/assets/crimson-blaster.glb"),
     name:        "Crimson Blaster",
     code:        "Crimson·MB",
+    category:    "Gel Blaster",
     tagline:     "Gel Blaster · High Velocity · Full Auto",
     eyebrow:     "/// SONIQ Toys · 2026",
     accentColor: "#ef4444",   // tactical red

@@ -5,6 +5,7 @@ const M416_PRODUCT = {
     modelUrl:    asset("/assets/m416-watergun.glb"),
     name:        "M416 Water X",
     code:        "M416·WX",
+    category:    "Water Gun",
     tagline:     "Fully Electric · Automatic · Trigger-Only",
     eyebrow:     "/// SONIQ Toys · 2026",
     accentColor: "#3b82f6",   // electric blue

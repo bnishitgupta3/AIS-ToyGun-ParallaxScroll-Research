@@ -30,11 +30,43 @@ export default function HeroVideo() {
     const [loadSecond, setLoadSecond] = useState(false);
 
     /* Kick off the first clip. `autoPlay` on the element is the primary
-       trigger; this is a belt-and-braces retry for browsers that ignore the
-       programmatic call while the element is mid-mount. */
+       trigger, but on a COLD load it can silently fail to start: the <body>
+       ships hidden (the FOUC gate) for up to ~900ms, and iOS/Chrome defer
+       muted autoplay while the element isn't actually visible — so the
+       mount-time play() gets dropped and the video stays paused until a hard
+       reload (one user hit exactly this: it only played after scrolling to the
+       Arsenal and back, i.e. after a gesture). Retry play() on a short bounded
+       interval (spans the hidden→visible window) and on the first user gesture
+       / tab-visible, clearing as soon as it actually plays. */
     useEffect(() => {
         if (REDUCE_MOTION) return;
-        refs[0].current?.play().catch(() => {});
+        let tries = 0;
+        let id;
+        const cleanup = () => {
+            clearInterval(id);
+            window.removeEventListener("pointerdown", onGesture);
+            window.removeEventListener("touchstart", onGesture);
+            window.removeEventListener("scroll", onGesture);
+            document.removeEventListener("visibilitychange", onVis);
+        };
+        const tryPlay = () => {
+            const v = refs[0].current;
+            if (!v) return;
+            if (!v.paused) { cleanup(); return; }
+            v.play().then(() => cleanup()).catch(() => {});
+        };
+        const onGesture = () => tryPlay();
+        const onVis = () => { if (!document.hidden) tryPlay(); };
+        id = setInterval(() => {
+            tryPlay();
+            if (++tries >= 20) clearInterval(id); // ~5s of retries
+        }, 250);
+        window.addEventListener("pointerdown", onGesture, { passive: true });
+        window.addEventListener("touchstart", onGesture, { passive: true });
+        window.addEventListener("scroll", onGesture, { passive: true });
+        document.addEventListener("visibilitychange", onVis);
+        tryPlay();
+        return cleanup;
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
@@ -107,8 +139,19 @@ export default function HeroVideo() {
 
     return (
         <div
-            className="pointer-events-none fixed inset-0 z-0 overflow-hidden"
-            style={{ opacity: fade, transition: "opacity 120ms linear" }}
+            /* Anchored at the top and made TALLER than the viewport (extra
+               160px below the fold). On iOS Safari the bottom toolbar shows/
+               hides as you scroll, which changes the visual-viewport height; a
+               plain `inset-0` fixed layer briefly exposes the light page
+               background at the bottom during that swing (the "bottom flicker").
+               Overscanning past the bottom keeps the dark video covering that
+               whole toolbar-swing band, so nothing flashes through. */
+            className="pointer-events-none fixed left-0 top-0 z-0 w-full overflow-hidden"
+            style={{
+                height: "calc(100vh + 160px)",
+                opacity: fade,
+                transition: "opacity 120ms linear",
+            }}
             aria-hidden="true"
         >
             {CLIPS.map((src, i) => (
@@ -128,7 +171,16 @@ export default function HeroVideo() {
                     onTimeUpdate={onTimeUpdate(i)}
                     onEnded={onEnded(i)}
                     className="absolute inset-0 h-full w-full object-cover transition-opacity duration-700 ease-in-out"
-                    style={{ opacity: active === i ? 1 : 0 }}
+                    /* Promote each clip to its own GPU layer. Two stacked
+                       hardware-decoded videos compositing on iOS is fragile;
+                       the translateZ/backface hints stabilise the crossfade and
+                       stop edge repaint flicker. */
+                    style={{
+                        opacity: active === i ? 1 : 0,
+                        transform: "translateZ(0)",
+                        backfaceVisibility: "hidden",
+                        willChange: "opacity",
+                    }}
                 />
             ))}
 

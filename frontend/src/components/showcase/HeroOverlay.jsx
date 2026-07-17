@@ -5,13 +5,23 @@ export default function HeroOverlay() {
             data-testid="hero-overlay"
             className="pointer-events-none absolute inset-0 z-20 flex flex-col items-center justify-center text-center"
         >
-            <span
+            {/* Eyebrow + prominent CATEGORY badge (Water Gun). Highlighted as a
+                solid accent pill so the "what is this" cue is unmistakable on
+                the opening screen. Both sit in #hero-eyebrow so the scroll
+                timeline fades them out together as the gun zooms in. */}
+            <div
                 id="hero-eyebrow"
                 data-testid="hero-eyebrow"
-                className="font-mono-tactical text-xs font-bold uppercase tracking-[0.5em] text-[color:var(--accent)] mb-6"
+                className="mb-6 flex flex-col items-center gap-3"
             >
-                /// SONIQ Toys · 2026
-            </span>
+                <span className="font-mono-tactical text-xs font-bold uppercase tracking-[0.5em] text-[color:var(--accent)]">
+                    /// SONIQ Toys · 2026
+                </span>
+                <span className="inline-flex items-center gap-2 rounded-full bg-[color:var(--accent)] px-4 py-1.5 font-inter text-[12px] font-bold uppercase tracking-[0.28em] text-white shadow-[0_8px_20px_-8px_rgba(0,0,0,0.5)] sm:text-[13px]">
+                    <span className="inline-block h-1.5 w-1.5 rounded-full bg-white/90" />
+                    Water Gun
+                </span>
+            </div>
 
             <h1
                 id="hero-wordmark"
