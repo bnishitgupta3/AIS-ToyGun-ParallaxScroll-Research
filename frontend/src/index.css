@@ -310,6 +310,17 @@ body.loading .sway {
         animation: none;
     }
 }
+
+/* ── Top announcement marquee ── seamless infinite scroll via transform
+   (GPU-composited, cheap). Two copies in .marquee-track; -50% == one copy. */
+@media (prefers-reduced-motion: no-preference) {
+    .marquee-track { animation: marqueeScroll 26s linear infinite; }
+}
+body.loading .marquee-track { animation-play-state: paused; }
+@keyframes marqueeScroll {
+    from { transform: translateX(0); }
+    to   { transform: translateX(-50%); }
+}
 @keyframes swayLoop {
     0%, 100% { transform: rotate(-3deg); }
     50%      { transform: rotate(3deg); }

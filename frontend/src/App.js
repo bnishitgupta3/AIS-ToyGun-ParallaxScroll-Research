@@ -20,6 +20,7 @@ import CrimsonBlasterShowcase from "@/pages/CrimsonBlasterShowcase";
 import RouteSeo              from "@/components/seo/RouteSeo";
 import BuyNowSheet           from "@/components/landing/BuyNowSheet";
 import CookieConsent         from "@/components/CookieConsent";
+import TopMarquee            from "@/components/landing/TopMarquee";
 import { CartProvider, useCart } from "@/lib/cart";
 import { trackPageview } from "@/lib/analytics";
 
@@ -111,6 +112,7 @@ function App() {
             <BodyReveal />
             <RouteSeo />
             <Analytics />
+            <TopMarquee />
             <CookieConsent />
             <GlobalBuyNowSheet />
             <Routes>
