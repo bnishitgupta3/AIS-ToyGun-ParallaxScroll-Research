@@ -280,7 +280,7 @@ export default function ProductShowcaseTemplate({ product: rawProduct }) {
                                 </span>
                                 {product.category && (
                                     <span
-                                        className="inline-flex items-center gap-2 rounded-full px-4 py-1.5 font-inter text-[12px] font-bold uppercase tracking-[0.28em] text-white shadow-[0_8px_20px_-8px_rgba(0,0,0,0.5)] sm:text-[13px]"
+                                        className="brutal wobble inline-flex items-center gap-2 rounded-full px-4 py-1.5 font-inter text-[12px] font-bold uppercase tracking-[0.28em] text-white sm:text-[13px]"
                                         style={{ background: product.accentColor }}
                                     >
                                         <span className="inline-block h-1.5 w-1.5 rounded-full bg-white/90" />

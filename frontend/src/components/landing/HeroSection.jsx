@@ -56,7 +56,8 @@ export default function HeroSection({ heroRef }) {
                 >
                     Holi to high-noon,
                     <br />
-                    <span className="text-white/55">soak every moment.</span>
+                    {/* Two-tone emphasis — the payoff line in the brand accent. */}
+                    <span className="text-[#f97316]">soak every moment.</span>
                 </motion.h1>
 
                 <motion.p

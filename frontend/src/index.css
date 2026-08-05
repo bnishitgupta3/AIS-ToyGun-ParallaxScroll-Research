@@ -208,14 +208,51 @@ body.sheet-open .section-dots {
    .font-logo     → Instrument Serif  (the SONIQ logo only) */
 .font-display {
     font-family: var(--font-display);
-    font-weight: 500;
-    letter-spacing: -0.01em;
+    font-weight: 600;
+    letter-spacing: -0.02em;
     line-height: 0.95;
 }
 
 /* Logo keeps the original serif wordmark — excluded from the display swap. */
 .font-logo {
     font-family: var(--font-logo);
+}
+
+/* ── Vibrancy kit (new-age D2C, dogggystyle-inspired) ────────────────────
+   All OPT-IN: nothing changes unless a class is applied to an element. */
+
+/* Punchier headlines: the Tailwind `font-instrument` utility carries no
+   weight, so give it the same bold display weight as `.font-display`. */
+.font-instrument {
+    font-weight: 600;
+    letter-spacing: -0.02em;
+}
+
+/* Two-tone headline emphasis — colour a word/phrase in a brand accent. */
+.hl        { color: var(--accent); }
+.hl-red    { color: #ef4444; }
+.hl-blue   { color: #0871e7; }
+.hl-yellow { color: #f5b301; }
+
+/* Neo-brutalist box — hard border + solid offset shadow (no blur). Pair with
+   a rounded radius from the element itself; these only add border + shadow. */
+.brutal {
+    border: 2px solid #1a1a1a;
+    box-shadow: 4px 4px 0 0 #1a1a1a;
+}
+.brutal-accent {
+    border: 2px solid #1a1a1a;
+    box-shadow: 4px 4px 0 0 var(--accent);
+}
+
+/* Playful hover wobble for display headings — motion-safe. */
+@media (prefers-reduced-motion: no-preference) {
+    .wobble {
+        transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    .wobble:hover {
+        transform: rotate(-1.4deg) scale(1.015);
+    }
 }
 
 .font-mono-tactical {
