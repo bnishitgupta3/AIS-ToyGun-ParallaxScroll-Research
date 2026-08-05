@@ -291,6 +291,25 @@ body.sheet-open .section-dots {
     0%   { background-position: 0% 50%; }
     100% { background-position: 260% 50%; }
 }
+
+/* ── Animation PERF guards ───────────────────────────────────────────────
+   1) Never run decorative loops during the critical load (body.loading) —
+      keep the main thread free for the WebGL/video work.
+   2) The gradient shimmer animates background-position, which REPAINTS the
+      text every frame; kill that repaint on phones (keep the static colour)
+      so it never competes with the 3-D canvas on mobile. Sway uses transform
+      (GPU-composited, cheap) so it may stay. */
+body.loading .text-shimmer,
+body.loading .text-shimmer-cool,
+body.loading .sway {
+    animation: none !important;
+}
+@media (max-width: 767px) {
+    .text-shimmer,
+    .text-shimmer-cool {
+        animation: none;
+    }
+}
 @keyframes swayLoop {
     0%, 100% { transform: rotate(-3deg); }
     50%      { transform: rotate(3deg); }

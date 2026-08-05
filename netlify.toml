@@ -1,0 +1,29 @@
+# Production hosting on a real CDN (Netlify) — fixes the slow/failing quick-tunnel.
+#
+# One-time setup: app.netlify.com -> Add new site -> Import from Git -> pick this
+# repo. Netlify auto-reads the settings below; no manual config needed. You get a
+# permanent, globally-CDN-cached URL (e.g. https://<site>.netlify.app) that serves
+# the 3D/video assets from the edge — no laptop, no bandwidth cap, survives restarts.
+#
+# (Cloudflare Pages works equally well and ignores this file — use:
+#  Root dir = frontend, Build command = npm run build, Output dir = build.)
+
+[build]
+  base = "frontend"
+  command = "npm run build"
+  publish = "build"
+
+# SPA client-side routing fallback is already provided by frontend/public/_redirects
+# (/*  /index.html  200), which CRA copies into the publish dir.
+
+# Long-cache the fingerprinted static bundles (CRA hashes them, so this is safe).
+[[headers]]
+  for = "/static/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+# Cache the heavy 3D/video assets at the edge for a day (tune as needed).
+[[headers]]
+  for = "/assets/*"
+  [headers.values]
+    Cache-Control = "public, max-age=86400"
