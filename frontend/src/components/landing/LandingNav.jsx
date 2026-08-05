@@ -87,7 +87,7 @@ export default function LandingNav() {
                     <Link
                         to="/"
                         onClick={goHome}
-                        className="font-instrument text-[28px] leading-none tracking-tight text-[#1a1a1a] select-none"
+                        className="font-logo text-[28px] leading-none tracking-tight text-[#1a1a1a] select-none"
                     >
                         SONIQ
                     </Link>

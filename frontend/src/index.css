@@ -35,6 +35,16 @@
        this so it clears the toolbar when present and sits flush when it's not.
        0 on desktop (vh == dvh). Default 0px is the safe pre-dvh fallback. */
     --chrome-bottom: 0px;
+
+    /* Brand DISPLAY / headline font. Fredoka is a license-clean (OFL) stand-in
+       for Hinato's bold, rounded, cheerful character, loaded via Google Fonts
+       (already trusted by this project — no new CDN). Everything that used the
+       old display serif now reads from this var, so swapping to a licensed
+       Hinato (or Clash Display / Baloo for more punch) is a ONE-LINE change here.
+       The logo is intentionally NOT on this var — it keeps Instrument Serif via
+       the `font-logo` utility. Body / UI / labels stay on Inter (unchanged). */
+    --font-display: "Fredoka", ui-rounded, "Segoe UI", system-ui, sans-serif;
+    --font-logo: "Instrument Serif", serif;
 }
 
 @supports (height: 100dvh) {
@@ -176,9 +186,12 @@ body.sheet-open .section-dots {
     background-size: 20px 20px;
 }
 
-/* ── Custom font utilities (complement Tailwind fontFamily config) ── */
+/* ── Custom font utilities (complement Tailwind fontFamily config) ──
+   NOTE: this .font-instrument overrides the Tailwind token by source order, so
+   it must ALSO point at the display var — otherwise headlines stay on the old
+   serif even though the Tailwind config was repointed. */
 .font-instrument {
-    font-family: "Instrument Serif", serif;
+    font-family: var(--font-display);
 }
 .font-nokia {
     font-family: "Nokia Cellphone FC Small", monospace;
@@ -188,16 +201,21 @@ body.sheet-open .section-dots {
 }
 
 /* SITE-WIDE FONT UNIFICATION
-   .font-display  → Instrument Serif  (all display titles / headings)
-   .font-mono-tactical → Inter         (all technical labels / nav / spec rows)
-   These two utilities are used across the homepage AND every product page,
-   so re-pointing them here propagates the unified type system repo-wide
-   without editing each component. */
+   .font-display  → brand display font (var, Fredoka)  — all display titles /
+                    headings, repo-wide. Re-pointed via --font-display so the
+                    whole type system swaps from one place.
+   .font-mono-tactical → Inter  (all technical labels / nav / spec rows)
+   .font-logo     → Instrument Serif  (the SONIQ logo only) */
 .font-display {
-    font-family: "Instrument Serif", serif;
-    font-weight: 400;
-    letter-spacing: -0.02em;
-    line-height: 0.92;
+    font-family: var(--font-display);
+    font-weight: 500;
+    letter-spacing: -0.01em;
+    line-height: 0.95;
+}
+
+/* Logo keeps the original serif wordmark — excluded from the display swap. */
+.font-logo {
+    font-family: var(--font-logo);
 }
 
 .font-mono-tactical {
