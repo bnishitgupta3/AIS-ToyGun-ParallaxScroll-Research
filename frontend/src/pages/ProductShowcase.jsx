@@ -43,13 +43,23 @@ export default function ProductShowcase() {
             // past the specs panel). Shrink to fit the viewport, and on mobile
             // keep it CENTRED at rest — the full-width opaque panel covers it.
             const aspect  = window.innerWidth / Math.max(1, window.innerHeight);
-            const fit     = Math.min(1, Math.max(0.55, aspect * 1.15));
+            // All three gun models normalise to the SAME 3.2-unit width, so at
+            // the old 0.55 mobile floor a portrait phone rendered the gun almost
+            // edge-to-edge (~98% of the visible width) and clipped the sides
+            // (drum mag / stock). Drive the scale straight off the aspect with a
+            // lower floor so portrait phones show the gun at ~82% width — full
+            // gun, clear side margins — while wide desktops still cap at 1.0.
+            const fit     = Math.min(1, Math.max(0.45, aspect));
             const settleX = window.innerWidth < 768 ? 0 : 1.55;
 
-            // Park the gun just below the frame at rest so the hero stays clean
-            // and the "Scroll to Engage" hint isn't covered by it.
+            // Park the gun low so a SUBTLE slice of it peeks up from the bottom
+            // of the first screen (more intuitive — signals "there's a product
+            // here, scroll to engage"), while staying BELOW the giant wordmark
+            // so it never overlaps the gun name. Same size as before — this is a
+            // pure lift, not a bigger gun. Tune PARK_Y to reveal more / less.
+            const PARK_Y = -1.4;
             group.scale.setScalar(0.3 * fit);
-            group.position.set(0, -2.45, 0);
+            group.position.set(0, PARK_Y, 0);
             group.rotation.set(0, 0, 0);
 
             gsap.set("#specs-panel", { opacity: 0, x: -24 });

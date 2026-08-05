@@ -284,8 +284,16 @@ export default function LandingPage() {
                     {/* ── HERO BACKGROUND VIDEO (z:0 — behind the 3D canvas) ── */}
                     <HeroVideo />
 
-                    {/* Film-grain texture layer (light, subtle on the bright bg) */}
-                    <div className="film-grain" style={{ opacity: 0.03 }} />
+                    {/* Film-grain layer REMOVED — it was `position:fixed;
+                        inset:0; z-index:5; mix-blend-mode:overlay` sitting
+                        directly above the continuously re-rendering WebGL
+                        canvas. mix-blend-mode forces the compositor to read
+                        back and re-blend the whole backdrop every frame, which
+                        on iOS Safari produces a luminance flicker — most
+                        visible over the large FLAT empty area in the bottom
+                        half of the page (content/texture masks it elsewhere).
+                        It rendered at opacity 0.03, i.e. visually negligible,
+                        so dropping it costs nothing and removes the hazard. */}
 
                     {/* ── FIXED GLOBAL 3D CANVAS ── */}
                     <LandingCanvas

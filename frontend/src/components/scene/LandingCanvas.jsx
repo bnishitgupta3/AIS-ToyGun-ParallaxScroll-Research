@@ -63,12 +63,17 @@ function responsiveLayout(width, height) {
         radius: clamp(aspect * 2.3, 1.35, ARC_RADIUS),
         depth:  clamp(aspect * 1.9, 1.4, ARC_DEPTH),
         scale:  clamp(aspect * 0.8, 0.5, 1.0),
-        /* Spyra-style hero: gun centred horizontally, sitting in the LOWER
-           third so the headline + Explore button above it never overlap the
-           gun (the laptop overlap issue). Drops a little further on tall
-           screens, but stays clear of the bottom edge. */
+        /* Spyra-style hero: gun centred horizontally, sitting in the lower
+           third. On desktop it parks at -1.1. On narrow/portrait phones it
+           needs to sit HIGHER, not lower: the fixed canvas is 100vh (larger
+           than the visible area, since the browser's bottom toolbar eats into
+           it), so a gun placed for desktop renders too low on a phone — it
+           dropped into / overlapped the "Scroll to explore" cue at the bottom.
+           So RAISE it on narrow screens (positive offset) to keep it centred in
+           the visible area and clear of both the headline above and the cue
+           below. Desktop (aspect > 0.95) is unchanged. */
         heroX:  0,
-        heroY:  -1.1 - clamp((0.95 - aspect) * 2.2, 0, 1) * 0.4,
+        heroY:  -1.1 + clamp((0.95 - aspect) * 2.2, 0, 1) * 0.2,
     };
 }
 

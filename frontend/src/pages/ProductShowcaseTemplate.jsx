@@ -106,14 +106,23 @@ export default function ProductShowcaseTemplate({ product: rawProduct }) {
             // on mobile keep it CENTRED at rest — the full-width opaque specs
             // panel covers it there, so there's no reason to slide it right.
             const aspect  = window.innerWidth / Math.max(1, window.innerHeight);
-            const fit     = Math.min(1, Math.max(0.55, aspect * 1.15));
+            // All three gun models normalise to the SAME 3.2-unit width, so at
+            // the old 0.55 mobile floor a portrait phone rendered the gun almost
+            // edge-to-edge (~98% of the visible width) and clipped the sides
+            // (drum mag / stock). Drive the scale straight off the aspect with a
+            // lower floor so portrait phones show the gun at ~82% width — full
+            // gun, clear side margins — while wide desktops still cap at 1.0.
+            const fit     = Math.min(1, Math.max(0.45, aspect));
             const settleX = window.innerWidth < 768 ? 0 : 1.55;
 
-            // Park the gun just below the frame at rest so the hero stays clean
-            // and the "Scroll to Engage" hint isn't covered by it. The Phase-A
-            // ease is gentle, so the first scroll lifts it into view smoothly.
+            // Park the gun low so a SUBTLE slice of it peeks up from the bottom
+            // of the first screen (more intuitive — signals "there's a product
+            // here, scroll to engage"), while staying BELOW the giant wordmark
+            // so it never overlaps the gun name. Same size as before — this is a
+            // pure lift, not a bigger gun. Tune PARK_Y to reveal more / less.
+            const PARK_Y = -1.4;
             group.scale.setScalar(0.3 * fit);
-            group.position.set(0, -2.45, 0);
+            group.position.set(0, PARK_Y, 0);
             group.rotation.set(0, 0, 0);
 
             gsap.set("#specs-panel",   { opacity: 0, x: -24 });
@@ -319,16 +328,36 @@ export default function ProductShowcaseTemplate({ product: rawProduct }) {
                                 </span>
                             )}
 
+                            {/* Scroll cue — same left-edge vertical treatment as
+                                the Arsenal (vertical label + capsule + bouncing
+                                down-chevron), so the DOWN direction is
+                                unmistakable and it never fights the centre
+                                column. Anchored BELOW the wordmark block rather
+                                than dead-centre: unlike the Arsenal (heading at
+                                the top), the product hero's giant wordmark is
+                                vertically centred and the longer codes span
+                                nearly the full width on narrow phones. At ~66% it
+                                clears the wordmark (ends ~60%) and the parked gun
+                                (starts ~81%), and the gun only spans ~82% of the
+                                width so this left gutter stays free at every
+                                phase of the demo. */}
                             <div
                                 id="scroll-hint"
-                                className="absolute bottom-16 left-1/2 flex -translate-x-1/2 flex-col items-center gap-2"
+                                className="pointer-events-none absolute left-3 top-[66%] flex -translate-y-1/2 flex-col items-center gap-2.5 sm:left-6"
                             >
-                                <span className="font-mono-tactical text-[10px] uppercase tracking-[0.32em] text-zinc-500">
-                                    Scroll to Engage
+                                <span className="font-mono-tactical text-[10px] font-semibold uppercase tracking-[0.3em] text-zinc-500 [writing-mode:vertical-rl]">
+                                    Scroll
                                 </span>
                                 <div className="relative h-9 w-5 rounded-full border border-zinc-400/70">
                                     <div className="scroll-nub absolute left-1/2 top-1.5 h-1.5 w-1 -translate-x-1/2 rounded-full bg-zinc-700" />
                                 </div>
+                                <svg
+                                    width="12" height="12" viewBox="0 0 24 24" fill="none"
+                                    stroke="currentColor" strokeWidth="2"
+                                    className="animate-bounce text-zinc-400"
+                                >
+                                    <path d="M6 9l6 6 6-6" />
+                                </svg>
                             </div>
                         </div>
 

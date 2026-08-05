@@ -7,7 +7,6 @@ const NAV_LINKS = {
         { label: "MP5K", to: "/product/mp5k" },
         { label: "M416 Water X", to: "/product/m416" },
         { label: "Crimson Blaster", to: "/product/crimson" },
-        { label: "Coming Soon", to: "/coming-soon" },
     ],
     Company: [
         { label: "About", to: "/about" },

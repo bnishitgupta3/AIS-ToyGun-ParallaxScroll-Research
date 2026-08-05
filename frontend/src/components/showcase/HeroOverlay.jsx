@@ -47,17 +47,34 @@ export default function HeroOverlay() {
                 <span className="h-px w-12 bg-zinc-900/30" />
             </div>
 
+            {/* Scroll cue — same left-edge vertical treatment as the Arsenal
+                (vertical label + capsule + bouncing down-chevron), so the DOWN
+                direction is unmistakable and it never fights the centre column.
+                Anchored BELOW the wordmark block rather than dead-centre: unlike
+                the Arsenal (heading at the top), the product hero's giant
+                wordmark is vertically centred and the longer codes span nearly
+                the full width on narrow phones. At ~66% it clears the wordmark
+                (ends ~60%) and the parked gun (starts ~81%), and the gun only
+                spans ~82% of the width so this left gutter stays free at every
+                phase of the demo. */}
             <div
                 id="scroll-hint"
                 data-testid="scroll-hint"
-                className="absolute bottom-16 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2"
+                className="pointer-events-none absolute left-3 top-[66%] flex -translate-y-1/2 flex-col items-center gap-2.5 sm:left-6"
             >
-                <span className="font-mono-tactical text-[10px] uppercase tracking-[0.32em] text-zinc-500">
-                    Scroll to Engage
+                <span className="font-mono-tactical text-[10px] font-semibold uppercase tracking-[0.3em] text-zinc-500 [writing-mode:vertical-rl]">
+                    Scroll
                 </span>
                 <div className="relative h-9 w-5 rounded-full border border-zinc-400/70">
                     <div className="scroll-nub absolute left-1/2 top-1.5 h-1.5 w-1 -translate-x-1/2 rounded-full bg-zinc-700" />
                 </div>
+                <svg
+                    width="12" height="12" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" strokeWidth="2"
+                    className="animate-bounce text-zinc-400"
+                >
+                    <path d="M6 9l6 6 6-6" />
+                </svg>
             </div>
         </div>
     );

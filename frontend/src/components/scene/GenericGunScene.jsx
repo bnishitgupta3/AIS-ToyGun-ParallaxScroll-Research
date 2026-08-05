@@ -29,16 +29,20 @@ export default function GenericGunScene({ modelRef, modelUrl, isFiring }) {
                 no added key/fill light (no extra highlights or hotspots). */}
             <NeutralEnvironment intensity={1.1} />
 
-            <Suspense fallback={null}>
-                <group ref={modelRef}>
+            {/* The ref'd group is OUTSIDE Suspense so it mounts immediately —
+                the scroll-timeline/pin builds right away instead of waiting for
+                the ~6 MB model to download (which locked scrolling for seconds).
+                The model itself streams in via the inner Suspense and fades up. */}
+            <group ref={modelRef}>
+                <Suspense fallback={null}>
                     <GenericGunModel
                         url={modelUrl}
                         isFiring={isFiring}
                         onNozzleResolved={setNozzle}
                     />
                     <WaterStream origin={nozzle} active={isFiring} />
-                </group>
-            </Suspense>
+                </Suspense>
+            </group>
 
             <ContactShadows
                 position={[0, -1.6, 0]}
