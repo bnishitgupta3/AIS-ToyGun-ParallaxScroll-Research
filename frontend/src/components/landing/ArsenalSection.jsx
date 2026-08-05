@@ -267,8 +267,8 @@ export default function ArsenalSection({ arsenalRef, onSelect, activeIndex = 0 }
                             style={{ opacity: i === activeIndex ? 1 : 0 }}
                         >
                             <span
-                                className="font-inter mb-2 inline-block rounded-full border px-2.5 py-0.5 text-[9px] font-semibold uppercase tracking-[0.28em]"
-                                style={{ borderColor: p.accent, color: p.accent }}
+                                className="brutal font-inter mb-2 inline-block rounded-full px-3 py-1 text-[9px] font-bold uppercase tracking-[0.26em] text-white"
+                                style={{ background: p.accent }}
                             >
                                 {p.sub}
                             </span>

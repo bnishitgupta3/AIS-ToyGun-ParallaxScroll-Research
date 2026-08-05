@@ -52,12 +52,14 @@ export default function HeroSection({ heroRef }) {
 
                 <motion.h1
                     variants={rise}
-                    className="font-instrument text-[clamp(38px,8vw,84px)] leading-[0.92] tracking-tight text-white drop-shadow-[0_2px_24px_rgba(0,0,0,0.55)]"
+                    className="font-instrument !font-bold text-[clamp(40px,8.6vw,92px)] leading-[0.88] tracking-tight text-white drop-shadow-[0_2px_24px_rgba(0,0,0,0.55)]"
                 >
-                    Holi to high-noon,
+                    {/* Multi-tone + motion: 'Holi' sways in sunshine yellow,
+                        and the payoff line runs an animated colour gradient. */}
+                    <span className="sway inline-block text-[#f5b301]">Holi</span>{" "}
+                    to high-noon,
                     <br />
-                    {/* Two-tone emphasis — the payoff line in the brand accent. */}
-                    <span className="text-[#f97316]">soak every moment.</span>
+                    <span className="text-shimmer">soak every moment.</span>
                 </motion.h1>
 
                 <motion.p

@@ -255,6 +255,47 @@ body.sheet-open .section-dots {
     }
 }
 
+/* Animated GRADIENT text — a colourful sweep across the letterforms. The
+   gradient is clipped to the glyphs; falls back to a solid accent where
+   background-clip:text is unsupported. Motion added only when motion is OK. */
+.text-shimmer {
+    color: #f97316; /* fallback fill */
+    background-image: linear-gradient(100deg, #f97316 0%, #f5b301 25%, #ef4444 50%, #f5b301 75%, #f97316 100%);
+    background-size: 260% 100%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-position: 0% 50%;
+}
+/* Cool variant (blue→cyan→violet) for blue-accent contexts. */
+.text-shimmer-cool {
+    color: #0871e7;
+    background-image: linear-gradient(100deg, #0871e7 0%, #22d3ee 25%, #6366f1 50%, #22d3ee 75%, #0871e7 100%);
+    background-size: 260% 100%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-position: 0% 50%;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+    .text-shimmer, .text-shimmer-cool { animation: textShimmer 6s linear infinite; }
+    /* Continuous gentle sway for a single playful word. */
+    .sway { display: inline-block; animation: swayLoop 3.2s ease-in-out infinite; transform-origin: 70% 90%; }
+    /* Neo-brutalist press: the element sinks toward its offset shadow on press. */
+    .brutal-press { transition: transform 0.12s ease, box-shadow 0.12s ease; }
+    .brutal-press:hover  { transform: translate(1px, 1px); box-shadow: 3px 3px 0 0 #1a1a1a; }
+    .brutal-press:active { transform: translate(4px, 4px); box-shadow: 0 0 0 0 #1a1a1a; }
+}
+@keyframes textShimmer {
+    0%   { background-position: 0% 50%; }
+    100% { background-position: 260% 50%; }
+}
+@keyframes swayLoop {
+    0%, 100% { transform: rotate(-3deg); }
+    50%      { transform: rotate(3deg); }
+}
+
 .font-mono-tactical {
     font-family: "Inter", ui-sans-serif, system-ui, sans-serif;
     font-weight: 600;
