@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
-import { useCart, PRODUCT_LOOKUP } from "@/lib/cart";
+import { Link } from "react-router-dom";
+import { useCart, PRODUCT_LOOKUP, CATALOG } from "@/lib/cart";
 import NotifyMe from "@/components/showcase/NotifyMe";
 
 /* "Coming soon" + cart-review panel — slides in from the RIGHT on desktop
@@ -29,6 +30,10 @@ export default function BuyNowSheet({ open, product, onClose }) {
         qty,
         ...(PRODUCT_LOOKUP[key] || { name: key.replace(/^\//, ""), sub: "" }),
     }));
+    // Cross-sell — every catalogue product NOT already in the cart. Standard
+    // D2C mini-cart upsell (Away / Warby Parker / Allbirds): let the shopper
+    // build their loadout without leaving the drawer, lifting AOV + conversion.
+    const crossSell = CATALOG.filter((p) => !(items[p.key] > 0));
     // Lock body scroll while open; close on ESC. Adding "sheet-open" to body
     // lets global chrome (nav, section dots) hide itself via CSS.
     useEffect(() => {
@@ -141,9 +146,16 @@ export default function BuyNowSheet({ open, product, onClose }) {
                                     className="flex items-center justify-between gap-3 px-4 py-3"
                                 >
                                     <div className="min-w-0 flex-1">
-                                        <div className="truncate font-instrument text-[17px] leading-tight text-[#1a1a1a]">
+                                        {/* Name links to the product's experience
+                                            page; closing the drawer as we go so it
+                                            doesn't linger over the new route. */}
+                                        <Link
+                                            to={line.key}
+                                            onClick={onClose}
+                                            className="block truncate font-instrument text-[17px] leading-tight text-[#1a1a1a] underline-offset-2 transition hover:underline"
+                                        >
                                             {line.name}
-                                        </div>
+                                        </Link>
                                         {line.sub && (
                                             <div className="font-inter text-[10px] font-medium uppercase tracking-[0.2em] text-[#1a1a1a]/45">
                                                 {line.sub}
@@ -205,6 +217,71 @@ export default function BuyNowSheet({ open, product, onClose }) {
                                 </li>
                             </ul>
                         </>
+                    )}
+
+                    {/* ── Cross-sell / "you might also like" quick-add ──
+                          Add the OTHER blasters straight from the cart. A
+                          launched product gets a one-tap "+ Add"; the pre-launch
+                          one shows a "Soon" tag (no buy path yet). Mirrors the
+                          Arsenal tiles so the flow feels consistent. */}
+                    {crossSell.length > 0 && (
+                        <div className="mt-8">
+                            <div className="font-inter text-[11px] font-semibold uppercase tracking-[0.3em] text-[#1a1a1a]/50">
+                                {hasItems ? "Complete your loadout" : "You might also like"}
+                            </div>
+                            <ul className="mt-3 space-y-2.5">
+                                {crossSell.map((p) => (
+                                    <li
+                                        key={p.key}
+                                        className="flex items-center gap-3 rounded-2xl border border-[#1a1a1a]/10 p-2.5"
+                                    >
+                                        <span
+                                            className="grid h-11 w-11 shrink-0 place-items-center rounded-xl"
+                                            style={{ background: `${p.accent}14` }}
+                                            aria-hidden="true"
+                                        >
+                                            <span
+                                                className="h-2.5 w-6 rounded-full"
+                                                style={{ background: p.accent }}
+                                            />
+                                        </span>
+                                        <div className="min-w-0 flex-1">
+                                            <Link
+                                                to={p.key}
+                                                onClick={onClose}
+                                                className="block truncate font-instrument text-[16px] leading-tight text-[#1a1a1a] underline-offset-2 transition hover:underline"
+                                            >
+                                                {p.name}
+                                            </Link>
+                                            <div className="font-inter text-[10px] font-medium uppercase tracking-[0.2em] text-[#1a1a1a]/45">
+                                                {p.sub}
+                                            </div>
+                                        </div>
+                                        {p.comingSoon ? (
+                                            <span
+                                                className="shrink-0 rounded-full px-3 py-1.5 font-inter text-[10px] font-bold uppercase tracking-[0.18em]"
+                                                style={{ background: `${p.accent}1a`, color: p.accent }}
+                                            >
+                                                Soon
+                                            </span>
+                                        ) : (
+                                            <button
+                                                type="button"
+                                                aria-label={`Add ${p.name} to cart`}
+                                                onClick={() => setQty(p.key, 1)}
+                                                className="inline-flex shrink-0 items-center gap-1 rounded-full px-3.5 py-1.5 font-inter text-[11px] font-semibold uppercase tracking-[0.16em] transition hover:brightness-95"
+                                                style={{ background: `${p.accent}14`, color: p.accent }}
+                                            >
+                                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.8">
+                                                    <path d="M12 5v14M5 12h14" />
+                                                </svg>
+                                                Add
+                                            </button>
+                                        )}
+                                    </li>
+                                ))}
+                            </ul>
+                        </div>
                     )}
 
                     <div className="mt-auto pt-10">
