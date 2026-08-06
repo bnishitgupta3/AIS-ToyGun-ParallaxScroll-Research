@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useCart, useCartItem } from "@/lib/cart";
 import NotifyMe from "@/components/showcase/NotifyMe";
+import DottedArrow from "@/components/landing/DottedArrow";
 
 /* Formspree `source` label per product, so Arsenal signups group with the
    product-page ones (e.g. "launch-crimson-blaster"). */
@@ -453,6 +454,14 @@ export default function ArsenalSection({ arsenalRef, onSelect, activeIndex = 0 }
                 className="absolute bottom-[calc(12.75rem_+_var(--chrome-bottom))] left-1/2 z-30 flex -translate-x-1/2 items-center gap-3 transition-opacity duration-500 sm:gap-4"
                 style={{ opacity: entered ? 1 : 0 }}
             >
+                {/* Dotted arrow nudging toward the weapon tiles — large screens
+                    only (needs the side room; hidden where it'd crowd). */}
+                <div className="pointer-events-none absolute left-full top-1/2 ml-2 hidden -translate-y-1/2 items-center gap-1 text-[#f97316] lg:flex">
+                    <DottedArrow className="shrink-0" />
+                    <span className="font-instrument -rotate-3 whitespace-nowrap text-[15px] font-bold">
+                        pick your weapon
+                    </span>
+                </div>
                 {PRODUCTS.map((p, i) => (
                     /* The tile itself acts as a clickable surface (gun switch).
                        It's a div (not a button) so the cart counter buttons can

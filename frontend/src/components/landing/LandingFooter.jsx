@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { postSignup } from "@/lib/notify";
+import DottedArrow from "@/components/landing/DottedArrow";
 
 const NAV_LINKS = {
     Products: [
@@ -81,6 +82,16 @@ export default function LandingFooter() {
                         <p className="mt-2 text-sm text-zinc-500">
                             New drops, limited colorways, and early access. First in your inbox.
                         </p>
+                        {status !== "success" && (
+                            /* Dotted arrow nudging toward the signup field — large
+                               screens only, points down at the form below. */
+                            <div className="pointer-events-none mt-3 hidden flex-col items-end pr-6 text-[#f5b301] lg:flex">
+                                <span className="font-instrument -rotate-2 text-[15px] font-bold">
+                                    get on the list
+                                </span>
+                                <DottedArrow className="-mt-1 -rotate-90" />
+                            </div>
+                        )}
                         {status === "success" ? (
                             <p className="mt-5 font-mono-tactical text-sm text-orange-400">
                                 You're on the list. ✓

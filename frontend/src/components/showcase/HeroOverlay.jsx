@@ -29,7 +29,9 @@ export default function HeroOverlay() {
                 className="font-display select-none text-[clamp(72px,18vw,300px)] text-zinc-900"
                 style={{ lineHeight: 0.78 }}
             >
-                MP5K
+                {/* Two-tone wordmark — the product name in the brand accent,
+                    SONIQ in ink (matches the homepage's coloured headline words). */}
+                <span className="text-[color:var(--accent)]">MP5K</span>
                 <span className="inline-block translate-y-[0.08em] text-[color:var(--accent)]">
                     ·
                 </span>

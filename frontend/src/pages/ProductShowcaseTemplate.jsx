@@ -296,7 +296,11 @@ export default function ProductShowcaseTemplate({ product: rawProduct }) {
                             >
                                 {product.code.split("·").map((part, i, arr) => (
                                     <span key={i}>
-                                        {part.trim()}
+                                        {/* Two-tone: the product name (first segment)
+                                            in the brand accent, matches the homepage. */}
+                                        <span style={i === 0 ? { color: product.accentColor } : undefined}>
+                                            {part.trim()}
+                                        </span>
                                         {i < arr.length - 1 && (
                                             <span
                                                 className="inline-block translate-y-[0.08em]"

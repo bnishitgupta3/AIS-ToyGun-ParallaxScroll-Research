@@ -333,7 +333,7 @@ body.loading .sway {
     backface-visibility: hidden;
 }
 @media (prefers-reduced-motion: no-preference) {
-    .marquee-track { animation: marqueeScroll 45s linear infinite; }
+    .marquee-track { animation: marqueeScroll 55s linear infinite; }
 }
 /* Pause on hover so a reader can catch a line. (No body.loading pause: that
    class lingers after client-side navigation, which froze the marquee on
