@@ -85,7 +85,7 @@ function BuyNowButton({ onClick }) {
         <button
             type="button"
             onClick={onClick}
-            className="group relative inline-flex items-center gap-2 overflow-hidden rounded-full bg-[#f97316] px-7 py-2.5 font-inter text-[12px] font-semibold uppercase tracking-[0.2em] text-white shadow-[inset_0_-4px_4px_rgba(255,255,255,0.35)] transition-all hover:brightness-110"
+            className="brutal group relative inline-flex items-center gap-2 overflow-hidden rounded-full bg-[#f97316] px-7 py-2.5 font-inter text-[12px] font-semibold uppercase tracking-[0.2em] text-white shadow-[inset_0_-4px_4px_rgba(255,255,255,0.35)] transition-all hover:brightness-110"
         >
             <span
                 aria-hidden="true"
@@ -272,7 +272,10 @@ export default function ArsenalSection({ arsenalRef, onSelect, activeIndex = 0 }
                             >
                                 {p.sub}
                             </span>
-                            <h3 className="font-instrument text-[clamp(26px,4.4vw,40px)] leading-none text-[#1a1a1a]">
+                            <h3
+                                className="font-instrument text-[clamp(26px,4.4vw,40px)] leading-none"
+                                style={{ color: p.accent }}
+                            >
                                 {p.name}
                             </h3>
                             <p className="mt-1.5 font-inter text-[10px] font-medium uppercase tracking-[0.2em] text-[#1a1a1a]/50">
@@ -363,7 +366,7 @@ export default function ArsenalSection({ arsenalRef, onSelect, activeIndex = 0 }
                                     the immersive 3D product page. */}
                                 <Link
                                     to={p.link}
-                                    className="group inline-flex items-center gap-2 rounded-full border border-[#1a1a1a]/30 px-7 py-2.5 font-inter text-[12px] font-semibold uppercase tracking-[0.2em] text-[#1a1a1a] transition-all hover:border-[#1a1a1a] hover:bg-[#1a1a1a] hover:text-white"
+                                    className="brutal group inline-flex items-center gap-2 rounded-full bg-white px-7 py-2.5 font-inter text-[12px] font-semibold uppercase tracking-[0.2em] text-[#1a1a1a] transition-all hover:bg-[#1a1a1a] hover:text-white"
                                 >
                                     Experience it
                                     <svg

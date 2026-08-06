@@ -89,8 +89,8 @@ export default function HeroSection({ heroRef }) {
                     </a>
                     {/* Playful dotted arrow nudging toward the CTA — desktop only
                         (kept off mobile to avoid crowding the centered layout). */}
-                    <div className="pointer-events-none absolute left-full top-1/2 hidden -translate-y-1/2 translate-x-1 items-center gap-1 md:flex">
-                        <DottedArrow className="text-[#f5b301]" flip />
+                    <div className="pointer-events-none absolute left-full top-1/2 hidden -translate-y-1/2 items-center gap-1 md:flex">
+                        <DottedArrow className="text-[#f5b301]" />
                         <span className="font-instrument -rotate-6 whitespace-nowrap text-[15px] font-bold text-[#f5b301] drop-shadow-[0_1px_8px_rgba(0,0,0,0.55)]">
                             psst — start here
                         </span>

@@ -20,7 +20,7 @@ function Copy() {
                     <span className="font-instrument px-5 text-[13px] font-bold uppercase tracking-[0.06em] sm:text-[14px]">
                         {t}
                     </span>
-                    <span className="text-[11px] text-white/75">✦</span>
+                    <span className="text-[12px]" role="img" aria-label="water">💦</span>
                 </span>
             ))}
         </div>

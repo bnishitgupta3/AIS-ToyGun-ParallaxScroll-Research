@@ -9,6 +9,19 @@
     font-display: swap;
 }
 
+/* Hinato — the brand display font (self-hosted, ~38 KB; no external CDN, per
+   our security posture). It's a SINGLE-master display face (weight 400), so we
+   declare it across the full 100–900 range: any font-weight our headings ask
+   for (600/700) then renders Hinato's true design instead of a faux-bold
+   synthesis. It lacks "·" and "✦" glyphs — those fall through to the stack's
+   system fonts (see --font-display). */
+@font-face {
+    font-family: "Hinato";
+    src: url("./fonts/hinato.otf") format("opentype");
+    font-weight: 100 900;
+    font-display: swap;
+}
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -36,14 +49,13 @@
        0 on desktop (vh == dvh). Default 0px is the safe pre-dvh fallback. */
     --chrome-bottom: 0px;
 
-    /* Brand DISPLAY / headline font. Fredoka is a license-clean (OFL) stand-in
-       for Hinato's bold, rounded, cheerful character, loaded via Google Fonts
-       (already trusted by this project — no new CDN). Everything that used the
-       old display serif now reads from this var, so swapping to a licensed
-       Hinato (or Clash Display / Baloo for more punch) is a ONE-LINE change here.
-       The logo is intentionally NOT on this var — it keeps Instrument Serif via
-       the `font-logo` utility. Body / UI / labels stay on Inter (unchanged). */
-    --font-display: "Fredoka", ui-rounded, "Segoe UI", system-ui, sans-serif;
+    /* Brand DISPLAY / headline font — self-hosted Hinato (@font-face above).
+       Everything that used the old display serif reads from this var, so the
+       whole headline system is one swap. System-font fallbacks cover the few
+       glyphs Hinato omits (e.g. "·", "✦"). The logo is intentionally NOT on
+       this var — it keeps Instrument Serif via `font-logo`. Body / UI / labels
+       stay on Inter (unchanged). */
+    --font-display: "Hinato", ui-rounded, "Segoe UI", system-ui, sans-serif;
     --font-logo: "Instrument Serif", serif;
 }
 

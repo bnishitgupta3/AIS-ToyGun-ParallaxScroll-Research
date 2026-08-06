@@ -1,28 +1,29 @@
-/* Playful hand-drawn DOTTED arrow (dogggystyle-style). Inherits `currentColor`,
-   so colour it with a text-* class. `flip` mirrors it horizontally. Decorative
-   only (aria-hidden). Curved dashed shaft + solid arrowhead. */
+/* Playful hand-drawn DOTTED arrow (dogggystyle-style). Points LEFT by default
+   (tip on the left), so placed to the RIGHT of a target it points straight at
+   it. `flip` mirrors it to point right. Inherits `currentColor`; decorative
+   only (aria-hidden). Curved dotted shaft + solid arrowhead. */
 export default function DottedArrow({ className = "", flip = false }) {
     return (
         <svg
             className={className}
             width="96"
-            height="64"
-            viewBox="0 0 96 64"
+            height="60"
+            viewBox="0 0 96 60"
             fill="none"
             aria-hidden="true"
             style={flip ? { transform: "scaleX(-1)" } : undefined}
         >
-            {/* dotted curved shaft */}
+            {/* dotted curved shaft — sweeps from the label (right) to the tip (left) */}
             <path
-                d="M6 10 C 34 2, 66 8, 82 44"
+                d="M90 14 C 62 6, 30 12, 14 30"
                 stroke="currentColor"
                 strokeWidth="3"
                 strokeLinecap="round"
                 strokeDasharray="0.5 9"
             />
-            {/* arrowhead */}
+            {/* arrowhead — tip at the left (~10,30), opening to the right */}
             <path
-                d="M69 38 L84 47 L72 58"
+                d="M28 20 L10 30 L28 40"
                 stroke="currentColor"
                 strokeWidth="3"
                 strokeLinecap="round"
