@@ -80,17 +80,21 @@ export default function MissionSection({ missionRef }) {
                 </span>
 
                 <div className="mt-10 flex flex-wrap items-baseline gap-x-5 gap-y-2">
-                    {WORDS.map(({ text, accent }, i) => (
-                        <span
-                            key={i}
-                            className={`mission-word font-display inline-block text-[clamp(36px,6vw,88px)] leading-[1.0] ${
-                                accent ? "text-orange-500" : "text-white"
-                            }`}
-                            style={{ opacity: 0 }}
-                        >
-                            {text}
-                        </span>
-                    ))}
+                    {WORDS.map(({ text, accent }, i) => {
+                        // The final word gets the animated colour-gradient shimmer.
+                        const isLast = i === WORDS.length - 1;
+                        return (
+                            <span
+                                key={i}
+                                className={`mission-word font-display inline-block text-[clamp(36px,6vw,88px)] leading-[1.0] ${
+                                    isLast ? "text-shimmer" : accent ? "text-orange-500" : "text-white"
+                                }`}
+                                style={{ opacity: 0 }}
+                            >
+                                {text}
+                            </span>
+                        );
+                    })}
                 </div>
 
                 <p className="mt-12 max-w-[54ch] text-base leading-relaxed text-zinc-400 md:text-lg">

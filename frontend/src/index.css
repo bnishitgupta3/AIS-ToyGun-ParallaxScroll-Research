@@ -323,15 +323,22 @@ body.loading .sway {
     }
 }
 
-/* ── Top announcement marquee ── seamless infinite scroll via transform
-   (GPU-composited, cheap). Two copies in .marquee-track; -50% == one copy. */
+/* ── Top announcement marquee ── seamless infinite scroll via transform.
+   Two identical reels in .marquee-track; -50% == exactly one reel. Promoted to
+   its own compositor layer (will-change + translateZ) so the scroll is smooth
+   and never repaints on the main thread alongside the WebGL canvas. */
+.marquee-track {
+    will-change: transform;
+    transform: translateZ(0);
+    backface-visibility: hidden;
+}
 @media (prefers-reduced-motion: no-preference) {
-    .marquee-track { animation: marqueeScroll 26s linear infinite; }
+    .marquee-track { animation: marqueeScroll 45s linear infinite; }
 }
 body.loading .marquee-track { animation-play-state: paused; }
 @keyframes marqueeScroll {
-    from { transform: translateX(0); }
-    to   { transform: translateX(-50%); }
+    from { transform: translate3d(0, 0, 0); }
+    to   { transform: translate3d(-50%, 0, 0); }
 }
 @keyframes swayLoop {
     0%, 100% { transform: rotate(-3deg); }
