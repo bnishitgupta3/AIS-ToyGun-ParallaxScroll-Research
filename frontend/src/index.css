@@ -335,7 +335,10 @@ body.loading .sway {
 @media (prefers-reduced-motion: no-preference) {
     .marquee-track { animation: marqueeScroll 45s linear infinite; }
 }
-body.loading .marquee-track { animation-play-state: paused; }
+/* Pause on hover so a reader can catch a line. (No body.loading pause: that
+   class lingers after client-side navigation, which froze the marquee on
+   non-home pages — and the bar is hidden during the load anyway.) */
+.marquee:hover .marquee-track { animation-play-state: paused; }
 @keyframes marqueeScroll {
     from { transform: translate3d(0, 0, 0); }
     to   { transform: translate3d(-50%, 0, 0); }

@@ -9,11 +9,12 @@
    while the page is still loading. */
 
 const ITEMS = [
-    "Fully Electric · Zero Pumping",
-    "Trigger-Only · Full-Auto Soak",
-    "Made for Holi & Every Sunlit Day",
-    "Free Shipping Across India at Launch",
-    "Backyard Battles, Settled",
+    "Fully electric. Zero pumping, zero priming.",
+    "Just pull the trigger.",
+    "Full-auto soak from a 300ml drum-fed tank.",
+    "Made for Holi mornings and every sunlit day of the year.",
+    "Free shipping across India at launch.",
+    "Backyard battles, settled.",
 ];
 
 /* One reel = the list repeated enough to overflow any viewport. */

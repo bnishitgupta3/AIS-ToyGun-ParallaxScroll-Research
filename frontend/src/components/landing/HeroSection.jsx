@@ -92,7 +92,7 @@ export default function HeroSection({ heroRef }) {
                     <div className="pointer-events-none absolute left-full top-1/2 hidden -translate-y-1/2 items-center gap-1 md:flex">
                         <DottedArrow className="text-[#f5b301]" />
                         <span className="font-instrument -rotate-6 whitespace-nowrap text-[15px] font-bold text-[#f5b301] drop-shadow-[0_1px_8px_rgba(0,0,0,0.55)]">
-                            psst — start here
+                            psst, start here
                         </span>
                     </div>
                 </motion.div>
