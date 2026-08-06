@@ -1,4 +1,4 @@
-import { Suspense, useRef } from "react";
+import { Suspense, useRef, useState, useEffect } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import {
     useGLTF,
@@ -10,10 +10,10 @@ import GenericGunModel from "./GenericGunModel";
 import NeutralEnvironment from "./NeutralEnvironment";
 import { asset } from "@/lib/asset";
 
-/* Pre-warm all three models so Arsenal transitions feel instant */
+/* Pre-warm the HERO gun immediately. The two Arsenal-only guns (~14 MB) are
+   preloaded + mounted after first paint (see the deferred mount in
+   LandingCanvas below) so the hero wins the initial bandwidth. */
 useGLTF.preload(asset("/assets/watergun.glb"));
-useGLTF.preload(asset("/assets/m416-watergun.glb"));
-useGLTF.preload(asset("/assets/crimson-blaster.glb"));
 
 /* World-space layout constants — MUST match LandingPage. */
 export const HERO_GUN_X = 2.4;   // model1's X during the hero (renders in right column)
@@ -41,6 +41,13 @@ const clamp01 = (v) => (v < 0 ? 0 : v > 1 ? 1 : v);
 const focusScale   = (f) => 0.32 + 0.68 * Math.pow(f, 1.3);  // 1.0 front → ~0.43 sides
 const focusOpacity = (f) => 0.28 + 0.72 * Math.pow(f, 1.8);  // 1.0 front → ~0.34 sides
 
+/* Pre-launch guns render permanently dimmed — even when swung to the front
+   slot — so an un-launched product reads as a faded "coming soon" teaser.
+   Index matches the model order below == the Arsenal PRODUCTS order:
+   [0] MP5K, [1] M416, [2] Crimson (pre-launch). Flip 2 → false on launch. */
+const COMING_SOON      = [false, false, true];
+const COMING_SOON_FADE = 0.32;  // multiplier on target opacity for a teaser gun
+
 const clamp = (v, a, b) => (v < a ? a : v > b ? b : v);
 
 /* ── Responsive layout from viewport aspect ──
@@ -56,23 +63,27 @@ function responsiveLayout(width, height) {
         radius: clamp(aspect * 2.3, 1.35, ARC_RADIUS),
         depth:  clamp(aspect * 1.9, 1.4, ARC_DEPTH),
         scale:  clamp(aspect * 0.8, 0.5, 1.0),
-        /* Spyra-style hero: gun centred horizontally, sitting in the LOWER
-           third so the headline + Explore button above it never overlap the
-           gun (the laptop overlap issue). Drops a little further on tall
-           screens, but stays clear of the bottom edge. */
+        /* Spyra-style hero: gun centred horizontally, sitting in the lower
+           third. On desktop it parks at -1.1. On narrow/portrait phones it
+           needs to sit HIGHER, not lower: the fixed canvas is 100vh (larger
+           than the visible area, since the browser's bottom toolbar eats into
+           it), so a gun placed for desktop renders too low on a phone — it
+           dropped into / overlapped the "Scroll to explore" cue at the bottom.
+           So RAISE it on narrow screens (positive offset) to keep it centred in
+           the visible area and clear of both the headline above and the cue
+           below. Desktop (aspect > 0.95) is unchanged. */
         heroX:  0,
-        heroY:  -1.1 - clamp((0.95 - aspect) * 2.2, 0, 1) * 0.4,
+        heroY:  -1.1 + clamp((0.95 - aspect) * 2.2, 0, 1) * 0.2,
     };
 }
 
 /* ── Scene graph — must live inside <Canvas> ── */
-function LandingScene({ model1Ref, model2Ref, model3Ref, mouseRef, scrollRef }) {
+function LandingScene({ model1Ref, model2Ref, model3Ref, mouseRef, scrollRef, secondaryReady }) {
     const { size } = useThree();
-    /* On (re)mount the gun groups start at origin (0,0,0). Without this, the
-       first frames would DAMP them from centre to their hero poses — making
-       e.g. the Crimson gun visibly fly across the hero when you return to the
-       homepage. We snap straight to target on the first fully-loaded frame. */
-    const firstFrame = useRef(true);
+    /* Each gun snaps straight to its target on the FIRST frame it's processed
+       (tracked per-object via userData.placed), then damps. This means a gun
+       that mounts late (the two Arsenal guns are deferred for load perf) drops
+       into place instead of flying in from the origin (0,0,0). */
     /*
      * BUTTERY CAROUSEL CORE
      * ─────────────────────
@@ -108,13 +119,13 @@ function LandingScene({ model1Ref, model2Ref, model3Ref, mouseRef, scrollRef }) 
         // clamp dt so a tab-switch frame-spike can't teleport the guns
         const d = Math.min(dt, 1 / 30);
 
-        // First fully-loaded frame snaps to target; afterwards we damp.
-        const snap = firstFrame.current;
-        const ap = (cur, tgt) => (snap ? tgt : damp(cur, tgt, DAMP_LAMBDA, d));
-
         for (let i = 0; i < guns.length; i++) {
             const g = guns[i];
             if (!g) continue;
+
+            // Snap this gun to target on its first processed frame, then damp.
+            const snapThis = !g.userData.placed;
+            const ap = (cur, tgt) => (snapThis ? tgt : damp(cur, tgt, DAMP_LAMBDA, d));
 
             /* — Carousel pose for slot i — */
             const phi  = (i - activePos) * SLOT_ANGLE;
@@ -142,7 +153,8 @@ function LandingScene({ model1Ref, model2Ref, model3Ref, mouseRef, scrollRef }) 
             const tY = lerp(hY, 0,  entry);
             const tZ = lerp(0,  cZ, entry);
             const tS = lerp(0.85, cS, entry) * R.scale;    // hero gun a touch smaller; arsenal unaffected
-            const tO = lerp(1,  cO, entry);  // fully opaque in hero, fades on the arc
+            let   tO = lerp(1,  cO, entry);  // fully opaque in hero, fades on the arc
+            if (COMING_SOON[i]) tO *= COMING_SOON_FADE;  // teaser guns stay dimmed
             let   tRotY = lerp(0, cRotY, entry);
             let   tRotX = 0;
 
@@ -161,34 +173,49 @@ function LandingScene({ model1Ref, model2Ref, model3Ref, mouseRef, scrollRef }) 
             const ns = ap(g.scale.x, tS);
             g.scale.setScalar(ns);
 
-            /* — Fade the non-focused guns (like the 40% thumbnails) — */
+            /* — Fade the non-focused guns (like the 40% thumbnails) —
+               Cache each gun's material list once (traversing the scene graph
+               every frame was a big cost) and only write opacity when it
+               actually changes, so a settled gun costs nothing here. */
             const op = ap(g.userData.op ?? 1, tO);
             g.userData.op = op;
-            g.traverse((o) => {
-                if (o.isMesh && o.material) {
-                    const mats = Array.isArray(o.material) ? o.material : [o.material];
-                    for (let k = 0; k < mats.length; k++) mats[k].opacity = op;
-                }
-            });
-        }
+            let mats = g.userData.mats;
+            if (!mats || mats.length === 0) {
+                mats = [];
+                g.traverse((o) => {
+                    if (o.isMesh && o.material) {
+                        const list = Array.isArray(o.material) ? o.material : [o.material];
+                        for (let k = 0; k < list.length; k++) mats.push(list[k]);
+                    }
+                });
+                g.userData.mats = mats;
+                g.userData.appliedOp = undefined; // apply now that we have mats
+            }
+            if (
+                mats.length &&
+                (g.userData.appliedOp === undefined ||
+                    Math.abs(op - g.userData.appliedOp) > 0.002)
+            ) {
+                for (let k = 0; k < mats.length; k++) mats[k].opacity = op;
+                g.userData.appliedOp = op;
+            }
 
-        // Once all three guns exist and have been placed, leave snap mode.
-        if (snap && guns.every(Boolean)) firstFrame.current = false;
+            g.userData.placed = true;
+        }
     });
 
     return (
         <>
-            {/* Neutral, even lighting — shows the asset at its true brightness.
-                NeutralEnvironment provides soft IBL so PBR/metal reads correctly;
-                a low ambient + one gentle key light add minimal form. */}
+            {/* Neutral IBL only — soft, even RoomEnvironment lighting so PBR/
+                metal reads at its true brightness, with NO added key/fill light
+                (removes the extra highlights/hotspots on the guns). */}
             <NeutralEnvironment intensity={1.1} />
-            <ambientLight intensity={0.55} />
-            <directionalLight position={[3, 6, 5]} intensity={0.5} color="#ffffff" />
 
-            {/* Slow, out-of-focus particles behind the guns — premium depth */}
+            {/* Slow, out-of-focus particles behind the guns — premium depth.
+                Trimmed count for cheaper per-frame animation. */}
             <Sparkles
                 position={[0, 0, -4]}
-                count={50}
+                count={20}
                 scale={12}
                 size={2}
                 speed={0.2}
@@ -203,24 +230,33 @@ function LandingScene({ model1Ref, model2Ref, model3Ref, mouseRef, scrollRef }) 
                 </Suspense>
             </group>
 
-            {/* Product 2 – M416 Water X  (arsenal slot 1) */}
-            <group ref={model2Ref}>
-                <Suspense fallback={null}>
-                    <GenericGunModel url={asset("/assets/m416-watergun.glb")} targetSize={2.8} />
-                </Suspense>
-            </group>
+            {/* Products 2 & 3 (M416, Crimson) — Arsenal-only guns, mounted after
+                first paint (secondaryReady) so they don't slow the hero load.
+                They snap into their parked poses when they appear. */}
+            {secondaryReady && (
+                <>
+                    {/* Product 2 – M416 Water X  (arsenal slot 1) */}
+                    <group ref={model2Ref}>
+                        <Suspense fallback={null}>
+                            <GenericGunModel url={asset("/assets/m416-watergun.glb")} targetSize={2.8} />
+                        </Suspense>
+                    </group>
 
-            {/* Product 3 – Crimson Blaster  (arsenal slot 2) */}
-            <group ref={model3Ref}>
-                <Suspense fallback={null}>
-                    <GenericGunModel url={asset("/assets/crimson-blaster.glb")} targetSize={2.8} />
-                </Suspense>
-            </group>
+                    {/* Product 3 – Crimson Blaster  (arsenal slot 2) */}
+                    <group ref={model3Ref}>
+                        <Suspense fallback={null}>
+                            <GenericGunModel url={asset("/assets/crimson-blaster.glb")} targetSize={2.8} />
+                        </Suspense>
+                    </group>
+                </>
+            )}
 
-            {/* Grounded contact shadow under the active model area */}
+            {/* Grounded contact shadow under the active model area.
+                512 resolution (from 1024) — 4x fewer pixels to re-render each
+                frame, visually near-identical under the soft blur. */}
             <ContactShadows
                 position={[0, -1.6, 0]}
-                resolution={1024}
+                resolution={512}
                 scale={10}
                 blur={2}
                 opacity={0.5}
@@ -232,15 +268,59 @@ function LandingScene({ model1Ref, model2Ref, model3Ref, mouseRef, scrollRef }) 
 }
 
 export default function LandingCanvas({ model1Ref, model2Ref, model3Ref, mouseRef, scrollRef }) {
+    /* Defer the two Arsenal guns (~14 MB) so the hero + first gun win the
+       initial bandwidth. Mount them after a short beat, or immediately on the
+       first scroll (whichever comes first) — always well before the user
+       reaches the Arsenal carousel. Preload the models as we flip so they warm
+       just before mounting. */
+    const [secondaryReady, setSecondaryReady] = useState(false);
+    useEffect(() => {
+        let done = false;
+        const ready = () => {
+            if (done) return;
+            done = true;
+            useGLTF.preload(asset("/assets/m416-watergun.glb"));
+            useGLTF.preload(asset("/assets/crimson-blaster.glb"));
+            setSecondaryReady(true);
+            window.removeEventListener("scroll", ready);
+        };
+        const t = setTimeout(ready, 1200);
+        window.addEventListener("scroll", ready, { passive: true });
+        return () => {
+            clearTimeout(t);
+            window.removeEventListener("scroll", ready);
+        };
+    }, []);
+
     return (
         <Canvas
             camera={{ position: [0, 0.15, 7.5], fov: 40 }}
-            dpr={[1, 2]}
-            gl={{ antialias: true, alpha: true, toneMapping: THREE.NeutralToneMapping }}
+            /* Cap devicePixelRatio at 1.5: on a 2x Retina screen this is ~1.8x
+               fewer pixels to shade every frame — the single biggest smoothness
+               win — with barely perceptible sharpness loss under antialiasing. */
+            dpr={[1, 1.5]}
+            gl={{
+                antialias: true,
+                alpha: true,
+                powerPreference: "high-performance",
+                toneMapping: THREE.NeutralToneMapping,
+            }}
+            /* Don't re-measure the canvas on scroll. Combined with the constant
+               100vh height below, this stops iOS Safari's toolbar show/hide (a
+               scroll side-effect) from resizing the WebGL drawing buffer mid-
+               scroll — which was jittering the contact shadow and flickering
+               the bottom band. */
+            resize={{ scroll: false }}
             style={{
                 position: "fixed",
                 top: 0, left: 0,
-                width: "100%", height: "100%",
+                /* height MUST be 100vh, not 100%. On iOS Safari `height:100%`
+                   on a fixed element tracks the *visual* viewport, which grows/
+                   shrinks as the bottom toolbar collapses/expands during scroll;
+                   that resized the canvas every frame and made the ground shadow
+                   flicker at the bottom. `100vh` is the constant large-viewport
+                   height there, so the buffer size stays put through the swing. */
+                width: "100%", height: "100vh",
                 zIndex: 1,
                 background: "transparent",
                 pointerEvents: "none",
@@ -252,6 +332,7 @@ export default function LandingCanvas({ model1Ref, model2Ref, model3Ref, mouseRe
                 model3Ref={model3Ref}
                 mouseRef={mouseRef}
                 scrollRef={scrollRef}
+                secondaryReady={secondaryReady}
             />
         </Canvas>
     );

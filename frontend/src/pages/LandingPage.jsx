@@ -3,6 +3,7 @@ import { useLocation } from "react-router-dom";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { ScrollToPlugin } from "gsap/ScrollToPlugin";
+import { scrollToSection } from "@/lib/scrollToSection";
 import { useProgress } from "@react-three/drei";
 
 import LandingCanvas, { HERO_GUN_X, GUN_SPACING } from "@/components/scene/LandingCanvas";
@@ -11,7 +12,8 @@ import HeroVideo      from "@/components/landing/HeroVideo";
 import HeroSection    from "@/components/landing/HeroSection";
 import ArsenalSection from "@/components/landing/ArsenalSection";
 import MissionSection from "@/components/landing/MissionSection";
-import FieldTestSection from "@/components/landing/FieldTestSection";
+// Hidden until real UGC videos are ready — see section 4 in the render below.
+// import FieldTestSection from "@/components/landing/FieldTestSection";
 import LandingFooter  from "@/components/landing/LandingFooter";
 import SectionDots    from "@/components/landing/SectionDots";
 import { isPrerendering } from "@/lib/isPrerendering";
@@ -136,18 +138,41 @@ export default function LandingPage() {
 
     /* ── Cross-page section nav ──
        When the global navbar sends us here from another route (e.g. /about →
-       "Mission"), it passes the target anchor via router state. Scroll to it
-       once the layout / ScrollTrigger have settled (and after ScrollToTop has
-       reset to the top). */
+       "Mission"), it passes the target anchor via router state. We must wait
+       for the Arsenal PIN to be built before scrolling: until then the pin's
+       spacer doesn't exist, so a section after the Arsenal (Mission/Footer)
+       still sits at its naive DOM offset — scrolling there lands you inside
+       the pinned carousel. Poll for arsenalST (set once the guns load and the
+       timeline is built), then refresh + scroll. */
     const location = useLocation();
     useEffect(() => {
         const target = location.state?.scrollTo;
         if (!target) return;
-        const id = setTimeout(() => {
-            document.querySelector(target)?.scrollIntoView({ behavior: "smooth" });
+        let cancelled = false;
+        let tries = 0;
+        const attempt = () => {
+            if (cancelled) return;
+            // Wait for the pin (or bail after ~6s so we never hang).
+            if (!arsenalST.current && tries < 60) {
+                tries += 1;
+                setTimeout(attempt, 100);
+                return;
+            }
+            ScrollTrigger.refresh(); // rebuild pin spacer so positions are final
+            // A short beat lets the refreshed layout settle before we measure
+            // the target's position (setTimeout, not rAF — rAF is unreliable
+            // in some embedded browsers).
+            setTimeout(() => {
+                if (!cancelled) scrollToSection(target);
+            }, 60);
             window.history.replaceState({}, ""); // don't re-scroll on back/refresh
-        }, 700);
-        return () => clearTimeout(id);
+        };
+        // Small initial delay so ScrollToTop's reset-to-0 lands first.
+        const id = setTimeout(attempt, 200);
+        return () => {
+            cancelled = true;
+            clearTimeout(id);
+        };
     }, [location.state]);
 
     /* ── GSAP scroll orchestration ── */
@@ -259,8 +284,16 @@ export default function LandingPage() {
                     {/* ── HERO BACKGROUND VIDEO (z:0 — behind the 3D canvas) ── */}
                     <HeroVideo />
 
-                    {/* Film-grain texture layer (light, subtle on the bright bg) */}
-                    <div className="film-grain" style={{ opacity: 0.03 }} />
+                    {/* Film-grain layer REMOVED — it was `position:fixed;
+                        inset:0; z-index:5; mix-blend-mode:overlay` sitting
+                        directly above the continuously re-rendering WebGL
+                        canvas. mix-blend-mode forces the compositor to read
+                        back and re-blend the whole backdrop every frame, which
+                        on iOS Safari produces a luminance flicker — most
+                        visible over the large FLAT empty area in the bottom
+                        half of the page (content/texture masks it elsewhere).
+                        It rendered at opacity 0.03, i.e. visually negligible,
+                        so dropping it costs nothing and removes the hazard. */}
 
                     {/* ── FIXED GLOBAL 3D CANVAS ── */}
                     <LandingCanvas
@@ -289,8 +322,11 @@ export default function LandingPage() {
                 {/* 3 — MISSION (dark contrast section) */}
                 <MissionSection missionRef={missionRef} />
 
-                {/* 4 — FIELD TEST */}
-                <FieldTestSection />
+                {/* 4 — FIELD TEST (UGC) — hidden until real creator videos are
+                    ready. To restore: uncomment <FieldTestSection /> below and
+                    its import, and re-add the "Field Test" entries in
+                    LandingNav (SECTION_LINKS) and SectionDots (SECTIONS). */}
+                {/* <FieldTestSection /> */}
 
                 {/* 5 — FOOTER */}
                 <LandingFooter />

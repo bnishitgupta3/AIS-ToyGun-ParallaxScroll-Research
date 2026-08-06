@@ -25,9 +25,9 @@ export default function FAQPage() {
             <Section heading="Are they safe for children?">
                 <p>
                     Our products are recreational water toys meant for fun under
-                    appropriate adult supervision. We recommend them for ages 14 and
+                    appropriate adult supervision. We recommend them for ages 4 and
                     up. For hygiene and safety, gel-bead products must be kept away
-                    from young children and never aimed at the face or eyes.
+                    from very young children and never aimed at the face or eyes.
                 </p>
             </Section>
 

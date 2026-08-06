@@ -12,28 +12,37 @@ export default function WaterGunScene({ modelRef, isFiring }) {
     return (
         <Canvas
             camera={{ position: [0, 0.2, 6.2], fov: 35 }}
-            dpr={[1, 2]}
-            gl={{ antialias: true, alpha: true, toneMapping: THREE.NeutralToneMapping }}
+            dpr={[1, 1.5]}
+            gl={{
+                antialias: true,
+                alpha: true,
+                powerPreference: "high-performance",
+                toneMapping: THREE.NeutralToneMapping,
+            }}
             style={{ background: "transparent" }}
         >
-            {/* Neutral, even lighting — shows the asset at its true brightness */}
+            {/* Neutral IBL only — shows the asset at its true brightness with
+                no added key/fill light (no extra highlights or hotspots). */}
             <NeutralEnvironment intensity={1.1} />
-            <ambientLight intensity={0.55} />
-            <directionalLight position={[3, 6, 5]} intensity={0.5} color="#ffffff" />
 
-            <Suspense fallback={null}>
-                <group ref={modelRef}>
+            {/* The ref'd group is OUTSIDE Suspense so it mounts immediately —
+                the scroll-timeline/pin builds right away instead of waiting for
+                the ~7 MB model to download (which locked scrolling for seconds
+                on the MP5K page). The model itself streams into the already-
+                parked group via the inner Suspense once it resolves. */}
+            <group ref={modelRef}>
+                <Suspense fallback={null}>
                     <WaterGunModel
                         isFiring={isFiring}
                         onNozzleResolved={setNozzle}
                     />
                     <WaterStream origin={nozzle} active={isFiring} />
-                </group>
-            </Suspense>
+                </Suspense>
+            </group>
 
             <ContactShadows
                 position={[0, -1.6, 0]}
-                resolution={1024}
+                resolution={512}
                 scale={10}
                 blur={2}
                 opacity={0.5}

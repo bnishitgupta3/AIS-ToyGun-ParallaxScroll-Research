@@ -13,9 +13,11 @@ import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 import LandingNav from "@/components/landing/LandingNav";
+import SectionDots from "@/components/landing/SectionDots";
 import GenericGunScene from "@/components/scene/GenericGunScene";
 import ParallaxBackground from "@/components/showcase/ParallaxBackground";
 import ProductActions from "@/components/showcase/ProductActions";
+import NotifyMe from "@/components/showcase/NotifyMe";
 import AlsoInArsenal from "@/components/showcase/AlsoInArsenal";
 import { useGLTF } from "@react-three/drei";
 import { asset } from "@/lib/asset";
@@ -23,10 +25,15 @@ import { isPrerendering } from "@/lib/isPrerendering";
 
 const PRERENDER = isPrerendering();
 
-/* Preload all product models so switching pages feels instant */
-useGLTF.preload(asset("/assets/watergun.glb"));
-useGLTF.preload(asset("/assets/m416-watergun.glb"));
-useGLTF.preload(asset("/assets/crimson-blaster.glb"));
+/* All product models, for the deferred cross-sell preload below. The CURRENT
+   page's model streams in via Suspense on mount; the OTHER models are preloaded
+   only after a beat (see the effect in the component) so they don't compete
+   with this page's first paint. */
+const ALL_MODELS = [
+    asset("/assets/watergun.glb"),
+    asset("/assets/m416-watergun.glb"),
+    asset("/assets/crimson-blaster.glb"),
+];
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -34,12 +41,13 @@ const DEFAULTS = {
     modelUrl:          asset("/assets/watergun.glb"),
     name:              "SONIQ Toys",
     code:              "SONIQ·001",
+    category:          "Water Gun",
     tagline:           "Electric Water Gun",
     eyebrow:           "/// SONIQ Toys · 2026",
     accentColor:       "#ff5a1f",
     accentDeep:        "#d63f0a",
     specs: [
-        { label: "RANGE",        value: "10–12m" },
+        { label: "RANGE",        value: "10-12m" },
         { label: "CAPACITY",     value: "500 Beads" },
         { label: "RATE OF FIRE", value: "8 r/s" },
         { label: "BATTERY",      value: "7.4V Li-Po" },
@@ -55,6 +63,23 @@ const DEFAULTS = {
 
 export default function ProductShowcaseTemplate({ product: rawProduct }) {
     const product = { ...DEFAULTS, ...rawProduct };
+
+    /* Formspree `source` label for the launch-notify signups, so this
+       product's captures are distinguishable from the coming-soon teaser's
+       ("coming-soon") in one shared form. e.g. "launch-crimson-blaster". */
+    const notifySource =
+        "launch-" + (product.name || "product").toLowerCase().replace(/[^a-z0-9]+/g, "-");
+
+    /* Warm the OTHER product models after this page has painted, so cross-sell
+       navigation stays snappy without slowing this page's first load. */
+    useEffect(() => {
+        const t = setTimeout(() => {
+            ALL_MODELS.forEach((u) => {
+                if (u !== product.modelUrl) useGLTF.preload(u);
+            });
+        }, 1500);
+        return () => clearTimeout(t);
+    }, [product.modelUrl]);
 
     const sectionRef        = useRef(null);
     const modelRef          = useRef(null);
@@ -75,13 +100,29 @@ export default function ProductShowcaseTemplate({ product: rawProduct }) {
         raf = requestAnimationFrame(setup);
 
         function buildTimeline(group) {
-            // Park the gun just below the frame at rest so the hero stays clean
-            // and the "Scroll to Engage" hint (bottom-centre) isn't covered by
-            // it. It's sized up from the old tiny dot and the Phase-A ease is
-            // gentle, so the very first scroll lifts it into view quickly and
-            // smoothly instead of popping.
-            group.scale.setScalar(0.3);
-            group.position.set(0, -2.45, 0);
+            // Responsive fit. The gun is sized for desktop; on narrow/portrait
+            // phones it overflowed both edges (and, pushed to the right at rest,
+            // peeked past the specs panel). Shrink it to fit the viewport, and
+            // on mobile keep it CENTRED at rest — the full-width opaque specs
+            // panel covers it there, so there's no reason to slide it right.
+            const aspect  = window.innerWidth / Math.max(1, window.innerHeight);
+            // All three gun models normalise to the SAME 3.2-unit width, so at
+            // the old 0.55 mobile floor a portrait phone rendered the gun almost
+            // edge-to-edge (~98% of the visible width) and clipped the sides
+            // (drum mag / stock). Drive the scale straight off the aspect with a
+            // lower floor so portrait phones show the gun at ~82% width — full
+            // gun, clear side margins — while wide desktops still cap at 1.0.
+            const fit     = Math.min(1, Math.max(0.45, aspect));
+            const settleX = window.innerWidth < 768 ? 0 : 1.55;
+
+            // Park the gun low so a SUBTLE slice of it peeks up from the bottom
+            // of the first screen (more intuitive — signals "there's a product
+            // here, scroll to engage"), while staying BELOW the giant wordmark
+            // so it never overlaps the gun name. Same size as before — this is a
+            // pure lift, not a bigger gun. Tune PARK_Y to reveal more / less.
+            const PARK_Y = -1.4;
+            group.scale.setScalar(0.3 * fit);
+            group.position.set(0, PARK_Y, 0);
             group.rotation.set(0, 0, 0);
 
             gsap.set("#specs-panel",   { opacity: 0, x: -24 });
@@ -98,7 +139,10 @@ export default function ProductShowcaseTemplate({ product: rawProduct }) {
                     scrollTrigger: {
                         trigger: sectionRef.current,
                         start:  "top top",
-                        end:    "+=3200",
+                        // Mobile is far more scroll-sensitive: ~1.1 viewport
+                        // heights to run the whole demo (vs 2.2 on desktop), so
+                        // reaching the product details takes a few swipes, not many.
+                        end:    () => "+=" + Math.round(window.innerHeight * (window.innerWidth < 768 ? 1.1 : 2.2)),
                         pin:    true,
                         scrub:  1,
                         anticipatePin:    1,
@@ -111,25 +155,34 @@ export default function ProductShowcaseTemplate({ product: rawProduct }) {
                    motion into the first 10%, which popped). Hero text fades
                    out FAST and early so it's clear before the gun reaches
                    centre (text gone by ~0.09; gun hits full scale at 0.30). */
-                tl.to(group.scale,    { x: 1, y: 1, z: 1, duration: 0.30, ease: "power2.out" }, 0)
+                tl.to(group.scale,    { x: fit, y: fit, z: fit, duration: 0.30, ease: "power2.out" }, 0)
                   .to(group.position, { y: 0,            duration: 0.30, ease: "power2.out" }, 0)
-                  .to("#scroll-hint",  { opacity: 0,      duration: 0.05, ease: "power2.out" }, 0)
                   .to("#hero-eyebrow", { opacity: 0, y: -16, duration: 0.08, ease: "power2.in" }, 0)
                   .to("#hero-subline", { opacity: 0, y: -16, duration: 0.08, ease: "power2.in" }, 0)
                   .to("#hero-wordmark",
                     { opacity: 0, y: -120, scale: 0.86, duration: 0.09, ease: "power2.in" },
                     0);
 
-                /* Phase C — 360° showcase spin: power4.inOut = mechanical */
-                tl.to(group.rotation,
-                    { y: Math.PI * 2, duration: 0.4, ease: "power4.inOut" },
-                    0.32);
+                /* Keep the "Scroll to Engage" hint visible through the whole
+                   demo (zoom, spin, settle) and only fade it out right before
+                   the spec sheet slides in — so it's always clear there's more
+                   to scroll. */
+                tl.to("#scroll-hint", { opacity: 0, duration: 0.06, ease: "power2.in" }, 0.72);
 
-                /* Phase D — settle to the right (precise, weighted) */
+                /* Phase C — 360° showcase spin. Starts at 0.26 (was 0.32) so it
+                   kicks in the moment the gun looks full-size, overlapping the
+                   tail of the zoom — no dead "keep scrolling but nothing moves"
+                   gap between the zoom finishing and the spin starting. */
+                tl.to(group.rotation,
+                    { y: Math.PI * 2, duration: 0.44, ease: "power4.inOut" },
+                    0.26);
+
+                /* Phase D — settle (to the right on desktop; stays centred on
+                   mobile, where the panel covers it). */
                 tl.to(group.position,
-                    { x: 1.55, duration: 0.3, ease: "expo.inOut" }, 0.55)
+                    { x: settleX, duration: 0.3, ease: "expo.inOut" }, 0.55)
                   .to(group.scale,
-                    { x: 0.95, y: 0.95, z: 0.95, duration: 0.3, ease: "expo.inOut" }, 0.55);
+                    { x: 0.95 * fit, y: 0.95 * fit, z: 0.95 * fit, duration: 0.3, ease: "expo.inOut" }, 0.55);
 
                 /* Phase E — specs panel snaps in */
                 tl.to("#specs-panel",
@@ -147,7 +200,7 @@ export default function ProductShowcaseTemplate({ product: rawProduct }) {
                         scrollTrigger: {
                             trigger: sectionRef.current,
                             start:  "top top",
-                            end:    "+=3200",
+                            end:    () => "+=" + Math.round(window.innerHeight * (window.innerWidth < 768 ? 1.1 : 2.2)),
                             scrub:  1.4,
                         },
                     });
@@ -178,6 +231,10 @@ export default function ProductShowcaseTemplate({ product: rawProduct }) {
                 {/* ── Global navbar ── */}
                 <LandingNav />
 
+                {/* Right-edge section dots (hidden over the showcase; appear at
+                    the cross-sell + deploy sections). */}
+                <SectionDots variant="product" />
+
                 {/* ── Pinned scroll section ── */}
                 <section
                     ref={sectionRef}
@@ -205,13 +262,32 @@ export default function ProductShowcaseTemplate({ product: rawProduct }) {
                             id="hero-overlay"
                             className="pointer-events-none absolute inset-0 z-20 flex flex-col items-center justify-center text-center"
                         >
-                            <span
+                            {/* Eyebrow + prominent CATEGORY badge. The category
+                                (Water Gun / Gel Blaster) is the single most
+                                useful "what is this" cue on the opening screen,
+                                so it's a solid accent pill, not fine print. Both
+                                live inside #hero-eyebrow so the existing timeline
+                                fades them out together as the gun zooms in. */}
+                            <div
                                 id="hero-eyebrow"
-                                className="font-mono-tactical mb-6 text-xs font-bold uppercase tracking-[0.5em]"
-                                style={{ color: product.accentColor }}
+                                className="mb-6 flex flex-col items-center gap-3"
                             >
-                                {product.eyebrow}
-                            </span>
+                                <span
+                                    className="font-mono-tactical text-xs font-bold uppercase tracking-[0.5em]"
+                                    style={{ color: product.accentColor }}
+                                >
+                                    {product.eyebrow}
+                                </span>
+                                {product.category && (
+                                    <span
+                                        className="inline-flex items-center gap-2 rounded-full px-4 py-1.5 font-inter text-[12px] font-bold uppercase tracking-[0.28em] text-white shadow-[0_8px_20px_-8px_rgba(0,0,0,0.5)] sm:text-[13px]"
+                                        style={{ background: product.accentColor }}
+                                    >
+                                        <span className="inline-block h-1.5 w-1.5 rounded-full bg-white/90" />
+                                        {product.category}
+                                    </span>
+                                )}
+                            </div>
 
                             <h1
                                 id="hero-wordmark"
@@ -242,16 +318,46 @@ export default function ProductShowcaseTemplate({ product: rawProduct }) {
                                 <span className="h-px w-12 bg-zinc-900/30" />
                             </div>
 
+                            {product.comingSoon && (
+                                <span
+                                    className="mt-6 inline-flex items-center gap-2 rounded-full px-4 py-1.5 font-mono-tactical text-[11px] font-bold uppercase tracking-[0.3em] text-white"
+                                    style={{ background: product.accentColor }}
+                                >
+                                    <span className="inline-block h-1.5 w-1.5 rounded-full bg-white/90" />
+                                    Coming Soon
+                                </span>
+                            )}
+
+                            {/* Scroll cue — same left-edge vertical treatment as
+                                the Arsenal (vertical label + capsule + bouncing
+                                down-chevron), so the DOWN direction is
+                                unmistakable and it never fights the centre
+                                column. Anchored BELOW the wordmark block rather
+                                than dead-centre: unlike the Arsenal (heading at
+                                the top), the product hero's giant wordmark is
+                                vertically centred and the longer codes span
+                                nearly the full width on narrow phones. At ~66% it
+                                clears the wordmark (ends ~60%) and the parked gun
+                                (starts ~81%), and the gun only spans ~82% of the
+                                width so this left gutter stays free at every
+                                phase of the demo. */}
                             <div
                                 id="scroll-hint"
-                                className="absolute bottom-10 left-1/2 flex -translate-x-1/2 flex-col items-center gap-2"
+                                className="pointer-events-none absolute left-3 top-[66%] flex -translate-y-1/2 flex-col items-center gap-2.5 sm:left-6"
                             >
-                                <span className="font-mono-tactical text-[10px] uppercase tracking-[0.32em] text-zinc-500">
-                                    Scroll to Engage
+                                <span className="font-mono-tactical text-[10px] font-semibold uppercase tracking-[0.3em] text-zinc-500 [writing-mode:vertical-rl]">
+                                    Scroll
                                 </span>
                                 <div className="relative h-9 w-5 rounded-full border border-zinc-400/70">
                                     <div className="scroll-nub absolute left-1/2 top-1.5 h-1.5 w-1 -translate-x-1/2 rounded-full bg-zinc-700" />
                                 </div>
+                                <svg
+                                    width="12" height="12" viewBox="0 0 24 24" fill="none"
+                                    stroke="currentColor" strokeWidth="2"
+                                    className="animate-bounce text-zinc-400"
+                                >
+                                    <path d="M6 9l6 6 6-6" />
+                                </svg>
                             </div>
                         </div>
 
@@ -316,12 +422,28 @@ export default function ProductShowcaseTemplate({ product: rawProduct }) {
                                             <span className="telemetry-label text-zinc-500">
                                                 {s.label}
                                             </span>
-                                            <span className="telemetry-value text-lg text-zinc-900">
+                                            <span
+                                                className="telemetry-value text-lg text-zinc-900"
+                                                style={
+                                                    product.comingSoon
+                                                        ? { filter: "blur(6px)", userSelect: "none" }
+                                                        : undefined
+                                                }
+                                            >
                                                 {s.value}
                                             </span>
                                         </li>
                                     ))}
                                 </ul>
+
+                                {/* Pre-launch: specs are blurred as a teaser —
+                                    this caption makes the blur read as
+                                    intentional rather than a rendering glitch. */}
+                                {product.comingSoon && (
+                                    <p className="mt-1.5 font-mono-tactical text-[10px] font-bold uppercase tracking-[0.28em] text-zinc-400">
+                                        Full specs revealed at launch
+                                    </p>
+                                )}
 
                                 {/* Asterisk footnote — industry-standard
                                     disclaimer for the play-time claim, same
@@ -335,20 +457,51 @@ export default function ProductShowcaseTemplate({ product: rawProduct }) {
                                     </p>
                                 )}
 
-                                {/* Primary conversion cluster — Buy Now (primary)
-                                    + Add to Cart (secondary) at the point of
-                                    highest intent: right after the spec sheet. */}
+                                {/* Primary cluster. Launched products get Buy
+                                    Now + Add to Cart at the point of highest
+                                    intent (right after the spec sheet); a
+                                    pre-launch product gets the Notify-me
+                                    capture instead — no buy path exists yet. */}
                                 <div className="mt-5">
-                                    <ProductActions
-                                        product={product}
-                                        accent={product.accentColor}
-                                    />
+                                    {product.comingSoon ? (
+                                        <NotifyMe
+                                            productName={product.name}
+                                            source={notifySource}
+                                            accent={product.accentColor}
+                                        />
+                                    ) : (
+                                        <ProductActions
+                                            product={product}
+                                            accent={product.accentColor}
+                                        />
+                                    )}
                                 </div>
 
                                 <div className="mt-4">
                                     <div className="telemetry-label text-zinc-400">
                                         Unit · {product.unitLabel}
+                                        {product.comingSoon && (
+                                            <>
+                                                {" · "}
+                                                <span style={{ color: product.accentColor }}>
+                                                    Coming soon
+                                                </span>
+                                            </>
+                                        )}
                                     </div>
+                                </div>
+
+                                {/* Scroll cue on the details view — more below
+                                    (rest of the Arsenal + deploy). In the content
+                                    flow (below the unit line) so it never
+                                    overlaps it. */}
+                                <div className="pointer-events-none mt-5 flex items-center gap-1.5 text-zinc-400">
+                                    <span className="font-mono-tactical text-[9px] uppercase tracking-[0.3em]">
+                                        Scroll for more
+                                    </span>
+                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="animate-bounce">
+                                        <path d="M6 9l6 6 6-6" />
+                                    </svg>
                                 </div>
                             </div>
                         </aside>
@@ -363,7 +516,7 @@ export default function ProductShowcaseTemplate({ product: rawProduct }) {
                 <AlsoInArsenal currentLink={product.currentLink} />
 
                 {/* ── Footer / CTA (dark) ── */}
-                <section className="relative w-full bg-[color:var(--ink)] text-white">
+                <section id="deploy" className="relative w-full bg-[color:var(--ink)] text-white">
                     <div className="mx-auto max-w-7xl px-6 py-24 md:px-12 md:py-32">
                         <div className="grid grid-cols-1 gap-10 md:grid-cols-12">
                             <div className="md:col-span-7">
@@ -392,15 +545,26 @@ export default function ProductShowcaseTemplate({ product: rawProduct }) {
                             </div>
 
                             <div className="md:col-span-5 md:flex md:items-end md:pl-10">
-                                {/* Closing CTAs — Buy Now + Add to Cart. Pricing
-                                    block was removed pre-launch; swap in a
-                                    price row here once checkout ships. */}
+                                {/* Closing CTAs — Buy Now + Add to Cart for
+                                    launched products; Notify-me capture for a
+                                    pre-launch one. Pricing block removed
+                                    pre-launch; swap in a price row here once
+                                    checkout ships. */}
                                 <div className="w-full">
-                                    <ProductActions
-                                        product={product}
-                                        accent={product.accentColor}
-                                        variant="dark"
-                                    />
+                                    {product.comingSoon ? (
+                                        <NotifyMe
+                                            productName={product.name}
+                                            source={notifySource}
+                                            accent={product.accentColor}
+                                            variant="dark"
+                                        />
+                                    ) : (
+                                        <ProductActions
+                                            product={product}
+                                            accent={product.accentColor}
+                                            variant="dark"
+                                        />
+                                    )}
                                 </div>
                             </div>
                         </div>

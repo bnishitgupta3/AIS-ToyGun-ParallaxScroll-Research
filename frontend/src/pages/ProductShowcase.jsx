@@ -8,6 +8,7 @@ import SpecsPanel from "@/components/showcase/SpecsPanel";
 import ParallaxBackground from "@/components/showcase/ParallaxBackground";
 import FooterCTA from "@/components/showcase/FooterCTA";
 import AlsoInArsenal from "@/components/showcase/AlsoInArsenal";
+import SectionDots from "@/components/landing/SectionDots";
 import { isPrerendering } from "@/lib/isPrerendering";
 
 gsap.registerPlugin(ScrollTrigger);
@@ -37,12 +38,28 @@ export default function ProductShowcase() {
 
         let ctx;
         function buildTimeline(group) {
-            // Initial state. Start the gun low but already on-screen (a peek
-            // at the bottom of the frame) rather than a tiny invisible dot far
-            // below it — so the very first scroll grows a gun that's already
-            // visible instead of spawning one out of nowhere.
-            group.scale.setScalar(0.42);
-            group.position.set(0, -1.85, 0);
+            // Responsive fit. The gun is sized for desktop; on narrow/portrait
+            // phones it overflowed both edges (and, pushed right at rest, peeked
+            // past the specs panel). Shrink to fit the viewport, and on mobile
+            // keep it CENTRED at rest — the full-width opaque panel covers it.
+            const aspect  = window.innerWidth / Math.max(1, window.innerHeight);
+            // All three gun models normalise to the SAME 3.2-unit width, so at
+            // the old 0.55 mobile floor a portrait phone rendered the gun almost
+            // edge-to-edge (~98% of the visible width) and clipped the sides
+            // (drum mag / stock). Drive the scale straight off the aspect with a
+            // lower floor so portrait phones show the gun at ~82% width — full
+            // gun, clear side margins — while wide desktops still cap at 1.0.
+            const fit     = Math.min(1, Math.max(0.45, aspect));
+            const settleX = window.innerWidth < 768 ? 0 : 1.55;
+
+            // Park the gun low so a SUBTLE slice of it peeks up from the bottom
+            // of the first screen (more intuitive — signals "there's a product
+            // here, scroll to engage"), while staying BELOW the giant wordmark
+            // so it never overlaps the gun name. Same size as before — this is a
+            // pure lift, not a bigger gun. Tune PARK_Y to reveal more / less.
+            const PARK_Y = -1.4;
+            group.scale.setScalar(0.3 * fit);
+            group.position.set(0, PARK_Y, 0);
             group.rotation.set(0, 0, 0);
 
             gsap.set("#specs-panel", { opacity: 0, x: -24 });
@@ -57,7 +74,10 @@ export default function ProductShowcase() {
                     scrollTrigger: {
                         trigger: sectionRef.current,
                         start: "top top",
-                        end: "+=3200",
+                        // Mobile is far more scroll-sensitive (~1.1 viewport
+                        // heights vs 2.2 on desktop) so the details are only a
+                        // few swipes away, not ~10.
+                        end: () => "+=" + Math.round(window.innerHeight * (window.innerWidth < 768 ? 1.1 : 2.2)),
                         pin: true,
                         scrub: 1,
                         anticipatePin: 1,
@@ -70,25 +90,30 @@ export default function ProductShowcase() {
                 // motion into the first 10%, which popped). Hero text fades
                 // out FAST and early so it's clear before the gun reaches
                 // centre (text gone by ~0.09; gun hits full scale at 0.30).
-                tl.to(group.scale,    { x: 1, y: 1, z: 1, duration: 0.30, ease: "power2.out" }, 0)
+                tl.to(group.scale,    { x: fit, y: fit, z: fit, duration: 0.30, ease: "power2.out" }, 0)
                   .to(group.position, { y: 0,            duration: 0.30, ease: "power2.out" }, 0)
-                  .to("#scroll-hint", { opacity: 0,       duration: 0.05, ease: "power2.out" }, 0)
                   .to("#hero-eyebrow",{ opacity: 0, y: -16, duration: 0.08, ease: "power2.in" }, 0)
                   .to("#hero-subline",{ opacity: 0, y: -16, duration: 0.08, ease: "power2.in" }, 0)
                   .to("#hero-wordmark",
                     { opacity: 0, y: -120, scale: 0.86, duration: 0.09, ease: "power2.in" },
                     0);
 
-                // PHASE C — 360° spin (mechanical inOut)
-                tl.to(group.rotation,
-                    { y: Math.PI * 2, duration: 0.4, ease: "power4.inOut" },
-                    0.32);
+                // Keep the "Scroll to Engage" hint visible through the whole
+                // demo and only fade it just before the spec sheet slides in.
+                tl.to("#scroll-hint", { opacity: 0, duration: 0.06, ease: "power2.in" }, 0.72);
 
-                // PHASE D — settle to the right (precise, weighted)
+                // PHASE C — 360° spin (mechanical inOut). Starts at 0.26 (was
+                // 0.32) so it begins the instant the gun looks full-size,
+                // overlapping the zoom's tail — no dead scroll gap in between.
+                tl.to(group.rotation,
+                    { y: Math.PI * 2, duration: 0.44, ease: "power4.inOut" },
+                    0.26);
+
+                // PHASE D — settle (right on desktop; centred on mobile)
                 tl.to(group.position,
-                    { x: 1.55, duration: 0.3, ease: "expo.inOut" }, 0.55)
+                    { x: settleX, duration: 0.3, ease: "expo.inOut" }, 0.55)
                   .to(group.scale,
-                    { x: 0.95, y: 0.95, z: 0.95, duration: 0.3, ease: "expo.inOut" }, 0.55);
+                    { x: 0.95 * fit, y: 0.95 * fit, z: 0.95 * fit, duration: 0.3, ease: "expo.inOut" }, 0.55);
 
                 // PHASE E — specs panel snaps in
                 tl.to("#specs-panel",
@@ -106,7 +131,7 @@ export default function ProductShowcase() {
                         scrollTrigger: {
                             trigger: sectionRef.current,
                             start: "top top",
-                            end: "+=3200",
+                            end: () => "+=" + Math.round(window.innerHeight * (window.innerWidth < 768 ? 1.1 : 2.2)),
                             scrub: 1.4,
                         },
                     });
@@ -131,6 +156,10 @@ export default function ProductShowcase() {
             <div>
             {/* Global navbar */}
             <LandingNav />
+
+            {/* Right-edge section dots (hidden over the showcase, appear at the
+                cross-sell + deploy sections). */}
+            <SectionDots variant="product" />
 
             {/* PINNED SCROLL SECTION */}
             <section

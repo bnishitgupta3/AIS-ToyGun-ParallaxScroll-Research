@@ -9,7 +9,7 @@ const EASE = [0.16, 1, 0.3, 1];
 
 const STATS = [
     { value: "2026", label: "Founded" },
-    { value: "25m", label: "Max Range" },
+    { value: "10m", label: "Max Range" },
     { value: "3", label: "Flagship Models" },
     { value: "100%", label: "Electric Drive" },
 ];
@@ -17,7 +17,7 @@ const STATS = [
 const VALUES = [
     {
         title: "Precision engineering",
-        body: "Every component is CNC-checked and stress-tested. We build instruments of play — designed to last, designed to delight.",
+        body: "Every component is CNC-checked and stress-tested. We build instruments of play, designed to last, designed to delight.",
     },
     {
         title: "Engineered to thrill",

@@ -1,7 +1,8 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import { Link } from "react-router-dom";
-import { useCart, PRODUCT_LOOKUP } from "@/lib/cart";
+import { useCart, PRODUCT_LOOKUP, CATALOG } from "@/lib/cart";
+import NotifyMe from "@/components/showcase/NotifyMe";
 
 /* "Coming soon" + cart-review panel — slides in from the RIGHT on desktop
    (md+) and from the BOTTOM as a partial sheet on mobile (~70% of viewport).
@@ -29,6 +30,10 @@ export default function BuyNowSheet({ open, product, onClose }) {
         qty,
         ...(PRODUCT_LOOKUP[key] || { name: key.replace(/^\//, ""), sub: "" }),
     }));
+    // Cross-sell — every catalogue product NOT already in the cart. Standard
+    // D2C mini-cart upsell (Away / Warby Parker / Allbirds): let the shopper
+    // build their loadout without leaving the drawer, lifting AOV + conversion.
+    const crossSell = CATALOG.filter((p) => !(items[p.key] > 0));
     // Lock body scroll while open; close on ESC. Adding "sheet-open" to body
     // lets global chrome (nav, section dots) hide itself via CSS.
     useEffect(() => {
@@ -44,6 +49,20 @@ export default function BuyNowSheet({ open, product, onClose }) {
             window.removeEventListener("keydown", onKey);
         };
     }, [open, onClose]);
+
+    /* Keep the sheet mounted-but-hidden when fully closed. On Android the
+       translate-off-screen alone left a white sliver/rectangle peeking at the
+       bottom (dynamic-viewport quirk); once the slide-out finishes we also flag
+       it `visibility: hidden` so it's guaranteed gone. */
+    const [visible, setVisible] = useState(open);
+    useEffect(() => {
+        if (open) {
+            setVisible(true);
+            return;
+        }
+        const t = setTimeout(() => setVisible(false), 350); // after slide-out
+        return () => clearTimeout(t);
+    }, [open]);
 
     // Portal into <body> so `position: fixed` escapes any ancestor that creates
     // a containing block (e.g. SpecsPanel uses `transform: translateX(-24px)`
@@ -71,6 +90,7 @@ export default function BuyNowSheet({ open, product, onClose }) {
                 aria-label="Buy Now"
                 className={`absolute left-0 right-0 bottom-0 max-h-[78vh] overflow-y-auto rounded-t-3xl bg-white shadow-2xl transition-transform duration-300 ease-out
                     md:left-auto md:right-0 md:top-0 md:bottom-0 md:h-full md:max-h-none md:w-[440px] md:rounded-l-3xl md:rounded-tr-none
+                    ${!visible ? "invisible" : ""}
                     ${
                         open
                             ? "translate-y-0 md:translate-x-0"
@@ -126,9 +146,16 @@ export default function BuyNowSheet({ open, product, onClose }) {
                                     className="flex items-center justify-between gap-3 px-4 py-3"
                                 >
                                     <div className="min-w-0 flex-1">
-                                        <div className="truncate font-instrument text-[17px] leading-tight text-[#1a1a1a]">
+                                        {/* Name links to the product's experience
+                                            page; closing the drawer as we go so it
+                                            doesn't linger over the new route. */}
+                                        <Link
+                                            to={line.key}
+                                            onClick={onClose}
+                                            className="block truncate font-instrument text-[17px] leading-tight text-[#1a1a1a] underline-offset-2 transition hover:underline"
+                                        >
                                             {line.name}
-                                        </div>
+                                        </Link>
                                         {line.sub && (
                                             <div className="font-inter text-[10px] font-medium uppercase tracking-[0.2em] text-[#1a1a1a]/45">
                                                 {line.sub}
@@ -192,24 +219,82 @@ export default function BuyNowSheet({ open, product, onClose }) {
                         </>
                     )}
 
+                    {/* ── Cross-sell / "you might also like" quick-add ──
+                          Add the OTHER blasters straight from the cart. A
+                          launched product gets a one-tap "+ Add"; the pre-launch
+                          one shows a "Soon" tag (no buy path yet). Mirrors the
+                          Arsenal tiles so the flow feels consistent. */}
+                    {crossSell.length > 0 && (
+                        <div className="mt-8">
+                            <div className="font-inter text-[11px] font-semibold uppercase tracking-[0.3em] text-[#1a1a1a]/50">
+                                {hasItems ? "Complete your loadout" : "You might also like"}
+                            </div>
+                            <ul className="mt-3 space-y-2.5">
+                                {crossSell.map((p) => (
+                                    <li
+                                        key={p.key}
+                                        className="flex items-center gap-3 rounded-2xl border border-[#1a1a1a]/10 p-2.5"
+                                    >
+                                        <span
+                                            className="grid h-11 w-11 shrink-0 place-items-center rounded-xl"
+                                            style={{ background: `${p.accent}14` }}
+                                            aria-hidden="true"
+                                        >
+                                            <span
+                                                className="h-2.5 w-6 rounded-full"
+                                                style={{ background: p.accent }}
+                                            />
+                                        </span>
+                                        <div className="min-w-0 flex-1">
+                                            <Link
+                                                to={p.key}
+                                                onClick={onClose}
+                                                className="block truncate font-instrument text-[16px] leading-tight text-[#1a1a1a] underline-offset-2 transition hover:underline"
+                                            >
+                                                {p.name}
+                                            </Link>
+                                            <div className="font-inter text-[10px] font-medium uppercase tracking-[0.2em] text-[#1a1a1a]/45">
+                                                {p.sub}
+                                            </div>
+                                        </div>
+                                        {p.comingSoon ? (
+                                            <span
+                                                className="shrink-0 rounded-full px-3 py-1.5 font-inter text-[10px] font-bold uppercase tracking-[0.18em]"
+                                                style={{ background: `${p.accent}1a`, color: p.accent }}
+                                            >
+                                                Soon
+                                            </span>
+                                        ) : (
+                                            <button
+                                                type="button"
+                                                aria-label={`Add ${p.name} to cart`}
+                                                onClick={() => setQty(p.key, 1)}
+                                                className="inline-flex shrink-0 items-center gap-1 rounded-full px-3.5 py-1.5 font-inter text-[11px] font-semibold uppercase tracking-[0.16em] transition hover:brightness-95"
+                                                style={{ background: `${p.accent}14`, color: p.accent }}
+                                            >
+                                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.8">
+                                                    <path d="M12 5v14M5 12h14" />
+                                                </svg>
+                                                Add
+                                            </button>
+                                        )}
+                                    </li>
+                                ))}
+                            </ul>
+                        </div>
+                    )}
+
                     <div className="mt-auto pt-10">
-                        {/* SHOPIFY SWAP: replace this Link with a button that
-                            redirects window.location to `cart.checkoutUrl` when
-                            hasItems, otherwise routes to /coming-soon for the
-                            email-capture flow. */}
-                        <Link
-                            to="/coming-soon"
-                            onClick={onClose}
-                            className="group relative inline-flex w-full items-center justify-center gap-2 overflow-hidden rounded-full bg-[#f97316] px-7 py-3.5 font-inter text-[13px] font-semibold uppercase tracking-[0.18em] text-white shadow-[inset_0_-4px_4px_rgba(255,255,255,0.39)] transition-all hover:brightness-110"
-                        >
-                            <span
-                                aria-hidden="true"
-                                className="pointer-events-none absolute left-[10%] top-[1px] h-4 w-[80%] rounded-[12px] bg-gradient-to-b from-[#FFD9B8] to-transparent transition-transform duration-200 group-hover:scale-x-105"
-                            />
-                            <span className="relative">
-                                {hasItems ? "Notify me at checkout launch" : "Notify me at launch"}
-                            </span>
-                        </Link>
+                        {/* Inline email capture — collects the launch/checkout
+                            waitlist straight into Formspree (no redirect to the
+                            coming-soon page). SHOPIFY SWAP: once checkout ships,
+                            swap this for a "Checkout" button that sends
+                            window.location to `cart.checkoutUrl` when hasItems. */}
+                        <NotifyMe
+                            productName={product?.name || (hasItems ? "checkout" : "launch")}
+                            source={hasItems ? "checkout-launch" : "buy-now-launch"}
+                            accent="#f97316"
+                        />
                         <p className="mt-3 text-center font-inter text-[11px] uppercase tracking-[0.22em] text-[#1a1a1a]/40">
                             Powered by SONIQ · India · 2026
                         </p>

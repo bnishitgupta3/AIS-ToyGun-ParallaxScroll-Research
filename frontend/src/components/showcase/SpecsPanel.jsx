@@ -5,7 +5,7 @@ import ProductActions from "@/components/showcase/ProductActions";
    the test conditions in a footnote below the table). */
 const specs = [
     { label: "PLAY TIME",     value: "45 min*",        id: "spec-playtime" },
-    { label: "RANGE",         value: "8–10 m",         id: "spec-range" },
+    { label: "RANGE",         value: "8-10 m",         id: "spec-range" },
     { label: "FIRE RATE",     value: "5 shots/sec",    id: "spec-rate" },
     { label: "BATTERY",       value: "3.7V Rechargeable", id: "spec-battery" },
     { label: "TANK CAPACITY", value: "300 ml",         id: "spec-capacity" },
@@ -58,7 +58,7 @@ export default function SpecsPanel() {
                     <span className="text-[color:var(--accent)]">Battle.</span>
                 </h2>
                 <p className="mt-2 max-w-[34ch] text-sm leading-relaxed text-zinc-600">
-                    Zero pumping, zero priming — just pull the trigger. An
+                    Zero pumping, zero priming. Just pull the trigger. An
                     electric drive delivers full-auto fire from a 300 ml tank.
                 </p>
 
@@ -102,6 +102,18 @@ export default function SpecsPanel() {
                             In stock
                         </span>
                     </div>
+                </div>
+
+                {/* Scroll cue on the details view — there's more below (the rest
+                    of the Arsenal + deploy). In the content flow (below the unit
+                    line) so it never overlaps it. */}
+                <div className="pointer-events-none mt-5 flex items-center gap-1.5 text-zinc-400">
+                    <span className="font-mono-tactical text-[9px] uppercase tracking-[0.3em]">
+                        Scroll for more
+                    </span>
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="animate-bounce">
+                        <path d="M6 9l6 6 6-6" />
+                    </svg>
                 </div>
             </div>
         </aside>

@@ -108,7 +108,13 @@ export function useCartItem(key) {
    query already containing the merchandise title and variant. Delete this
    table and read directly from the Shopify cart line. */
 export const PRODUCT_LOOKUP = {
-    "/product/mp5k": { name: "MP5K", sub: "Water Gun" },
-    "/product/m416": { name: "M416 Water X", sub: "Water Gun" },
-    "/product/crimson": { name: "Crimson Blaster", sub: "Gel Blaster" },
+    "/product/mp5k": { name: "MP5K", sub: "Water Gun", accent: "#f97316" },
+    "/product/m416": { name: "M416 Water X", sub: "Water Gun", accent: "#0871E7" },
+    "/product/crimson": { name: "Crimson Blaster", sub: "Gel Blaster", accent: "#ef4444", comingSoon: true },
 };
+
+/* Ordered product catalogue (derived from the lookup above) for the cart
+   drawer's cross-sell / "you might also like" quick-add row. Kept here so the
+   cart's import graph stays independent of the Arsenal component. On the Shopify
+   swap this becomes a product-recommendations query. */
+export const CATALOG = Object.entries(PRODUCT_LOOKUP).map(([key, v]) => ({ key, ...v }));

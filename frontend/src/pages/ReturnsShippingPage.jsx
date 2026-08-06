@@ -12,8 +12,8 @@ export default function ReturnsShippingPage() {
             <Section heading="1. Shipping & delivery">
                 <p>
                     We ship across India through reputed courier partners. Orders are
-                    typically dispatched within 1–3 business days and delivered
-                    within 3–8 business days depending on your location. Delivery
+                    typically dispatched within 1-3 business days and delivered
+                    within 3-8 business days depending on your location. Delivery
                     timelines are indicative; remote PIN codes may take longer.
                     Shipping charges, if any, are shown at checkout.
                 </p>
@@ -52,7 +52,7 @@ export default function ReturnsShippingPage() {
             <Section heading="5. Refunds">
                 <p>
                     Approved refunds are processed to the original payment method
-                    within 5–7 business days of the returned item being received and
+                    within 5-7 business days of the returned item being received and
                     inspected (or the cancellation being confirmed). Banks may take
                     additional time to reflect the amount.
                 </p>

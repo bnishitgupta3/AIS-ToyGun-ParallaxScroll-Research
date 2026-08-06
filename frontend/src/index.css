@@ -23,6 +23,24 @@
     --accent-deep: #d63f0a;
     --tactical: #121212;
     --line: #e4e4e7;
+
+    /* Height of the mobile browser's collapsible BOTTOM chrome (Safari/Chrome
+       toolbar) AS IT CURRENTLY IS. `vh` is the LARGE viewport (toolbar hidden);
+       `dvh` is the DYNAMIC viewport (tracks the toolbar live) — so the diff is
+       the toolbar's height RIGHT NOW: it's the toolbar height while the toolbar
+       is shown, and collapses to 0 the moment the toolbar retracts (which is
+       the usual state once you've scrolled into a section). This is why `dvh`
+       and not `svh`: `svh` is constant (always the toolbar-shown height), so it
+       left a permanent gap once the toolbar was gone. Bottom-anchored UI adds
+       this so it clears the toolbar when present and sits flush when it's not.
+       0 on desktop (vh == dvh). Default 0px is the safe pre-dvh fallback. */
+    --chrome-bottom: 0px;
+}
+
+@supports (height: 100dvh) {
+    :root {
+        --chrome-bottom: calc(100vh - 100dvh);
+    }
 }
 
 /* ── Dark theme helpers (landing page) ── */
@@ -215,6 +233,25 @@ body.sheet-open .section-dots {
 .btn-pill:hover {
     transform: translateY(-2px);
     box-shadow: 0 12px 28px -10px rgba(255, 90, 31, 0.55);
+}
+
+/* ── Reduced motion ──
+   Honour the OS "reduce motion" setting: collapse CSS transitions/animations
+   and looping effects so motion-sensitive visitors get a calm, static page.
+   (The hero video also stops autoplaying under this setting — see HeroVideo.) */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.001ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.001ms !important;
+        scroll-behavior: auto !important;
+    }
+    .buy-now-charge {
+        animation: none !important;
+        width: 60%;
+    }
 }
 
 .spec-row {

@@ -1,39 +1,90 @@
 import { useEffect, useState } from "react";
 
-/* Vertical section dots — a right-edge scrollspy. Each dot maps to a section
-   on the landing page; clicking jumps there. It stays hidden over the hero and
-   only fades in once the Arsenal section reaches the upper viewport, remaining
-   through to the footer. */
-const SECTIONS = [
-    { id: "hero", label: "Top" },
-    { id: "arsenal", label: "Arsenal" },
-    { id: "mission", label: "Mission" },
-    { id: "field-test", label: "Field Test" },
-    { id: "footer", label: "Connect" },
-];
+/* Vertical section dots — a right-edge scrollspy. Clicking jumps to a section.
 
-export default function SectionDots() {
-    const [activeId, setActiveId] = useState("arsenal");
-    const [visible, setVisible] = useState(false);
+   `variant` picks the set:
+   • "home"    — hero → arsenal → mission → footer (element-based; hidden over
+                 the hero, revealed from the Arsenal on).
+   • "product" — Experience → Details → Arsenal → Deploy. Experience and Details
+                 are two moments INSIDE the pinned showcase (the gun demo, then
+                 the spec sheet), so they target scroll POSITIONS (a fraction of
+                 the pin distance) rather than DOM elements. Visible throughout,
+                 including while the gun is scrolling.
+
+   A section is `{ key, label, id? , y? }`: give `id` for an element target, or
+   `y()` for a scroll-position target. */
+
+const productPinDist = () =>
+    Math.round(window.innerHeight * (window.innerWidth < 768 ? 1.1 : 2.2));
+
+const SECTION_SETS = {
+    home: {
+        alwaysVisible: false,
+        revealId: "arsenal",
+        sections: [
+            { key: "hero", id: "hero", label: "Top" },
+            { key: "arsenal", id: "arsenal", label: "Arsenal" },
+            { key: "mission", id: "mission", label: "Mission" },
+            { key: "footer", id: "footer", label: "Connect" },
+        ],
+    },
+    product: {
+        // Hidden on the opening gun-name screen; revealed once the visitor
+        // scrolls a little into the demo (past where the hero name fades).
+        revealY: () => Math.round(productPinDist() * 0.12),
+        sections: [
+            // `y` = where a click scrolls to; `activeY` = when the dot lights up.
+            { key: "experience", label: "Experience", y: () => Math.round(productPinDist() * 0.2), activeY: () => 0 },
+            { key: "details", label: "Details", y: () => Math.round(productPinDist() * 0.95), activeY: () => Math.round(productPinDist() * 0.78) },
+            { key: "also-arsenal", id: "also-arsenal", label: "Arsenal" },
+            { key: "deploy", id: "deploy", label: "Deploy" },
+        ],
+    },
+};
+
+export default function SectionDots({ variant = "home" }) {
+    const cfg = SECTION_SETS[variant] || SECTION_SETS.home;
+    const sections = cfg.sections;
+    const [activeKey, setActiveKey] = useState(sections[0].key);
+    const [visible, setVisible] = useState(!!cfg.alwaysVisible);
 
     useEffect(() => {
-        // Reading 4 rects per scroll is cheap, and React bails on unchanged
-        // state, so we update directly on scroll (no rAF throttle needed).
+        // Absolute document scroll position that brings a section to the top.
+        const targetY = (s) => {
+            if (typeof s.y === "function") return s.y();
+            const el = document.getElementById(s.id);
+            return el ? el.getBoundingClientRect().top + window.scrollY : Infinity;
+        };
+
         const update = () => {
             const vh = window.innerHeight;
-            const refY = vh * 0.45; // reference line ~45% down the viewport
+            const y = window.scrollY;
 
-            // Show only from the Arsenal onward (hidden over the hero).
-            const arsenal = document.getElementById("arsenal");
-            setVisible(arsenal ? arsenal.getBoundingClientRect().top <= vh * 0.5 : false);
-
-            // Active = the last section whose top has crossed the reference line.
-            let current = SECTIONS[0].id;
-            for (const s of SECTIONS) {
-                const el = document.getElementById(s.id);
-                if (el && el.getBoundingClientRect().top <= refY) current = s.id;
+            if (cfg.alwaysVisible) {
+                setVisible(true);
+            } else if (cfg.revealY) {
+                // Scroll-position reveal (product): hidden on the opening
+                // gun-name screen, shown once scrolled into the demo.
+                setVisible(y > cfg.revealY());
+            } else if (cfg.revealId) {
+                const el = document.getElementById(cfg.revealId);
+                setVisible(el ? el.getBoundingClientRect().top <= vh * 0.5 : false);
             }
-            setActiveId(current);
+
+            // Active = the last section whose target the scroll has reached.
+            // Element targets use a ~45%-into-view reference line (as before);
+            // in-pin position targets (Experience/Details) activate at their
+            // own `activeY` so the dot matches the demo phase (spec sheet, etc.).
+            let current = sections[0].key;
+            for (const s of sections) {
+                const isPos = typeof s.y === "function";
+                const t = isPos
+                    ? (typeof s.activeY === "function" ? s.activeY() : s.y())
+                    : targetY(s);
+                const ref = isPos ? y + 2 : y + vh * 0.45;
+                if (t <= ref) current = s.key;
+            }
+            setActiveKey(current);
         };
 
         update();
@@ -43,10 +94,18 @@ export default function SectionDots() {
             window.removeEventListener("scroll", update);
             window.removeEventListener("resize", update);
         };
-    }, []);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [variant]);
 
-    const go = (id) =>
-        document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
+    const go = (s) => {
+        let y = null;
+        if (typeof s.y === "function") y = s.y();
+        else {
+            const el = document.getElementById(s.id);
+            if (el) y = el.getBoundingClientRect().top + window.scrollY;
+        }
+        if (y != null) window.scrollTo(0, Math.round(y));
+    };
 
     return (
         <div
@@ -55,13 +114,13 @@ export default function SectionDots() {
                 visible ? "opacity-100" : "pointer-events-none opacity-0"
             }`}
         >
-            {SECTIONS.map((s) => {
-                const active = s.id === activeId;
+            {sections.map((s) => {
+                const active = s.key === activeKey;
                 return (
                     <button
-                        key={s.id}
+                        key={s.key}
                         type="button"
-                        onClick={() => go(s.id)}
+                        onClick={() => go(s)}
                         aria-label={`Go to ${s.label}`}
                         aria-current={active ? "true" : undefined}
                         className="group relative flex items-center justify-center p-1.5"

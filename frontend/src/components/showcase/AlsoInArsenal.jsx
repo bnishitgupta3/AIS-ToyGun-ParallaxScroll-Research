@@ -72,7 +72,7 @@ export default function AlsoInArsenal({ currentLink }) {
     const others = PRODUCTS.filter((p) => p.link !== currentLink);
 
     return (
-        <section className="relative w-full bg-[#F3F4ED] py-20 md:py-28">
+        <section id="also-arsenal" className="relative w-full bg-[#F3F4ED] py-20 md:py-28">
             <div className="mx-auto max-w-6xl px-6 md:px-12">
                 <div className="flex flex-col items-start gap-3 md:flex-row md:items-end md:justify-between">
                     <div>
@@ -98,13 +98,24 @@ export default function AlsoInArsenal({ currentLink }) {
                             className="group relative flex flex-col gap-5 rounded-3xl border border-black/10 bg-white p-7 shadow-sm transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg md:p-9"
                             style={{ borderTop: `4px solid ${p.accent}` }}
                         >
-                            {/* Category badge */}
-                            <span
-                                className="font-inter inline-block self-start rounded-full border px-3 py-0.5 text-[9px] font-semibold uppercase tracking-[0.3em]"
-                                style={{ borderColor: p.accent, color: p.accent }}
-                            >
-                                {p.sub}
-                            </span>
+                            {/* Category badge — plus a "Coming Soon" pill for
+                                a pre-launch product. */}
+                            <div className="flex items-center gap-2">
+                                <span
+                                    className="font-inter inline-block self-start rounded-full border px-3 py-0.5 text-[9px] font-semibold uppercase tracking-[0.3em]"
+                                    style={{ borderColor: p.accent, color: p.accent }}
+                                >
+                                    {p.sub}
+                                </span>
+                                {p.comingSoon && (
+                                    <span
+                                        className="font-inter inline-block self-start rounded-full px-3 py-0.5 text-[9px] font-bold uppercase tracking-[0.3em] text-white"
+                                        style={{ background: p.accent }}
+                                    >
+                                        Coming Soon
+                                    </span>
+                                )}
+                            </div>
 
                             {/* Name + tagline */}
                             <div>
@@ -132,19 +143,30 @@ export default function AlsoInArsenal({ currentLink }) {
                                 </div>
                             )}
 
-                            {/* Actions — view product (primary text link) + quick add */}
+                            {/* Actions — view link + quick add. A coming-soon
+                                product links to its teaser and shows a static
+                                "Coming Soon" pill instead of an add button. */}
                             <div className="mt-auto flex items-center justify-between gap-4 pt-2">
                                 <Link
                                     to={p.link}
                                     className="inline-flex items-center gap-1 font-inter text-[12px] font-semibold uppercase tracking-[0.2em] text-[#1a1a1a] transition hover:gap-2"
                                     style={{ color: p.accent }}
                                 >
-                                    View product
+                                    {p.comingSoon ? "Experience it" : "View product"}
                                     <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                                         <path d="M5 12h14M13 5l7 7-7 7" />
                                     </svg>
                                 </Link>
-                                <MiniCounter accent={p.accent} cartKey={p.link} />
+                                {p.comingSoon ? (
+                                    <span
+                                        className="inline-flex h-9 items-center rounded-full px-4 font-inter text-[11px] font-semibold uppercase tracking-[0.18em]"
+                                        style={{ background: `${p.accent}1a`, color: p.accent }}
+                                    >
+                                        Coming Soon
+                                    </span>
+                                ) : (
+                                    <MiniCounter accent={p.accent} cartKey={p.link} />
+                                )}
                             </div>
                         </div>
                     ))}

@@ -27,15 +27,6 @@ export default function WaterStream({ origin, active }) {
 
     useFrame((_, dt) => {
         if (!meshRef.current) return;
-        // Debug: log once when active flips
-        if (active && !meshRef.current.__activeLogged) {
-            // eslint-disable-next-line no-console
-            console.log("[stream] active frame, origin=", origin.x, origin.y, origin.z);
-            meshRef.current.__activeLogged = true;
-        }
-        if (!active) {
-            meshRef.current.__activeLogged = false;
-        }
         for (let i = 0; i < COUNT; i++) {
             const p = particles[i];
             if (active) {

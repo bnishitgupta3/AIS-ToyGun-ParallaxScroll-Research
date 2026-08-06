@@ -4,8 +4,16 @@
     {
       "name": "frontend",
       "runtimeExecutable": "npm",
-      "runtimeArgs": ["start"],
-      "port": 3000
+      "runtimeArgs": ["--prefix", "frontend", "start"],
+      "port": 3000,
+      "autoPort": true
+    },
+    {
+      "name": "cs-build",
+      "runtimeExecutable": "npx",
+      "runtimeArgs": ["-y", "serve", "-s", "frontend/build", "-l", "5050"],
+      "port": 5050,
+      "autoPort": true
     }
   ]
 }
