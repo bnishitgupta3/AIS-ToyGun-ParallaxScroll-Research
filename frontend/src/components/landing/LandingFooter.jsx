@@ -85,11 +85,11 @@ export default function LandingFooter() {
                         {status !== "success" && (
                             /* Dotted arrow nudging toward the signup field — large
                                screens only, points down at the form below. */
-                            <div className="pointer-events-none mt-3 hidden flex-col items-end pr-6 text-[#f5b301] lg:flex">
+                            <div className="pointer-events-none mt-3 hidden flex-col items-start pl-6 text-[#f5b301] lg:flex">
                                 <span className="font-instrument -rotate-2 text-[15px] font-bold">
                                     get on the list
                                 </span>
-                                <DottedArrow className="-mt-1 -rotate-90" />
+                                <DottedArrow down className="-mt-1 ml-7" />
                             </div>
                         )}
                         {status === "success" ? (

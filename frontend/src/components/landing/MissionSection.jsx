@@ -4,19 +4,23 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 gsap.registerPlugin(ScrollTrigger);
 
+/* Funky multi-colour statement — festival/summer palette across the key words,
+   the closing word runs the animated gradient shimmer. */
 const WORDS = [
-    { text: "Every", accent: false },
-    { text: "Holi,", accent: true },
-    { text: "every", accent: false },
-    { text: "sunny", accent: true },
-    { text: "day,", accent: true },
-    { text: "every", accent: false },
-    { text: "splash", accent: false },
-    { text: "deserves", accent: false },
-    { text: "serious", accent: true },
-    { text: "engineering.", accent: false },
+    { text: "Every" },
+    { text: "Holi,", color: "#f5b301" },
+    { text: "every" },
+    { text: "sunny", color: "#f97316" },
+    { text: "day,", color: "#ef4444" },
+    { text: "every" },
+    { text: "splash", color: "#0871e7" },
+    { text: "deserves" },
+    { text: "serious", color: "#ec4899" },
+    { text: "engineering.", shimmer: true },
 ];
 
+/* Each stat value gets its own colour so the row reads as a vibrant set. */
+const STAT_COLORS = ["#f97316", "#0871e7", "#ef4444", "#f5b301"];
 const STATS = [
     { value: "25m", label: "Max Range" },
     { value: "11 r/s", label: "Peak Fire Rate" },
@@ -80,21 +84,17 @@ export default function MissionSection({ missionRef }) {
                 </span>
 
                 <div className="mt-10 flex flex-wrap items-baseline gap-x-5 gap-y-2">
-                    {WORDS.map(({ text, accent }, i) => {
-                        // The final word gets the animated colour-gradient shimmer.
-                        const isLast = i === WORDS.length - 1;
-                        return (
-                            <span
-                                key={i}
-                                className={`mission-word font-display inline-block text-[clamp(36px,6vw,88px)] leading-[1.0] ${
-                                    isLast ? "text-shimmer" : accent ? "text-orange-500" : "text-white"
-                                }`}
-                                style={{ opacity: 0 }}
-                            >
-                                {text}
-                            </span>
-                        );
-                    })}
+                    {WORDS.map(({ text, color, shimmer }, i) => (
+                        <span
+                            key={i}
+                            className={`mission-word font-display inline-block text-[clamp(36px,6vw,88px)] leading-[1.0] ${
+                                shimmer ? "text-shimmer" : color ? "" : "text-white"
+                            }`}
+                            style={{ opacity: 0, ...(color ? { color } : {}) }}
+                        >
+                            {text}
+                        </span>
+                    ))}
                 </div>
 
                 <p className="mt-12 max-w-[54ch] text-base leading-relaxed text-zinc-400 md:text-lg">
@@ -106,9 +106,12 @@ export default function MissionSection({ missionRef }) {
                 </p>
 
                 <div className="mt-16 grid grid-cols-2 gap-8 border-t border-zinc-800 pt-12 md:grid-cols-4">
-                    {STATS.map((stat) => (
+                    {STATS.map((stat, i) => (
                         <div key={stat.label} className="mission-stat" style={{ opacity: 0 }}>
-                            <div className="font-display text-5xl text-orange-500">
+                            <div
+                                className="font-display text-5xl"
+                                style={{ color: STAT_COLORS[i % STAT_COLORS.length] }}
+                            >
                                 {stat.value}
                             </div>
                             <div className="mt-2 font-mono-tactical text-[11px] uppercase tracking-[0.3em] text-zinc-500">

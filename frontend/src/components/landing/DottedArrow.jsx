@@ -1,31 +1,58 @@
-/* Playful hand-drawn DOTTED arrow (dogggystyle-style). Points LEFT by default
-   (tip on the left), so placed to the RIGHT of a target it points straight at
-   it. `flip` mirrors it to point right. Inherits `currentColor`; decorative
-   only (aria-hidden). Curved dotted shaft + solid arrowhead. */
-export default function DottedArrow({ className = "", flip = false }) {
+/* Playful hand-drawn DOTTED arrow (dogggystyle-style). Bold, round-dotted shaft
+   + chunky arrowhead, inherits `currentColor`. Decorative (aria-hidden).
+     • default: points LEFT (tip on the left) — put it to the RIGHT of a target.
+     • flip:    mirror to point RIGHT.
+     • down:    a dedicated DOWN-pointing arrow — put it ABOVE a target. */
+export default function DottedArrow({ className = "", flip = false, down = false }) {
+    if (down) {
+        return (
+            <svg
+                className={className}
+                width="54"
+                height="82"
+                viewBox="0 0 54 82"
+                fill="none"
+                aria-hidden="true"
+            >
+                <path
+                    d="M12 6 C 4 30, 48 36, 34 66"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                    strokeLinecap="round"
+                    strokeDasharray="0.5 13"
+                />
+                <path
+                    d="M22 56 L35 72 L48 58"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    fill="none"
+                />
+            </svg>
+        );
+    }
     return (
         <svg
             className={className}
-            width="96"
-            height="60"
-            viewBox="0 0 96 60"
+            width="104"
+            height="54"
+            viewBox="0 0 104 54"
             fill="none"
             aria-hidden="true"
             style={flip ? { transform: "scaleX(-1)" } : undefined}
         >
-            {/* dotted curved shaft — sweeps from the label (right) to the tip (left) */}
             <path
-                d="M90 14 C 62 6, 30 12, 14 30"
+                d="M98 12 C 68 4, 36 10, 15 28"
                 stroke="currentColor"
-                strokeWidth="3"
+                strokeWidth="4"
                 strokeLinecap="round"
-                strokeDasharray="0.5 9"
+                strokeDasharray="0.5 13"
             />
-            {/* arrowhead — tip at the left (~10,30), opening to the right */}
             <path
-                d="M28 20 L10 30 L28 40"
+                d="M30 18 L10 28 L30 40"
                 stroke="currentColor"
-                strokeWidth="3"
+                strokeWidth="4"
                 strokeLinecap="round"
                 strokeLinejoin="round"
                 fill="none"
