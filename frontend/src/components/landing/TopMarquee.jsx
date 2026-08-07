@@ -15,8 +15,12 @@ const ITEMS = [
     "Free shipping across India when we launch this season.",
 ];
 
-/* One reel = the list repeated enough to overflow any viewport. */
-const REEL = [...ITEMS, ...ITEMS, ...ITEMS];
+/* One reel repeats the list just enough to overflow the viewport (so the loop
+   is seamless) WITHOUT making the two-reel track exceed the GPU's ~8192px
+   single-layer texture limit — past that the browser drops it off the GPU and
+   the scroll stutters. With the current long lines, x2 keeps the track well
+   under the limit while a single reel still exceeds any common screen. */
+const REEL = [...ITEMS, ...ITEMS];
 
 function Reel({ hidden }) {
     return (
