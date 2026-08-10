@@ -4,8 +4,9 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 gsap.registerPlugin(ScrollTrigger);
 
-/* Funky multi-colour statement — festival/summer palette across the key words,
-   the closing word runs the animated gradient shimmer. */
+/* Funky statement — warm festival palette (yellow/orange/red) plus a single
+   water-blue accent, the closing word runs the animated gradient shimmer.
+   Deliberately warm-dominant so it reads as summer/Holi, not a rainbow. */
 const WORDS = [
     { text: "Every" },
     { text: "Holi,", color: "#f5b301" },
@@ -15,7 +16,7 @@ const WORDS = [
     { text: "every" },
     { text: "splash", color: "#0871e7" },
     { text: "deserves" },
-    { text: "serious", color: "#ec4899" },
+    { text: "serious", color: "#f97316" },
     { text: "engineering.", shimmer: true },
 ];
 
