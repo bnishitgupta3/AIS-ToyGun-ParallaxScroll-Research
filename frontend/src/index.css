@@ -9,6 +9,19 @@
     font-display: swap;
 }
 
+/* Hinato — the brand display font (self-hosted, ~38 KB; no external CDN, per
+   our security posture). It's a SINGLE-master display face (weight 400), so we
+   declare it across the full 100–900 range: any font-weight our headings ask
+   for (600/700) then renders Hinato's true design instead of a faux-bold
+   synthesis. It lacks "·" and "✦" glyphs — those fall through to the stack's
+   system fonts (see --font-display). */
+@font-face {
+    font-family: "Hinato";
+    src: url("./fonts/hinato.otf") format("opentype");
+    font-weight: 100 900;
+    font-display: swap;
+}
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -35,6 +48,15 @@
        this so it clears the toolbar when present and sits flush when it's not.
        0 on desktop (vh == dvh). Default 0px is the safe pre-dvh fallback. */
     --chrome-bottom: 0px;
+
+    /* Brand DISPLAY / headline font — self-hosted Hinato (@font-face above).
+       Everything that used the old display serif reads from this var, so the
+       whole headline system is one swap. System-font fallbacks cover the few
+       glyphs Hinato omits (e.g. "·", "✦"). The logo is intentionally NOT on
+       this var — it keeps Instrument Serif via `font-logo`. Body / UI / labels
+       stay on Inter (unchanged). */
+    --font-display: "Hinato", ui-rounded, "Segoe UI", system-ui, sans-serif;
+    --font-logo: "Instrument Serif", serif;
 }
 
 @supports (height: 100dvh) {
@@ -176,9 +198,12 @@ body.sheet-open .section-dots {
     background-size: 20px 20px;
 }
 
-/* ── Custom font utilities (complement Tailwind fontFamily config) ── */
+/* ── Custom font utilities (complement Tailwind fontFamily config) ──
+   NOTE: this .font-instrument overrides the Tailwind token by source order, so
+   it must ALSO point at the display var — otherwise headlines stay on the old
+   serif even though the Tailwind config was repointed. */
 .font-instrument {
-    font-family: "Instrument Serif", serif;
+    font-family: var(--font-display);
 }
 .font-nokia {
     font-family: "Nokia Cellphone FC Small", monospace;
@@ -188,16 +213,139 @@ body.sheet-open .section-dots {
 }
 
 /* SITE-WIDE FONT UNIFICATION
-   .font-display  → Instrument Serif  (all display titles / headings)
-   .font-mono-tactical → Inter         (all technical labels / nav / spec rows)
-   These two utilities are used across the homepage AND every product page,
-   so re-pointing them here propagates the unified type system repo-wide
-   without editing each component. */
+   .font-display  → brand display font (var, Fredoka)  — all display titles /
+                    headings, repo-wide. Re-pointed via --font-display so the
+                    whole type system swaps from one place.
+   .font-mono-tactical → Inter  (all technical labels / nav / spec rows)
+   .font-logo     → Instrument Serif  (the SONIQ logo only) */
 .font-display {
-    font-family: "Instrument Serif", serif;
-    font-weight: 400;
+    font-family: var(--font-display);
+    font-weight: 600;
     letter-spacing: -0.02em;
-    line-height: 0.92;
+    line-height: 0.95;
+}
+
+/* Logo keeps the original serif wordmark — excluded from the display swap. */
+.font-logo {
+    font-family: var(--font-logo);
+}
+
+/* ── Vibrancy kit (new-age D2C, dogggystyle-inspired) ────────────────────
+   All OPT-IN: nothing changes unless a class is applied to an element. */
+
+/* Punchier headlines: the Tailwind `font-instrument` utility carries no
+   weight, so give it the same bold display weight as `.font-display`. */
+.font-instrument {
+    font-weight: 600;
+    letter-spacing: -0.02em;
+}
+
+/* Two-tone headline emphasis — colour a word/phrase in a brand accent. */
+.hl        { color: var(--accent); }
+.hl-red    { color: #ef4444; }
+.hl-blue   { color: #0871e7; }
+.hl-yellow { color: #f5b301; }
+
+/* Neo-brutalist box — hard border + solid offset shadow (no blur). Pair with
+   a rounded radius from the element itself; these only add border + shadow. */
+.brutal {
+    border: 2px solid #1a1a1a;
+    box-shadow: 4px 4px 0 0 #1a1a1a;
+}
+.brutal-accent {
+    border: 2px solid #1a1a1a;
+    box-shadow: 4px 4px 0 0 var(--accent);
+}
+
+/* Playful hover wobble for display headings — motion-safe. */
+@media (prefers-reduced-motion: no-preference) {
+    .wobble {
+        transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    .wobble:hover {
+        transform: rotate(-1.4deg) scale(1.015);
+    }
+}
+
+/* Animated GRADIENT text — a colourful sweep across the letterforms. The
+   gradient is clipped to the glyphs; falls back to a solid accent where
+   background-clip:text is unsupported. Motion added only when motion is OK. */
+.text-shimmer {
+    color: #f97316; /* fallback fill */
+    background-image: linear-gradient(100deg, #f97316 0%, #f5b301 25%, #ef4444 50%, #f5b301 75%, #f97316 100%);
+    background-size: 260% 100%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-position: 0% 50%;
+}
+/* Cool variant (blue→cyan→violet) for blue-accent contexts. */
+.text-shimmer-cool {
+    color: #0871e7;
+    background-image: linear-gradient(100deg, #0871e7 0%, #22d3ee 25%, #6366f1 50%, #22d3ee 75%, #0871e7 100%);
+    background-size: 260% 100%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-position: 0% 50%;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+    .text-shimmer, .text-shimmer-cool { animation: textShimmer 6s linear infinite; }
+    /* Continuous gentle sway for a single playful word. */
+    .sway { display: inline-block; animation: swayLoop 3.2s ease-in-out infinite; transform-origin: 70% 90%; }
+    /* Neo-brutalist press: the element sinks toward its offset shadow on press. */
+    .brutal-press { transition: transform 0.12s ease, box-shadow 0.12s ease; }
+    .brutal-press:hover  { transform: translate(1px, 1px); box-shadow: 3px 3px 0 0 #1a1a1a; }
+    .brutal-press:active { transform: translate(4px, 4px); box-shadow: 0 0 0 0 #1a1a1a; }
+}
+@keyframes textShimmer {
+    0%   { background-position: 0% 50%; }
+    100% { background-position: 260% 50%; }
+}
+
+/* ── Animation PERF guards ───────────────────────────────────────────────
+   1) Never run decorative loops during the critical load (body.loading) —
+      keep the main thread free for the WebGL/video work.
+   2) The gradient shimmer animates background-position, which REPAINTS the
+      text every frame; kill that repaint on phones (keep the static colour)
+      so it never competes with the 3-D canvas on mobile. Sway uses transform
+      (GPU-composited, cheap) so it may stay. */
+body.loading .text-shimmer,
+body.loading .text-shimmer-cool,
+body.loading .sway {
+    animation: none !important;
+}
+@media (max-width: 767px) {
+    .text-shimmer,
+    .text-shimmer-cool {
+        animation: none;
+    }
+}
+
+/* ── Top announcement marquee ── seamless infinite scroll via transform.
+   Two identical reels in .marquee-track; -50% == exactly one reel. Promoted to
+   its own compositor layer (will-change + translateZ) so the scroll is smooth
+   and never repaints on the main thread alongside the WebGL canvas. */
+.marquee-track {
+    will-change: transform;
+    transform: translateZ(0);
+    backface-visibility: hidden;
+}
+@media (prefers-reduced-motion: no-preference) {
+    .marquee-track { animation: marqueeScroll 38s linear infinite; }
+}
+/* Pause on hover so a reader can catch a line. (No body.loading pause: that
+   class lingers after client-side navigation, which froze the marquee on
+   non-home pages — and the bar is hidden during the load anyway.) */
+.marquee:hover .marquee-track { animation-play-state: paused; }
+@keyframes marqueeScroll {
+    from { transform: translate3d(0, 0, 0); }
+    to   { transform: translate3d(-50%, 0, 0); }
+}
+@keyframes swayLoop {
+    0%, 100% { transform: rotate(-3deg); }
+    50%      { transform: rotate(3deg); }
 }
 
 .font-mono-tactical {

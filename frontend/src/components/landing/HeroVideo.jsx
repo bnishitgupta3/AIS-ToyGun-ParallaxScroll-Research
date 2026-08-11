@@ -18,6 +18,12 @@ const REDUCE_MOTION =
     typeof window.matchMedia === "function" &&
     window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
+/* On phones we NEVER fetch the heavy 2nd clip (~13 MB): mobile bandwidth is the
+   scarcest resource and the single-clip loop looks the same on a small screen.
+   This alone cuts the hero's mobile video payload by ~78% (17 MB -> ~3.6 MB). */
+const IS_MOBILE =
+    typeof window !== "undefined" && window.innerWidth < 768;
+
 export default function HeroVideo() {
     const refs = [useRef(null), useRef(null)];
     const [active, setActive] = useState(0);
@@ -117,9 +123,19 @@ export default function HeroVideo() {
         if (!v || !v.duration) return;
 
         /* Start fetching clip 2 shortly after clip 1 begins, so it has the
-           whole rest of clip 1 to buffer before the crossfade. */
-        if (i === 0 && !loadSecond && v.currentTime > 0.5) {
+           whole rest of clip 1 to buffer before the crossfade. Skipped on
+           mobile — clip 1 just loops (onEnded), saving the ~13 MB 2nd clip. */
+        if (i === 0 && !loadSecond && !IS_MOBILE && v.currentTime > 0.5) {
             setLoadSecond(true);
+        }
+
+        /* On mobile there is no 2nd clip — loop clip 1 instead of crossfading. */
+        if (IS_MOBILE) {
+            if (v.currentTime >= v.duration - 0.15) {
+                v.currentTime = 0;
+                v.play().catch(() => {});
+            }
+            return;
         }
 
         if (v.currentTime >= v.duration - CROSSFADE) {

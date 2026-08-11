@@ -280,7 +280,7 @@ export default function ProductShowcaseTemplate({ product: rawProduct }) {
                                 </span>
                                 {product.category && (
                                     <span
-                                        className="inline-flex items-center gap-2 rounded-full px-4 py-1.5 font-inter text-[12px] font-bold uppercase tracking-[0.28em] text-white shadow-[0_8px_20px_-8px_rgba(0,0,0,0.5)] sm:text-[13px]"
+                                        className="brutal wobble inline-flex items-center gap-2 rounded-full px-4 py-1.5 font-inter text-[12px] font-bold uppercase tracking-[0.28em] text-white sm:text-[13px]"
                                         style={{ background: product.accentColor }}
                                     >
                                         <span className="inline-block h-1.5 w-1.5 rounded-full bg-white/90" />
@@ -296,7 +296,11 @@ export default function ProductShowcaseTemplate({ product: rawProduct }) {
                             >
                                 {product.code.split("·").map((part, i, arr) => (
                                     <span key={i}>
-                                        {part.trim()}
+                                        {/* Two-tone: the product name (first segment)
+                                            in the brand accent, matches the homepage. */}
+                                        <span style={i === 0 ? { color: product.accentColor } : undefined}>
+                                            {part.trim()}
+                                        </span>
                                         {i < arr.length - 1 && (
                                             <span
                                                 className="inline-block translate-y-[0.08em]"

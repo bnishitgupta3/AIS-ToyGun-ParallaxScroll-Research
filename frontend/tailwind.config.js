@@ -8,7 +8,11 @@ module.exports = {
   theme: {
   	extend: {
   		fontFamily: {
-  			instrument: ['"Instrument Serif"', 'serif'],
+  			// Display/headline font — repointed to the brand display var
+  			// (Fredoka) so `font-instrument` across the app swaps from one place.
+  			// The old serif is retained only for the logo via `font-logo`.
+  			instrument: ['var(--font-display)'],
+  			logo:       ['"Instrument Serif"', 'serif'],
   			nokia:      ['"Nokia Cellphone FC Small"', 'monospace'],
   			inter:      ['Inter', 'ui-sans-serif', 'system-ui', 'sans-serif'],
   		},

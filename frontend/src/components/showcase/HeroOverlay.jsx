@@ -17,7 +17,7 @@ export default function HeroOverlay() {
                 <span className="font-mono-tactical text-xs font-bold uppercase tracking-[0.5em] text-[color:var(--accent)]">
                     /// SONIQ Toys · 2026
                 </span>
-                <span className="inline-flex items-center gap-2 rounded-full bg-[color:var(--accent)] px-4 py-1.5 font-inter text-[12px] font-bold uppercase tracking-[0.28em] text-white shadow-[0_8px_20px_-8px_rgba(0,0,0,0.5)] sm:text-[13px]">
+                <span className="brutal wobble inline-flex items-center gap-2 rounded-full bg-[color:var(--accent)] px-4 py-1.5 font-inter text-[12px] font-bold uppercase tracking-[0.28em] text-white sm:text-[13px]">
                     <span className="inline-block h-1.5 w-1.5 rounded-full bg-white/90" />
                     Water Gun
                 </span>
@@ -29,7 +29,9 @@ export default function HeroOverlay() {
                 className="font-display select-none text-[clamp(72px,18vw,300px)] text-zinc-900"
                 style={{ lineHeight: 0.78 }}
             >
-                MP5K
+                {/* Two-tone wordmark — the product name in the brand accent,
+                    SONIQ in ink (matches the homepage's coloured headline words). */}
+                <span className="text-[color:var(--accent)]">MP5K</span>
                 <span className="inline-block translate-y-[0.08em] text-[color:var(--accent)]">
                     ·
                 </span>

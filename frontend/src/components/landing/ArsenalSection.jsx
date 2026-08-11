@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useCart, useCartItem } from "@/lib/cart";
 import NotifyMe from "@/components/showcase/NotifyMe";
+import DottedArrow from "@/components/landing/DottedArrow";
 
 /* Formspree `source` label per product, so Arsenal signups group with the
    product-page ones (e.g. "launch-crimson-blaster"). */
@@ -85,7 +86,7 @@ function BuyNowButton({ onClick }) {
         <button
             type="button"
             onClick={onClick}
-            className="group relative inline-flex items-center gap-2 overflow-hidden rounded-full bg-[#f97316] px-7 py-2.5 font-inter text-[12px] font-semibold uppercase tracking-[0.2em] text-white shadow-[inset_0_-4px_4px_rgba(255,255,255,0.35)] transition-all hover:brightness-110"
+            className="brutal group relative inline-flex items-center gap-2 overflow-hidden rounded-full bg-[#f97316] px-7 py-2.5 font-inter text-[12px] font-semibold uppercase tracking-[0.2em] text-white shadow-[inset_0_-4px_4px_rgba(255,255,255,0.35)] transition-all hover:brightness-110"
         >
             <span
                 aria-hidden="true"
@@ -267,12 +268,15 @@ export default function ArsenalSection({ arsenalRef, onSelect, activeIndex = 0 }
                             style={{ opacity: i === activeIndex ? 1 : 0 }}
                         >
                             <span
-                                className="font-inter mb-2 inline-block rounded-full border px-2.5 py-0.5 text-[9px] font-semibold uppercase tracking-[0.28em]"
-                                style={{ borderColor: p.accent, color: p.accent }}
+                                className="brutal font-inter mb-2 inline-block rounded-full px-3 py-1 text-[9px] font-bold uppercase tracking-[0.26em] text-white"
+                                style={{ background: p.accent }}
                             >
                                 {p.sub}
                             </span>
-                            <h3 className="font-instrument text-[clamp(26px,4.4vw,40px)] leading-none text-[#1a1a1a]">
+                            <h3
+                                className="font-instrument text-[clamp(26px,4.4vw,40px)] leading-none"
+                                style={{ color: p.accent }}
+                            >
                                 {p.name}
                             </h3>
                             <p className="mt-1.5 font-inter text-[10px] font-medium uppercase tracking-[0.2em] text-[#1a1a1a]/50">
@@ -363,7 +367,7 @@ export default function ArsenalSection({ arsenalRef, onSelect, activeIndex = 0 }
                                     the immersive 3D product page. */}
                                 <Link
                                     to={p.link}
-                                    className="group inline-flex items-center gap-2 rounded-full border border-[#1a1a1a]/30 px-7 py-2.5 font-inter text-[12px] font-semibold uppercase tracking-[0.2em] text-[#1a1a1a] transition-all hover:border-[#1a1a1a] hover:bg-[#1a1a1a] hover:text-white"
+                                    className="brutal group inline-flex items-center gap-2 rounded-full bg-white px-7 py-2.5 font-inter text-[12px] font-semibold uppercase tracking-[0.2em] text-[#1a1a1a] transition-all hover:bg-[#1a1a1a] hover:text-white"
                                 >
                                     Experience it
                                     <svg
@@ -450,6 +454,14 @@ export default function ArsenalSection({ arsenalRef, onSelect, activeIndex = 0 }
                 className="absolute bottom-[calc(12.75rem_+_var(--chrome-bottom))] left-1/2 z-30 flex -translate-x-1/2 items-center gap-3 transition-opacity duration-500 sm:gap-4"
                 style={{ opacity: entered ? 1 : 0 }}
             >
+                {/* Dotted arrow nudging toward the weapon tiles — large screens
+                    only (needs the side room; hidden where it'd crowd). */}
+                <div className="pointer-events-none absolute left-full top-1/2 ml-2 hidden -translate-y-1/2 items-center gap-1 text-[#f97316] lg:flex">
+                    <DottedArrow className="shrink-0" />
+                    <span className="font-instrument -rotate-3 whitespace-nowrap text-[15px] font-bold">
+                        pick your weapon
+                    </span>
+                </div>
                 {PRODUCTS.map((p, i) => (
                     /* The tile itself acts as a clickable surface (gun switch).
                        It's a div (not a button) so the cart counter buttons can

@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
+import DottedArrow from "@/components/landing/DottedArrow";
 
 const EASE = [0.16, 1, 0.3, 1];
 
@@ -52,11 +53,14 @@ export default function HeroSection({ heroRef }) {
 
                 <motion.h1
                     variants={rise}
-                    className="font-instrument text-[clamp(38px,8vw,84px)] leading-[0.92] tracking-tight text-white drop-shadow-[0_2px_24px_rgba(0,0,0,0.55)]"
+                    className="font-instrument !font-bold text-[clamp(40px,8.6vw,92px)] leading-[0.88] tracking-tight text-white drop-shadow-[0_2px_24px_rgba(0,0,0,0.55)]"
                 >
-                    Holi to high-noon,
+                    {/* Multi-tone + motion: 'Holi' sways in sunshine yellow,
+                        and the payoff line runs an animated colour gradient. */}
+                    <span className="sway inline-block text-[#f5b301]">Holi</span>{" "}
+                    to high-noon,
                     <br />
-                    <span className="text-white/55">soak every moment.</span>
+                    <span className="text-shimmer">soak every moment.</span>
                 </motion.h1>
 
                 <motion.p
@@ -69,20 +73,29 @@ export default function HeroSection({ heroRef }) {
                     backyard. Whenever the sun's out, play harder.
                 </motion.p>
 
-                <motion.a
-                    variants={rise}
-                    href="#arsenal"
-                    className="group relative mt-9 inline-flex items-center gap-2 overflow-hidden rounded-full bg-[#f97316] px-7 py-3 font-inter text-[13px] font-semibold text-white shadow-[inset_0_-4px_4px_rgba(255,255,255,0.39)] transition-all hover:brightness-110"
-                >
-                    <span
-                        aria-hidden="true"
-                        className="pointer-events-none absolute left-[10%] top-[1px] h-4 w-[80%] rounded-[12px] bg-gradient-to-b from-[#FFD9B8] to-transparent transition-transform duration-200 group-hover:scale-x-105"
-                    />
-                    <span className="relative">Explore the Arsenal</span>
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="relative">
-                        <path d="M12 5v14M5 12l7 7 7-7" />
-                    </svg>
-                </motion.a>
+                <motion.div variants={rise} className="relative mt-9 inline-flex flex-col items-center">
+                    <a
+                        href="#arsenal"
+                        className="group relative inline-flex items-center gap-2 overflow-hidden rounded-full bg-[#f97316] px-7 py-3 font-inter text-[13px] font-semibold text-white shadow-[inset_0_-4px_4px_rgba(255,255,255,0.39)] transition-all hover:brightness-110"
+                    >
+                        <span
+                            aria-hidden="true"
+                            className="pointer-events-none absolute left-[10%] top-[1px] h-4 w-[80%] rounded-[12px] bg-gradient-to-b from-[#FFD9B8] to-transparent transition-transform duration-200 group-hover:scale-x-105"
+                        />
+                        <span className="relative">Explore the Arsenal</span>
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="relative">
+                            <path d="M12 5v14M5 12l7 7 7-7" />
+                        </svg>
+                    </a>
+                    {/* Playful dotted arrow nudging toward the CTA — desktop only
+                        (kept off mobile to avoid crowding the centered layout). */}
+                    <div className="pointer-events-none absolute left-full top-1/2 hidden -translate-y-1/2 items-center gap-1 md:flex">
+                        <DottedArrow className="text-[#f5b301]" />
+                        <span className="font-instrument -rotate-6 whitespace-nowrap text-[15px] font-bold text-[#f5b301] drop-shadow-[0_1px_8px_rgba(0,0,0,0.55)]">
+                            psst, start here
+                        </span>
+                    </div>
+                </motion.div>
             </motion.div>
 
             {/* Scroll cue — bottom-centre */}

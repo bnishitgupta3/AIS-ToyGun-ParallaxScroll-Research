@@ -27,6 +27,9 @@ export default function ProductActions({
 
     const isDark = variant === "dark";
     const baseInk = isDark ? "#ffffff" : "#1a1a1a";
+    // Neo-brutalist border + hard shadow on the LIGHT variant (the black shadow
+    // reads on the pale spec panel; on the dark footer it wouldn't show).
+    const brutalCls = isDark ? "" : "brutal ";
 
     return (
         <div className="flex w-full flex-col gap-3 sm:flex-row sm:items-stretch">
@@ -34,7 +37,7 @@ export default function ProductActions({
             <button
                 type="button"
                 onClick={() => openDrawer(product)}
-                className="group relative inline-flex flex-1 items-center justify-center gap-2 overflow-hidden rounded-full px-7 py-3.5 font-inter text-[13px] font-semibold uppercase tracking-[0.2em] text-white shadow-[inset_0_-4px_4px_rgba(255,255,255,0.35)] transition-all hover:brightness-110"
+                className={`${brutalCls}group relative inline-flex flex-1 items-center justify-center gap-2 overflow-hidden rounded-full px-7 py-3.5 font-inter text-[13px] font-semibold uppercase tracking-[0.2em] text-white shadow-[inset_0_-4px_4px_rgba(255,255,255,0.35)] transition-all hover:brightness-110`}
                 style={{ background: accent }}
             >
                 <span
@@ -77,7 +80,7 @@ export default function ProductActions({
                 </button>
             ) : (
                 <div
-                    className="flex flex-1 items-center justify-between rounded-full pl-1.5 pr-1.5 text-white shadow-[inset_0_-4px_4px_rgba(255,255,255,0.35)]"
+                    className={`${brutalCls}flex flex-1 items-center justify-between rounded-full pl-1.5 pr-1.5 text-white shadow-[inset_0_-4px_4px_rgba(255,255,255,0.35)]`}
                     style={{ background: accent }}
                 >
                     <button
