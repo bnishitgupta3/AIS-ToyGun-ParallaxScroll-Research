@@ -1,4 +1,4 @@
-import { Suspense, useRef, useState, useEffect } from "react";
+import { Suspense } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import {
     useGLTF,
@@ -78,7 +78,7 @@ function responsiveLayout(width, height) {
 }
 
 /* ── Scene graph — must live inside <Canvas> ── */
-function LandingScene({ model1Ref, model2Ref, model3Ref, mouseRef, scrollRef, secondaryReady }) {
+function LandingScene({ model1Ref, model2Ref, model3Ref, mouseRef, scrollRef }) {
     const { size } = useThree();
     /* Each gun snaps straight to its target on the FIRST frame it's processed
        (tracked per-object via userData.placed), then damps. This means a gun
@@ -230,26 +230,10 @@ function LandingScene({ model1Ref, model2Ref, model3Ref, mouseRef, scrollRef, se
                 </Suspense>
             </group>
 
-            {/* Products 2 & 3 (M416, Crimson) — Arsenal-only guns, mounted after
-                first paint (secondaryReady) so they don't slow the hero load.
-                They snap into their parked poses when they appear. */}
-            {secondaryReady && (
-                <>
-                    {/* Product 2 – M416 Water X  (arsenal slot 1) */}
-                    <group ref={model2Ref}>
-                        <Suspense fallback={null}>
-                            <GenericGunModel url={asset("/assets/m416-watergun.glb")} targetSize={2.8} />
-                        </Suspense>
-                    </group>
-
-                    {/* Product 3 – Crimson Blaster  (arsenal slot 2) */}
-                    <group ref={model3Ref}>
-                        <Suspense fallback={null}>
-                            <GenericGunModel url={asset("/assets/crimson-blaster.glb")} targetSize={2.8} />
-                        </Suspense>
-                    </group>
-                </>
-            )}
+            {/* Guns 2 & 3 (M416, Crimson) are NO LONGER mounted here — the
+                Arsenal is now a photo grid (ArsenalGrid), so streaming those two
+                ~7 MB GLBs on the homepage is pure waste. Only the hero gun loads.
+                model2Ref/model3Ref stay unattached; the useFrame skips nulls. */}
 
             {/* Grounded contact shadow under the active model area.
                 512 resolution (from 1024) — 4x fewer pixels to re-render each
@@ -268,30 +252,8 @@ function LandingScene({ model1Ref, model2Ref, model3Ref, mouseRef, scrollRef, se
 }
 
 export default function LandingCanvas({ model1Ref, model2Ref, model3Ref, mouseRef, scrollRef }) {
-    /* Defer the two Arsenal guns (~14 MB) so the hero + first gun win the
-       initial bandwidth. Mount them after a short beat, or immediately on the
-       first scroll (whichever comes first) — always well before the user
-       reaches the Arsenal carousel. Preload the models as we flip so they warm
-       just before mounting. */
-    const [secondaryReady, setSecondaryReady] = useState(false);
-    useEffect(() => {
-        let done = false;
-        const ready = () => {
-            if (done) return;
-            done = true;
-            useGLTF.preload(asset("/assets/m416-watergun.glb"));
-            useGLTF.preload(asset("/assets/crimson-blaster.glb"));
-            setSecondaryReady(true);
-            window.removeEventListener("scroll", ready);
-        };
-        const t = setTimeout(ready, 1200);
-        window.addEventListener("scroll", ready, { passive: true });
-        return () => {
-            clearTimeout(t);
-            window.removeEventListener("scroll", ready);
-        };
-    }, []);
-
+    /* Only the hero gun loads now — the Arsenal grid replaced the 3-D carousel,
+       so guns 2 & 3 are no longer mounted or preloaded here. */
     return (
         <Canvas
             camera={{ position: [0, 0.15, 7.5], fov: 40 }}
@@ -332,7 +294,6 @@ export default function LandingCanvas({ model1Ref, model2Ref, model3Ref, mouseRe
                 model3Ref={model3Ref}
                 mouseRef={mouseRef}
                 scrollRef={scrollRef}
-                secondaryReady={secondaryReady}
             />
         </Canvas>
     );

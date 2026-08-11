@@ -106,6 +106,7 @@ export const PRODUCTS = [
         name: "MP5K",
         tagline: "Fully Electric · Automatic · Trigger-Only",
         link: "/product/mp5k",
+        image: "mp5k.jpg",
         accent: "#f97316",
         sub: "Water Gun",
         stats: [
@@ -120,6 +121,7 @@ export const PRODUCTS = [
         name: "M416 Water X",
         tagline: "Fully Electric · Automatic · Trigger-Only",
         link: "/product/m416",
+        image: "m416.jpg",
         accent: "#0871E7",
         sub: "Water Gun",
         stats: [
@@ -134,6 +136,7 @@ export const PRODUCTS = [
         name: "Crimson Blaster",
         tagline: "Gel Blaster · High Velocity · Tactical",
         link: "/product/crimson",
+        image: "crimson.jpg",
         accent: "#ef4444",
         sub: "Gel Blaster",
         /* Not launched yet — shown as a teaser everywhere (faded tile, no

@@ -4,7 +4,10 @@ import { useGLTF } from "@react-three/drei";
 import * as THREE from "three";
 import { asset } from "@/lib/asset";
 
-useGLTF.preload(asset("/assets/mp5k-dark.glb"));
+/* NOTE: no module-level useGLTF.preload here. This file is imported by the
+   eagerly-bundled ComingSoonPage, so a top-level preload ran at app startup and
+   pulled the 6.3 MB mp5k-dark.glb on EVERY route (incl. the homepage). The model
+   now loads only when this component actually mounts (the /coming-soon page). */
 
 /* The MP5K rendered as a flat, UNLIT silhouette — pure shadow, no detail
    revealed — slowly auto-rotating. */

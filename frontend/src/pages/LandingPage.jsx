@@ -1,18 +1,14 @@
 import { useEffect, useRef, useState } from "react";
 import { useLocation } from "react-router-dom";
-import gsap from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { ScrollToPlugin } from "gsap/ScrollToPlugin";
 import { scrollToSection } from "@/lib/scrollToSection";
-import { useProgress } from "@react-three/drei";
 
-import LandingCanvas, { HERO_GUN_X, GUN_SPACING } from "@/components/scene/LandingCanvas";
+import LandingCanvas from "@/components/scene/LandingCanvas";
 import LandingNav     from "@/components/landing/LandingNav";
 import HeroVideo      from "@/components/landing/HeroVideo";
 import HeroSection    from "@/components/landing/HeroSection";
-import ArsenalSection from "@/components/landing/ArsenalSection";
+import ArsenalGrid    from "@/components/landing/ArsenalGrid";
 import MissionSection from "@/components/landing/MissionSection";
-// Hidden until real UGC videos are ready — see section 4 in the render below.
+// Hidden until real UGC videos are ready.
 // import FieldTestSection from "@/components/landing/FieldTestSection";
 import LandingFooter  from "@/components/landing/LandingFooter";
 import SectionDots    from "@/components/landing/SectionDots";
@@ -20,113 +16,46 @@ import { isPrerendering } from "@/lib/isPrerendering";
 
 const PRERENDER = isPrerendering();
 
-gsap.registerPlugin(ScrollTrigger, ScrollToPlugin);
-
-const ARSENAL_COUNT = 3;   // number of weapons
-
-/* ── Scroll mapping with a DWELL on each weapon ──
-   Raw scroll progress (0..1) is remapped to a carousel position (0..N-1)
-   that REST (holds) on each gun before easing to the next. This makes the
-   carousel "snap and wait" on every weapon — including the last one, so the
-   pin doesn't release the instant you reach it. */
-const HOLD_FRAC  = 0.16;   // fraction of the pin scroll spent resting on each gun
-const TRANS_FRAC = (1 - ARSENAL_COUNT * HOLD_FRAC) / (ARSENAL_COUNT - 1);
-const smoothstep = (t) => t * t * (3 - 2 * t);
-
-const remapArsenal = (p) => {
-    let acc = 0;
-    for (let k = 0; k < ARSENAL_COUNT; k++) {
-        if (p <= acc + HOLD_FRAC) return k;              // resting on weapon k
-        acc += HOLD_FRAC;
-        if (k < ARSENAL_COUNT - 1) {
-            if (p <= acc + TRANS_FRAC) {                 // easing k → k+1
-                return k + smoothstep((p - acc) / TRANS_FRAC);
-            }
-            acc += TRANS_FRAC;
-        }
-    }
-    return ARSENAL_COUNT - 1;
-};
-
-/* Raw progress that centres weapon i (middle of its hold band) — for seek. */
-const holdCenter = (i) => i * (HOLD_FRAC + TRANS_FRAC) + HOLD_FRAC / 2;
-
+/* Homepage. The Arsenal is now a shoppable photo GRID (ArsenalGrid) rather than
+   a pinned 3-D carousel — lighter, faster, more conversion-focused. A single
+   cinematic 3-D gun still anchors the hero for brand; it fades out as you scroll
+   past so the grid below sits on a clean background. */
 export default function LandingPage() {
-    /* ── 3D model refs – populated inside <Canvas> ── */
-    const model1Ref = useRef();  // MP5K
-    const model2Ref = useRef();  // M416
-    const model3Ref = useRef();  // Crimson Blaster
+    /* Hero gun ref (populated inside <Canvas>). model2/3 are kept only so the
+       LandingCanvas prop shape is unchanged; the two Arsenal-only guns are no
+       longer mounted (no carousel), which drops ~14 MB from the homepage. */
+    const model1Ref = useRef();
+    const model2Ref = useRef();
+    const model3Ref = useRef();
 
-    /* ── Shared mouse position for hero mouse-tracking ── */
-    const mouseRef = useRef({ x: 0, y: 0 });
+    const mouseRef  = useRef({ x: 0, y: 0 });
+    /* The Canvas reads this; with no carousel it stays at the hero pose. */
+    const scrollRef = useRef({ entry: 0, arsenal: 0 });
 
-    /* ── Section refs ── */
     const heroRef    = useRef(null);
     const arsenalRef = useRef(null);
     const missionRef = useRef(null);
 
-    /* ── Arsenal ScrollTrigger handle (for thumbnail click-to-seek) ── */
-    const arsenalST = useRef(null);
-
-    /* ── Active weapon index (drives the heading / button / thumbnail) ──
-       Held in React state so the UI is reliably in sync with the centred gun.
-       Updated ONLY when the index actually changes (2–3× per scroll), so it
-       never interferes with the per-frame gun animation in the Canvas. */
-    const [activeIdx, setActiveIdx] = useState(0);
-    const activeIdxRef = useRef(0);
-    const setActive = (idx) => {
-        if (idx === activeIdxRef.current) return;
-        activeIdxRef.current = idx;
-        setActiveIdx(idx);
-    };
-    /* While a thumbnail click-to-seek is animating, hold the highlight on the
-       chosen weapon (index) so the scroll-driven onUpdate can't drag it back.
-       null = no seek in progress (highlight follows scroll normally). */
-    const seekLockRef = useRef(null);
-
-    /* ── Scroll progress shared with the 3D canvas ──
-       GSAP writes here every scroll tick; the Canvas's useFrame reads it
-       and damps the guns toward their targets — decoupling WebGL motion
-       from scroll-event frequency for buttery 60fps interpolation. */
-    const scrollRef = useRef({ entry: 0, arsenal: 0 });
-
-    /* Smoothly scroll so the Arsenal lands EXACTLY centred on weapon `index`.
-       Progress i/(n-1) maps 1:1 to the gun-centred points (0, 0.5, 1). */
-    const seekToWeapon = (index) => {
-        const st = arsenalST.current;
-        if (!st) return;
-        // Highlight the picked tile instantly on click — don't wait for the
-        // carousel to finish animating the gun to the front (otherwise the tap
-        // feels unregistered and users double-click). Lock it for the duration
-        // of the seek so onUpdate (which tracks scroll position) can't drag the
-        // highlight back to where the gun currently is.
-        setActive(index);
-        seekLockRef.current = index;
-        const targetY = st.start + (st.end - st.start) * holdCenter(index);
-        gsap.to(window, {
-            scrollTo: { y: targetY, autoKill: false },
-            duration: 1,
-            ease: "power3.inOut",
-            onComplete: () => {
-                if (seekLockRef.current === index) seekLockRef.current = null;
-            },
-        });
-    };
-
-    /* ── FOUC gate: reveal body only after all .glb assets are loaded ── */
-    const { progress, active } = useProgress();
+    /* Fade the fixed hero canvas out over the first viewport of scroll, so the
+       3-D gun owns the hero and disappears cleanly before the Arsenal grid. */
+    const [canvasOpacity, setCanvasOpacity] = useState(1);
     useEffect(() => {
-        if (progress >= 100 && !active) {
-            gsap.to("body", {
-                autoAlpha: 1,
-                duration: 0.6,
-                ease: "power2.inOut",
-                onStart: () => document.body.classList.remove("loading"),
+        let raf = 0;
+        const onScroll = () => {
+            if (raf) return;
+            raf = requestAnimationFrame(() => {
+                raf = 0;
+                setCanvasOpacity(1 - Math.min(1, window.scrollY / (window.innerHeight * 0.85)));
             });
-        }
-    }, [progress, active]);
+        };
+        window.addEventListener("scroll", onScroll, { passive: true });
+        return () => {
+            window.removeEventListener("scroll", onScroll);
+            if (raf) cancelAnimationFrame(raf);
+        };
+    }, []);
 
-    /* ── Mouse tracking ── */
+    /* Mouse tracking for the hero gun tilt */
     useEffect(() => {
         const onMove = (e) => {
             mouseRef.current.x =  (e.clientX / window.innerWidth  - 0.5) * 2;
@@ -136,197 +65,59 @@ export default function LandingPage() {
         return () => window.removeEventListener("mousemove", onMove);
     }, []);
 
-    /* ── Cross-page section nav ──
-       When the global navbar sends us here from another route (e.g. /about →
-       "Mission"), it passes the target anchor via router state. We must wait
-       for the Arsenal PIN to be built before scrolling: until then the pin's
-       spacer doesn't exist, so a section after the Arsenal (Mission/Footer)
-       still sits at its naive DOM offset — scrolling there lands you inside
-       the pinned carousel. Poll for arsenalST (set once the guns load and the
-       timeline is built), then refresh + scroll. */
+    /* Cross-page section nav. Sections now sit at their natural offsets (no pin
+       spacer to wait for), so we scroll straight to the target after a short
+       settle once ScrollToTop's reset lands. */
     const location = useLocation();
     useEffect(() => {
         const target = location.state?.scrollTo;
         if (!target) return;
-        let cancelled = false;
-        let tries = 0;
-        const attempt = () => {
-            if (cancelled) return;
-            // Wait for the pin (or bail after ~6s so we never hang).
-            if (!arsenalST.current && tries < 60) {
-                tries += 1;
-                setTimeout(attempt, 100);
-                return;
-            }
-            ScrollTrigger.refresh(); // rebuild pin spacer so positions are final
-            // A short beat lets the refreshed layout settle before we measure
-            // the target's position (setTimeout, not rAF — rAF is unreliable
-            // in some embedded browsers).
-            setTimeout(() => {
-                if (!cancelled) scrollToSection(target);
-            }, 60);
-            window.history.replaceState({}, ""); // don't re-scroll on back/refresh
-        };
-        // Small initial delay so ScrollToTop's reset-to-0 lands first.
-        const id = setTimeout(attempt, 200);
-        return () => {
-            cancelled = true;
-            clearTimeout(id);
-        };
+        const id = setTimeout(() => {
+            scrollToSection(target);
+            window.history.replaceState({}, "");
+        }, 260);
+        return () => clearTimeout(id);
     }, [location.state]);
 
-    /* ── GSAP scroll orchestration ── */
-    useEffect(() => {
-        let cancelled = false;
-        let raf;
-        let ctx;
-
-        const setup = () => {
-            if (cancelled) return;
-            const g1 = model1Ref.current;
-            const g2 = model2Ref.current;
-            const g3 = model3Ref.current;
-            if (!g1 || !g2 || !g3) {
-                raf = requestAnimationFrame(setup);
-                return;
-            }
-            buildTimelines(g1, g2, g3);
-        };
-        raf = requestAnimationFrame(setup);
-
-        function buildTimelines(g1, g2, g3) {
-            /* ── Initial world positions ──
-               First-frame seed only; the Canvas useFrame damps from here on.
-               model1 sits at +HERO_GUN_X so it renders in the hero's right
-               column with no overlap on the left-aligned text. */
-            g1.position.set(HERO_GUN_X,                   0, 0);
-            g2.position.set(GUN_SPACING + HERO_GUN_X,     0, 0);
-            g3.position.set(2 * GUN_SPACING + HERO_GUN_X, 0, 0);
-            g1.scale.setScalar(1);
-            g2.scale.setScalar(1);
-            g3.scale.setScalar(1);
-            g1.rotation.set(0, 0, 0);
-
-            ctx = gsap.context(() => {
-
-                /* ── HERO → ARSENAL entrance ──
-                   Writes `entry` 0→1 as the section scrolls into view. No
-                   attached tween — the Canvas reads `entry` and damps the
-                   hero offset out. */
-                ScrollTrigger.create({
-                    trigger: arsenalRef.current,
-                    start:   "top bottom",
-                    end:     "top top",
-                    onUpdate: (self) => { scrollRef.current.entry = self.progress; },
-                });
-
-                /* ── ARSENAL pin ──
-                   Pins the section for a fixed scroll distance and writes
-                   `arsenal` 0→1. NO scrub and NO attached tween: the gun
-                   motion is interpolated frame-by-frame in the Canvas's
-                   useFrame (THREE damp), which is what makes it buttery and
-                   land exactly centred. raw self.progress keeps the math
-                   1:1 so click-to-seek is pixel-accurate. */
-                const st = ScrollTrigger.create({
-                    trigger:             arsenalRef.current,
-                    start:               "top top",
-                    /* Longer pin so the per-weapon dwells have room to breathe. */
-                    end:                 () => "+=" + Math.round(window.innerHeight * 3.4),
-                    pin:                 true,
-                    pinSpacing:          true,
-                    anticipatePin:       1,
-                    invalidateOnRefresh: true,
-                    onUpdate: (self) => {
-                        /* Remap raw scroll → carousel position with dwells. */
-                        const pos = remapArsenal(self.progress);  // 0 .. N-1
-                        scrollRef.current.arsenal = pos / (ARSENAL_COUNT - 1);
-                        /* During a click-to-seek, keep the highlight pinned to the
-                           chosen weapon; otherwise track the scroll position. */
-                        setActive(
-                            seekLockRef.current !== null
-                                ? seekLockRef.current
-                                : Math.round(pos),
-                        );
-                    },
-                    onRefresh: () =>
-                        setActive(
-                            Math.round((scrollRef.current.arsenal || 0) * (ARSENAL_COUNT - 1)),
-                        ),
-                });
-
-                arsenalST.current = st;
-            }); // end gsap.context
-
-            requestAnimationFrame(() => ScrollTrigger.refresh());
-        }
-
-        return () => {
-            cancelled = true;
-            if (raf) cancelAnimationFrame(raf);
-            if (ctx) ctx.revert();
-        };
-    }, []);
-
     return (
-        /*
-         * dot-grid = #F3F4ED + 20px radial dot grid.
-         * text-[#1a1a1a] = default dark text for all light-theme sections.
-         * The fixed Canvas (z:1) floats between the page bg and the HTML
-         * overlay (z:10), making the 3D guns visible through transparent areas.
-         */
         <div className="dot-grid relative overflow-x-hidden text-[#1a1a1a]">
-
-            {/* Heavy hero video + WebGL canvas: skipped during react-snap
-                prerender (they never reach network-idle) so the page's text is
-                captured for crawlers. Real browsers always render them. */}
             {!PRERENDER && (
                 <>
-                    {/* ── HERO BACKGROUND VIDEO (z:0 — behind the 3D canvas) ── */}
+                    {/* ── HERO BACKGROUND VIDEO (behind the 3-D canvas) ── */}
                     <HeroVideo />
 
-                    {/* Film-grain layer REMOVED — it was `position:fixed;
-                        inset:0; z-index:5; mix-blend-mode:overlay` sitting
-                        directly above the continuously re-rendering WebGL
-                        canvas. mix-blend-mode forces the compositor to read
-                        back and re-blend the whole backdrop every frame, which
-                        on iOS Safari produces a luminance flicker — most
-                        visible over the large FLAT empty area in the bottom
-                        half of the page (content/texture masks it elsewhere).
-                        It rendered at opacity 0.03, i.e. visually negligible,
-                        so dropping it costs nothing and removes the hazard. */}
-
-                    {/* ── FIXED GLOBAL 3D CANVAS ── */}
-                    <LandingCanvas
-                        model1Ref={model1Ref}
-                        model2Ref={model2Ref}
-                        model3Ref={model3Ref}
-                        mouseRef={mouseRef}
-                        scrollRef={scrollRef}
-                    />
+                    {/* ── FIXED 3-D HERO GUN — fades out past the hero ── */}
+                    <div
+                        style={{
+                            opacity: canvasOpacity,
+                            transition: "opacity 120ms linear",
+                            visibility: canvasOpacity <= 0.02 ? "hidden" : "visible",
+                        }}
+                    >
+                        <LandingCanvas
+                            model1Ref={model1Ref}
+                            model2Ref={model2Ref}
+                            model3Ref={model3Ref}
+                            mouseRef={mouseRef}
+                            scrollRef={scrollRef}
+                        />
+                    </div>
                 </>
             )}
 
             {/* ── SCROLLABLE HTML OVERLAY ── */}
             <div className="relative z-10">
                 <LandingNav />
-
-                {/* Right-edge section dots (scrollspy) — appears from Arsenal down */}
                 <SectionDots />
 
                 {/* 1 — HERO */}
                 <HeroSection heroRef={heroRef} />
 
-                {/* 2 — ARSENAL (GSAP pins this) */}
-                <ArsenalSection arsenalRef={arsenalRef} onSelect={seekToWeapon} activeIndex={activeIdx} />
+                {/* 2 — ARSENAL (shoppable photo grid) */}
+                <ArsenalGrid arsenalRef={arsenalRef} />
 
                 {/* 3 — MISSION (dark contrast section) */}
                 <MissionSection missionRef={missionRef} />
-
-                {/* 4 — FIELD TEST (UGC) — hidden until real creator videos are
-                    ready. To restore: uncomment <FieldTestSection /> below and
-                    its import, and re-add the "Field Test" entries in
-                    LandingNav (SECTION_LINKS) and SectionDots (SECTIONS). */}
-                {/* <FieldTestSection /> */}
 
                 {/* 5 — FOOTER */}
                 <LandingFooter />
