@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { useCart, useCartItem } from "@/lib/cart";
+import { useCartItem } from "@/lib/cart";
 import NotifyMe from "@/components/showcase/NotifyMe";
 import { PRODUCTS } from "@/components/landing/ArsenalSection";
 import { asset } from "@/lib/asset";
@@ -49,7 +49,6 @@ function AddToCart({ accent, cartKey }) {
 }
 
 function ProductCard({ p }) {
-    const { openDrawer } = useCart();
     // Show the placeholder until a REAL photo actually decodes (naturalWidth>1).
     // Robust to the file being missing (404 or SPA-fallback HTML both keep the
     // placeholder) — so the layout is never broken before the photos are added.
@@ -58,19 +57,21 @@ function ProductCard({ p }) {
 
     return (
         <div className="brutal group flex flex-col overflow-hidden rounded-3xl bg-white transition-transform duration-200 hover:-translate-y-1.5">
-            {/* Photo — studio shot on a soft accent wash */}
+            {/* DOMINANT product image — the toy is the hero. The name is overlaid
+                on the photo (dogggystyle) rather than stacked as a text block. */}
             <div
-                className="relative flex aspect-[4/3] items-center justify-center overflow-hidden"
-                style={{ background: `${p.accent}12` }}
+                className="relative aspect-[4/3] overflow-hidden"
+                style={{ background: `linear-gradient(155deg, ${p.accent}20 0%, ${p.accent}0a 55%, #ffffff 100%)` }}
             >
                 {p.comingSoon && (
                     <span
-                        className="brutal absolute left-4 top-4 z-10 rounded-full px-3 py-1 font-inter text-[10px] font-bold uppercase tracking-[0.2em] text-white"
+                        className="brutal absolute right-3 top-3 z-20 rounded-full px-3 py-1 font-inter text-[10px] font-bold uppercase tracking-[0.2em] text-white"
                         style={{ background: p.accent }}
                     >
                         Coming Soon
                     </span>
                 )}
+
                 {img && (
                     <img
                         src={img}
@@ -78,79 +79,56 @@ function ProductCard({ p }) {
                         loading="lazy"
                         onLoad={(e) => { if (e.currentTarget.naturalWidth > 1) setImgReady(true); }}
                         onError={() => setImgReady(false)}
-                        className={`h-full w-full object-contain p-6 transition-transform duration-300 group-hover:scale-[1.06] ${imgReady ? "" : "hidden"}`}
+                        className={`absolute inset-0 h-full w-full object-contain p-3 transition-transform duration-300 group-hover:scale-[1.07] ${imgReady ? "" : "hidden"}`}
                     />
                 )}
                 {!imgReady && (
-                    /* Graceful placeholder until the real photo is dropped in */
-                    <div className="flex flex-col items-center gap-2" style={{ color: p.accent }}>
-                        <span className="font-instrument text-4xl">{p.name}</span>
-                        <span className="font-inter text-[10px] font-semibold uppercase tracking-[0.25em] opacity-60">
+                    <div className="absolute inset-0 flex items-center justify-center" style={{ color: p.accent }}>
+                        <span className="font-inter text-[11px] font-semibold uppercase tracking-[0.25em] opacity-50">
                             Photo coming
                         </span>
                     </div>
                 )}
+
+                {/* White scrim at the bottom so the overlaid name stays legible
+                    over any part of the gun. */}
+                <div className="pointer-events-none absolute inset-x-0 bottom-0 z-[5] h-2/5 bg-gradient-to-t from-white via-white/75 to-transparent" />
+
+                {/* Overlaid name + category — big, highlighting the product */}
+                <div className="pointer-events-none absolute inset-x-0 bottom-0 z-10 p-4">
+                    <span
+                        className="font-inter inline-block rounded-full px-2.5 py-0.5 text-[9px] font-bold uppercase tracking-[0.24em] text-white"
+                        style={{ background: p.accent }}
+                    >
+                        {p.sub}
+                    </span>
+                    <h3
+                        className="font-instrument mt-1.5 text-[clamp(30px,3.4vw,42px)] leading-[0.88]"
+                        style={{ color: p.accent, textShadow: "0 1px 10px rgba(255,255,255,0.95)" }}
+                    >
+                        {p.name}
+                    </h3>
+                </div>
             </div>
 
-            {/* Body */}
-            <div className="flex flex-1 flex-col p-6">
-                <span
-                    className="brutal self-start rounded-full px-3 py-1 font-inter text-[9px] font-bold uppercase tracking-[0.24em] text-white"
-                    style={{ background: p.accent }}
-                >
-                    {p.sub}
-                </span>
-
-                <h3 className="font-instrument mt-3 text-[32px] leading-none" style={{ color: p.accent }}>
-                    {p.name}
-                </h3>
-                <p className="mt-2 font-inter text-[11px] font-medium uppercase tracking-[0.22em] text-[#1a1a1a]/50">
-                    {p.tagline}
-                </p>
-
-                {/* Key spec chips */}
-                <div className="mt-4 flex flex-wrap gap-2">
-                    {p.stats.slice(0, 3).map((s) => (
-                        <span
-                            key={s.label}
-                            className="rounded-lg bg-[#1a1a1a]/[0.05] px-2.5 py-1.5 font-inter text-[11px] text-[#1a1a1a]/70"
+            {/* Slim action bar — the image stays the star; minimal text below. */}
+            <div className="flex items-center gap-2.5 border-t-2 border-[#1a1a1a] p-3">
+                {p.comingSoon ? (
+                    <NotifyMe compact productName={p.name} source={launchSource(p.name)} accent={p.accent} />
+                ) : (
+                    <>
+                        <AddToCart accent={p.accent} cartKey={p.link} />
+                        <Link
+                            to={p.link}
+                            aria-label={`${p.name} details`}
+                            className="brutal grid h-11 w-11 shrink-0 place-items-center rounded-full bg-white text-[#1a1a1a] transition hover:bg-[#1a1a1a] hover:text-white"
                         >
-                            {s.label}{" "}
-                            <b
-                                className="font-instrument text-[13px]"
-                                style={p.comingSoon ? { filter: "blur(4px)" } : { color: "#1a1a1a" }}
-                            >
-                                {s.value}
-                            </b>
-                        </span>
-                    ))}
-                </div>
-
-                {/* Actions — cart is front and centre for conversion */}
-                <div className="mt-auto pt-6">
-                    {p.comingSoon ? (
-                        <NotifyMe compact productName={p.name} source={launchSource(p.name)} accent={p.accent} />
-                    ) : (
-                        <div className="flex flex-col gap-2.5">
-                            <AddToCart accent={p.accent} cartKey={p.link} />
-                            <div className="flex gap-2.5">
-                                <button
-                                    type="button"
-                                    onClick={() => openDrawer(p)}
-                                    className="brutal flex-1 rounded-full bg-white py-2.5 font-inter text-[11px] font-bold uppercase tracking-[0.16em] text-[#1a1a1a] transition hover:bg-[#1a1a1a] hover:text-white"
-                                >
-                                    Buy Now
-                                </button>
-                                <Link
-                                    to={p.link}
-                                    className="flex-1 rounded-full py-2.5 text-center font-inter text-[11px] font-bold uppercase tracking-[0.16em] text-[#1a1a1a]/60 underline-offset-4 transition hover:text-[#1a1a1a] hover:underline"
-                                >
-                                    Details
-                                </Link>
-                            </div>
-                        </div>
-                    )}
-                </div>
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                                <path d="M5 12h14M13 5l7 7-7 7" />
+                            </svg>
+                        </Link>
+                    </>
+                )}
             </div>
         </div>
     );
@@ -175,7 +153,7 @@ export default function ArsenalGrid({ arsenalRef }) {
                     and every sunlit day. Zero pumping, zero priming.
                 </p>
 
-                <div className="mt-14 grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
+                <div className="mt-12 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
                     {PRODUCTS.map((p) => (
                         <ProductCard key={p.id} p={p} />
                     ))}
