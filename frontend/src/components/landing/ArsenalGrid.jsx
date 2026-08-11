@@ -57,15 +57,17 @@ function ProductCard({ p }) {
 
     return (
         <div className="brutal group flex flex-col overflow-hidden rounded-3xl bg-white transition-transform duration-200 hover:-translate-y-1.5">
-            {/* DOMINANT product image — the toy is the hero. The name is overlaid
-                on the photo (dogggystyle) rather than stacked as a text block. */}
+            {/* DOMINANT product image — the toy is the hero. Gun sits toward the
+                top; the name + specs-at-a-glance overlay a tinted band across the
+                bottom of the photo (dogggystyle), so nothing is stacked as plain
+                text and the image stays big. */}
             <div
-                className="relative aspect-[4/3] overflow-hidden"
-                style={{ background: `linear-gradient(155deg, ${p.accent}20 0%, ${p.accent}0a 55%, #ffffff 100%)` }}
+                className="relative aspect-[5/4] overflow-hidden"
+                style={{ background: `linear-gradient(155deg, ${p.accent}22 0%, ${p.accent}0c 55%, #ffffff 100%)` }}
             >
                 {p.comingSoon && (
                     <span
-                        className="brutal absolute right-3 top-3 z-20 rounded-full px-3 py-1 font-inter text-[10px] font-bold uppercase tracking-[0.2em] text-white"
+                        className="absolute right-3 top-3 z-20 rounded-full px-3 py-1 font-inter text-[10px] font-bold uppercase tracking-[0.2em] text-white shadow-sm"
                         style={{ background: p.accent }}
                     >
                         Coming Soon
@@ -79,7 +81,7 @@ function ProductCard({ p }) {
                         loading="lazy"
                         onLoad={(e) => { if (e.currentTarget.naturalWidth > 1) setImgReady(true); }}
                         onError={() => setImgReady(false)}
-                        className={`absolute inset-0 h-full w-full object-contain p-3 transition-transform duration-300 group-hover:scale-[1.07] ${imgReady ? "" : "hidden"}`}
+                        className={`absolute inset-0 h-full w-full object-contain object-top p-3 pb-16 transition-transform duration-300 group-hover:scale-[1.06] ${imgReady ? "" : "hidden"}`}
                     />
                 )}
                 {!imgReady && (
@@ -90,11 +92,9 @@ function ProductCard({ p }) {
                     </div>
                 )}
 
-                {/* White scrim at the bottom so the overlaid name stays legible
-                    over any part of the gun. */}
-                <div className="pointer-events-none absolute inset-x-0 bottom-0 z-[5] h-2/5 bg-gradient-to-t from-white via-white/75 to-transparent" />
+                {/* Tinted band across the bottom — carries the name + specs. */}
+                <div className="pointer-events-none absolute inset-x-0 bottom-0 z-[5] h-3/5 bg-gradient-to-t from-black/82 via-black/45 to-transparent" />
 
-                {/* Overlaid name + category — big, highlighting the product */}
                 <div className="pointer-events-none absolute inset-x-0 bottom-0 z-10 p-4">
                     <span
                         className="font-inter inline-block rounded-full px-2.5 py-0.5 text-[9px] font-bold uppercase tracking-[0.24em] text-white"
@@ -103,11 +103,28 @@ function ProductCard({ p }) {
                         {p.sub}
                     </span>
                     <h3
-                        className="font-instrument mt-1.5 text-[clamp(30px,3.4vw,42px)] leading-[0.88]"
-                        style={{ color: p.accent, textShadow: "0 1px 10px rgba(255,255,255,0.95)" }}
+                        className="font-instrument mt-1.5 text-[clamp(28px,3.2vw,40px)] leading-[0.88]"
+                        style={{ color: p.accent }}
                     >
                         {p.name}
                     </h3>
+
+                    {/* Specs at a glance */}
+                    <div className="mt-3 flex flex-wrap gap-x-5 gap-y-1.5">
+                        {p.stats.slice(0, 3).map((s) => (
+                            <div key={s.label} className="flex flex-col leading-none">
+                                <span
+                                    className="font-instrument text-[17px] text-white"
+                                    style={p.comingSoon ? { filter: "blur(4px)" } : undefined}
+                                >
+                                    {s.value}
+                                </span>
+                                <span className="mt-1 font-inter text-[8px] font-semibold uppercase tracking-[0.18em] text-white/55">
+                                    {s.label}
+                                </span>
+                            </div>
+                        ))}
+                    </div>
                 </div>
             </div>
 
