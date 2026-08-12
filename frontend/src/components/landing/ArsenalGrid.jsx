@@ -64,8 +64,8 @@ function ProductCard({ p }) {
                 bottom of the photo (dogggystyle), so nothing is stacked as plain
                 text and the image stays big. */}
             <div
-                className="relative aspect-[4/3] overflow-hidden"
-                style={{ background: `linear-gradient(160deg, ${p.accent}26 0%, ${p.accent}12 46%, #f4f3f1 100%)` }}
+                className="relative aspect-[16/9] overflow-hidden"
+                style={{ background: `linear-gradient(160deg, ${p.accent}1f 0%, ${p.accent}0f 46%, #f1f0ee 100%)` }}
             >
                 {p.comingSoon && (
                     <span
@@ -77,14 +77,17 @@ function ProductCard({ p }) {
                 )}
 
                 {showImg && (
-                    /* object-center + light padding so the gun fills the frame
-                       (no big letterbox gap). The tinted band below overlaps its
-                       lower edge, which is the intended "photo + tint" look. */
+                    /* object-cover, no padding, so the photo fills the frame
+                       edge-to-edge (the photos have a baked-in white background,
+                       so object-contain left an ugly white rectangle inside the
+                       accent frame). The frame is a touch wider than the photo,
+                       so cover crops ONLY the empty top/bottom margins — the gun
+                       keeps its full length and object-bottom lifts it up. */
                     <img
                         src={img}
                         alt={p.name}
                         onError={() => setImgError(true)}
-                        className="absolute inset-0 h-full w-full object-contain object-center p-4 pb-10 transition-transform duration-300 group-hover:scale-[1.06]"
+                        className="absolute inset-0 h-full w-full object-cover object-bottom transition-transform duration-300 group-hover:scale-[1.05]"
                     />
                 )}
                 {!showImg && (
@@ -100,11 +103,11 @@ function ProductCard({ p }) {
                     renders; a non-standard opacity step like from-black/82 can
                     silently compile to background:none and the specs vanish. */}
                 <div
-                    className="pointer-events-none absolute inset-x-0 bottom-0 z-[5] h-[64%]"
-                    style={{ background: "linear-gradient(to top, rgba(10,10,12,0.95) 0%, rgba(10,10,12,0.86) 34%, rgba(10,10,12,0.45) 66%, rgba(10,10,12,0) 100%)" }}
+                    className="pointer-events-none absolute inset-x-0 bottom-0 z-[5] h-[70%]"
+                    style={{ background: "linear-gradient(to top, rgba(12,12,14,0.9) 0%, rgba(12,12,14,0.64) 30%, rgba(12,12,14,0.18) 62%, rgba(12,12,14,0) 100%)" }}
                 />
 
-                <div className="pointer-events-none absolute inset-x-0 bottom-0 z-10 p-4">
+                <div className="pointer-events-none absolute inset-x-0 bottom-0 z-10 p-3.5">
                     <span
                         className="font-inter inline-block rounded-full px-2.5 py-0.5 text-[9px] font-bold uppercase tracking-[0.24em] text-white"
                         style={{ background: p.accent }}
@@ -112,23 +115,23 @@ function ProductCard({ p }) {
                         {p.sub}
                     </span>
                     <h3
-                        className="font-instrument mt-1.5 text-[clamp(28px,3.2vw,40px)] leading-[0.88]"
+                        className="font-instrument mt-1 text-[clamp(24px,2.9vw,34px)] leading-[0.9]"
                         style={{ color: p.accent }}
                     >
                         {p.name}
                     </h3>
 
                     {/* Specs at a glance */}
-                    <div className="mt-2.5 flex flex-wrap gap-x-5 gap-y-1.5">
+                    <div className="mt-2 flex flex-wrap gap-x-5 gap-y-1">
                         {p.stats.slice(0, 3).map((s) => (
                             <div key={s.label} className="flex flex-col leading-none">
                                 <span
-                                    className="font-instrument text-[18px] text-white"
+                                    className="font-instrument text-[16px] text-white [text-shadow:0_1px_3px_rgba(0,0,0,0.55)]"
                                     style={p.comingSoon ? { filter: "blur(4px)" } : undefined}
                                 >
                                     {s.value}
                                 </span>
-                                <span className="mt-1 font-inter text-[8px] font-semibold uppercase tracking-[0.18em] text-white/60">
+                                <span className="mt-1 font-inter text-[8px] font-semibold uppercase tracking-[0.18em] text-white/65">
                                     {s.label}
                                 </span>
                             </div>
