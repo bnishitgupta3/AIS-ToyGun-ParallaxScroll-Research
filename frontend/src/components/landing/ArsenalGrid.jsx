@@ -64,8 +64,8 @@ function ProductCard({ p }) {
                 bottom of the photo (dogggystyle), so nothing is stacked as plain
                 text and the image stays big. */}
             <div
-                className="relative aspect-[5/4] overflow-hidden"
-                style={{ background: `linear-gradient(155deg, ${p.accent}22 0%, ${p.accent}0c 55%, #ffffff 100%)` }}
+                className="relative aspect-[4/3] overflow-hidden"
+                style={{ background: `linear-gradient(160deg, ${p.accent}26 0%, ${p.accent}12 46%, #f4f3f1 100%)` }}
             >
                 {p.comingSoon && (
                     <span
@@ -77,16 +77,14 @@ function ProductCard({ p }) {
                 )}
 
                 {showImg && (
-                    /* No loading="lazy" (a lazy image in a below-the-fold or
-                       display:none container may never trigger), and no onLoad
-                       gating (an eager/cached image can be `complete` before
-                       React attaches the handler, so onLoad never fires). Just
-                       show it; fall back to the placeholder only on error. */
+                    /* object-center + light padding so the gun fills the frame
+                       (no big letterbox gap). The tinted band below overlaps its
+                       lower edge, which is the intended "photo + tint" look. */
                     <img
                         src={img}
                         alt={p.name}
                         onError={() => setImgError(true)}
-                        className="absolute inset-0 h-full w-full object-contain object-top p-3 pb-16 transition-transform duration-300 group-hover:scale-[1.06]"
+                        className="absolute inset-0 h-full w-full object-contain object-center p-4 pb-10 transition-transform duration-300 group-hover:scale-[1.06]"
                     />
                 )}
                 {!showImg && (
@@ -97,8 +95,14 @@ function ProductCard({ p }) {
                     </div>
                 )}
 
-                {/* Tinted band across the bottom — carries the name + specs. */}
-                <div className="pointer-events-none absolute inset-x-0 bottom-0 z-[5] h-3/5 bg-gradient-to-t from-black/82 via-black/45 to-transparent" />
+                {/* Tinted band across the bottom — carries the name + specs.
+                    Inline gradient (not a Tailwind gradient utility) so it always
+                    renders; a non-standard opacity step like from-black/82 can
+                    silently compile to background:none and the specs vanish. */}
+                <div
+                    className="pointer-events-none absolute inset-x-0 bottom-0 z-[5] h-[64%]"
+                    style={{ background: "linear-gradient(to top, rgba(10,10,12,0.95) 0%, rgba(10,10,12,0.86) 34%, rgba(10,10,12,0.45) 66%, rgba(10,10,12,0) 100%)" }}
+                />
 
                 <div className="pointer-events-none absolute inset-x-0 bottom-0 z-10 p-4">
                     <span
@@ -115,16 +119,16 @@ function ProductCard({ p }) {
                     </h3>
 
                     {/* Specs at a glance */}
-                    <div className="mt-3 flex flex-wrap gap-x-5 gap-y-1.5">
+                    <div className="mt-2.5 flex flex-wrap gap-x-5 gap-y-1.5">
                         {p.stats.slice(0, 3).map((s) => (
                             <div key={s.label} className="flex flex-col leading-none">
                                 <span
-                                    className="font-instrument text-[17px] text-white"
+                                    className="font-instrument text-[18px] text-white"
                                     style={p.comingSoon ? { filter: "blur(4px)" } : undefined}
                                 >
                                     {s.value}
                                 </span>
-                                <span className="mt-1 font-inter text-[8px] font-semibold uppercase tracking-[0.18em] text-white/55">
+                                <span className="mt-1 font-inter text-[8px] font-semibold uppercase tracking-[0.18em] text-white/60">
                                     {s.label}
                                 </span>
                             </div>
@@ -133,19 +137,23 @@ function ProductCard({ p }) {
                 </div>
             </div>
 
-            {/* Slim action bar — the image stays the star; minimal text below. */}
+            {/* Action bar — Add to Cart is the primary CTA; "Experience it"
+                links through to the immersive 3-D product page. */}
             <div className="flex items-center gap-2.5 border-t-2 border-[#1a1a1a] p-3">
                 {p.comingSoon ? (
                     <NotifyMe compact productName={p.name} source={launchSource(p.name)} accent={p.accent} />
                 ) : (
                     <>
-                        <AddToCart accent={p.accent} cartKey={p.link} />
+                        <div className="flex-1">
+                            <AddToCart accent={p.accent} cartKey={p.link} />
+                        </div>
                         <Link
                             to={p.link}
-                            aria-label={`${p.name} details`}
-                            className="brutal grid h-11 w-11 shrink-0 place-items-center rounded-full bg-white text-[#1a1a1a] transition hover:bg-[#1a1a1a] hover:text-white"
+                            aria-label={`Experience the ${p.name}`}
+                            className="brutal flex h-11 shrink-0 items-center gap-1.5 rounded-full bg-white px-4 font-inter text-[11px] font-bold uppercase tracking-[0.14em] text-[#1a1a1a] transition hover:bg-[#1a1a1a] hover:text-white"
                         >
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                            Experience it
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.6">
                                 <path d="M5 12h14M13 5l7 7-7 7" />
                             </svg>
                         </Link>
