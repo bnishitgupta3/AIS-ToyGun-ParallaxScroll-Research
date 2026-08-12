@@ -59,20 +59,14 @@ function ProductCard({ p }) {
 
     return (
         <div
-            className="brutal-accent group flex flex-col overflow-hidden rounded-3xl bg-white transition-transform duration-200 hover:-translate-y-1.5"
+            className="brutal-accent group flex flex-col overflow-hidden rounded-3xl bg-[#18181b] p-3 transition-transform duration-200 hover:-translate-y-1.5"
             style={{ "--accent": p.accent }}
         >
-            {/* Product photo — clean and edge-to-edge. The photos carry a white
-                studio background, so cover fills the frame with no letterbox and
-                blends into the card. Nothing overlays the gun; the name + specs
-                live in their own panel below (more vertical room, no overlap). */}
-            <div
-                className="relative aspect-[5/3] overflow-hidden border-b-[3px]"
-                style={{
-                    borderBottomColor: p.accent,
-                    background: `linear-gradient(160deg, ${p.accent}2e 0%, ${p.accent}14 52%, #f2f1ef 100%)`,
-                }}
-            >
+            {/* Product photo sits in a light tile framed by the dark card — the
+                light gun pops against the charcoal (the D2C "product window"
+                look) and the photo's own white studio background blends into the
+                tile, so there is no seam and no colour cast on the toy. */}
+            <div className="relative aspect-[5/3] overflow-hidden rounded-2xl bg-[#f1f0ed]">
                 {p.comingSoon && (
                     <span
                         className="absolute right-3 top-3 z-20 rounded-full px-3 py-1 font-inter text-[10px] font-bold uppercase tracking-[0.2em] text-white shadow-sm"
@@ -86,7 +80,7 @@ function ProductCard({ p }) {
                         src={img}
                         alt={p.name}
                         onError={() => setImgError(true)}
-                        className="absolute inset-0 h-full w-full object-cover object-center transition-transform duration-300 group-hover:scale-[1.05]"
+                        className="absolute inset-0 h-full w-full object-cover object-center transition-transform duration-500 group-hover:scale-[1.06]"
                     />
                 ) : (
                     <div className="absolute inset-0 flex items-center justify-center" style={{ color: p.accent }}>
@@ -95,23 +89,11 @@ function ProductCard({ p }) {
                         </span>
                     </div>
                 )}
-
-                {/* Accent glow — a multiply overlay that tints the photo's white
-                    studio background toward the product accent (restoring the
-                    colour-behind-the-gun vibrancy). Multiply keeps the dark gun
-                    dark, so the toy stays crisp. */}
-                <div
-                    className="pointer-events-none absolute inset-0 z-[3] mix-blend-multiply"
-                    style={{ background: `radial-gradient(88% 74% at 50% 20%, ${p.accent}c4 0%, ${p.accent}00 60%)` }}
-                />
             </div>
 
-            {/* Name + specs — their own space, so nothing overlaps the gun.
-                An accent wash tints the panel toward the product colour. */}
-            <div
-                className="flex flex-1 flex-col p-4"
-                style={{ background: `linear-gradient(180deg, ${p.accent}12 0%, ${p.accent}2b 100%)` }}
-            >
+            {/* Name + specs — white on the dark card, so they stay crisp and the
+                accent is spent only where it aids conversion (chip, name, CTA). */}
+            <div className="flex flex-1 flex-col pt-4">
                 <span
                     className="font-inter self-start rounded-full px-2.5 py-0.5 text-[9px] font-bold uppercase tracking-[0.24em] text-white"
                     style={{ background: p.accent }}
@@ -125,17 +107,17 @@ function ProductCard({ p }) {
                     {p.name}
                 </h3>
 
-                {/* Specs at a glance — dark on the card's white, always legible. */}
+                {/* Specs at a glance — white values on dark, always legible. */}
                 <div className="mt-3.5 flex flex-wrap gap-x-6 gap-y-2">
                     {p.stats.slice(0, 3).map((s) => (
                         <div key={s.label} className="flex flex-col leading-none">
                             <span
-                                className="font-instrument text-[20px] text-[#1a1a1a]"
+                                className="font-instrument text-[20px] text-white"
                                 style={p.comingSoon ? { filter: "blur(4px)" } : undefined}
                             >
                                 {s.value}
                             </span>
-                            <span className="mt-1 font-inter text-[8px] font-semibold uppercase tracking-[0.2em] text-[#1a1a1a]/45">
+                            <span className="mt-1 font-inter text-[8px] font-semibold uppercase tracking-[0.2em] text-white/45">
                                 {s.label}
                             </span>
                         </div>
@@ -143,9 +125,9 @@ function ProductCard({ p }) {
                 </div>
             </div>
 
-            {/* Action bar — Add to Cart is the primary CTA; "Experience it"
-                links through to the immersive 3-D product page. */}
-            <div className="flex items-center gap-2.5 border-t-2 border-[#1a1a1a] p-3">
+            {/* Action row — Add to Cart is the primary CTA; "Experience it" is a
+                quiet ghost link through to the immersive 3-D product page. */}
+            <div className="mt-4 flex items-center gap-2.5 border-t border-white/10 pt-4">
                 {p.comingSoon ? (
                     <NotifyMe compact productName={p.name} source={launchSource(p.name)} accent={p.accent} />
                 ) : (
@@ -156,7 +138,7 @@ function ProductCard({ p }) {
                         <Link
                             to={p.link}
                             aria-label={`Experience the ${p.name}`}
-                            className="brutal flex h-11 shrink-0 items-center gap-1.5 rounded-full bg-white px-4 font-inter text-[11px] font-bold uppercase tracking-[0.14em] text-[#1a1a1a] transition hover:bg-[#1a1a1a] hover:text-white"
+                            className="flex h-11 shrink-0 items-center gap-1.5 rounded-full border-2 border-white/25 px-4 font-inter text-[11px] font-bold uppercase tracking-[0.14em] text-white transition hover:bg-white hover:text-[#18181b]"
                         >
                             Experience it
                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.6">
