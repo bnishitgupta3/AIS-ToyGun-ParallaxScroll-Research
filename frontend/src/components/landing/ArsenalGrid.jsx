@@ -49,11 +49,13 @@ function AddToCart({ accent, cartKey }) {
 }
 
 function ProductCard({ p }) {
-    // Show the placeholder until a REAL photo actually decodes (naturalWidth>1).
-    // Robust to the file being missing (404 or SPA-fallback HTML both keep the
-    // placeholder) — so the layout is never broken before the photos are added.
-    const [imgReady, setImgReady] = useState(false);
+    // Show the photo by default; fall back to the placeholder only if it errors
+    // (missing file). Gating on onLoad is unreliable — an eager/cached image can
+    // already be `complete` before React attaches the handler, so onLoad never
+    // fires and the card gets stuck on the placeholder.
+    const [imgError, setImgError] = useState(false);
     const img = p.image ? asset("/assets/products/" + p.image) : null;
+    const showImg = img && !imgError;
 
     return (
         <div className="brutal group flex flex-col overflow-hidden rounded-3xl bg-white transition-transform duration-200 hover:-translate-y-1.5">
@@ -74,17 +76,20 @@ function ProductCard({ p }) {
                     </span>
                 )}
 
-                {img && (
+                {showImg && (
+                    /* No loading="lazy" (a lazy image in a below-the-fold or
+                       display:none container may never trigger), and no onLoad
+                       gating (an eager/cached image can be `complete` before
+                       React attaches the handler, so onLoad never fires). Just
+                       show it; fall back to the placeholder only on error. */
                     <img
                         src={img}
                         alt={p.name}
-                        loading="lazy"
-                        onLoad={(e) => { if (e.currentTarget.naturalWidth > 1) setImgReady(true); }}
-                        onError={() => setImgReady(false)}
-                        className={`absolute inset-0 h-full w-full object-contain object-top p-3 pb-16 transition-transform duration-300 group-hover:scale-[1.06] ${imgReady ? "" : "hidden"}`}
+                        onError={() => setImgError(true)}
+                        className="absolute inset-0 h-full w-full object-contain object-top p-3 pb-16 transition-transform duration-300 group-hover:scale-[1.06]"
                     />
                 )}
-                {!imgReady && (
+                {!showImg && (
                     <div className="absolute inset-0 flex items-center justify-center" style={{ color: p.accent }}>
                         <span className="font-inter text-[11px] font-semibold uppercase tracking-[0.25em] opacity-50">
                             Photo coming
