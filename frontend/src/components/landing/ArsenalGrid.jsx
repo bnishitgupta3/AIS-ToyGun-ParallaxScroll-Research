@@ -59,14 +59,14 @@ function ProductCard({ p }) {
 
     return (
         <div
-            className="brutal-accent group flex flex-col overflow-hidden rounded-3xl bg-[#18181b] p-3 transition-transform duration-200 hover:-translate-y-1.5"
+            className="brutal-accent group flex flex-col overflow-hidden rounded-3xl bg-[#18181b] transition-transform duration-200 hover:-translate-y-1.5"
             style={{ "--accent": p.accent }}
         >
-            {/* Product photo sits in a light tile framed by the dark card — the
-                light gun pops against the charcoal (the D2C "product window"
-                look) and the photo's own white studio background blends into the
-                tile, so there is no seam and no colour cast on the toy. */}
-            <div className="relative aspect-[5/3] overflow-hidden rounded-2xl bg-[#f1f0ed]">
+            {/* Product photo runs edge-to-edge across the top of the card — the
+                light gun on its white studio background sits flush to the card
+                edges. Only the lower panel is charcoal, so the dark reads as a
+                grounded info block rather than a heavy frame around the photo. */}
+            <div className="relative aspect-[5/3] overflow-hidden bg-[#f1f0ed]">
                 {p.comingSoon && (
                     <span
                         className="absolute right-3 top-3 z-20 rounded-full px-3 py-1 font-inter text-[10px] font-bold uppercase tracking-[0.2em] text-white shadow-sm"
@@ -91,9 +91,12 @@ function ProductCard({ p }) {
                 )}
             </div>
 
+            {/* Thin accent line marks the photo → panel seam. */}
+            <div className="h-[3px] w-full" style={{ background: p.accent }} />
+
             {/* Name + specs — white on the dark card, so they stay crisp and the
                 accent is spent only where it aids conversion (chip, name, CTA). */}
-            <div className="flex flex-1 flex-col pt-4">
+            <div className="flex flex-1 flex-col px-4 pt-4">
                 <span
                     className="font-inter self-start rounded-full px-2.5 py-0.5 text-[9px] font-bold uppercase tracking-[0.24em] text-white"
                     style={{ background: p.accent }}
@@ -127,7 +130,7 @@ function ProductCard({ p }) {
 
             {/* Action row — Add to Cart is the primary CTA; "Experience it" is a
                 quiet ghost link through to the immersive 3-D product page. */}
-            <div className="mt-4 flex items-center gap-2.5 border-t border-white/10 pt-4">
+            <div className="mt-4 flex items-center gap-2.5 border-t border-white/10 px-4 pb-4 pt-4">
                 {p.comingSoon ? (
                     <NotifyMe compact productName={p.name} source={launchSource(p.name)} accent={p.accent} />
                 ) : (
