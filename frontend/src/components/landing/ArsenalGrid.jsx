@@ -58,14 +58,20 @@ function ProductCard({ p }) {
     const showImg = img && !imgError;
 
     return (
-        <div className="brutal group flex flex-col overflow-hidden rounded-3xl bg-white transition-transform duration-200 hover:-translate-y-1.5">
+        <div
+            className="brutal-accent group flex flex-col overflow-hidden rounded-3xl bg-white transition-transform duration-200 hover:-translate-y-1.5"
+            style={{ "--accent": p.accent }}
+        >
             {/* Product photo — clean and edge-to-edge. The photos carry a white
                 studio background, so cover fills the frame with no letterbox and
                 blends into the card. Nothing overlays the gun; the name + specs
                 live in their own panel below (more vertical room, no overlap). */}
             <div
-                className="relative aspect-[5/3] overflow-hidden border-b-2 border-[#1a1a1a]"
-                style={{ background: `linear-gradient(160deg, ${p.accent}1c 0%, ${p.accent}0c 52%, #f2f1ef 100%)` }}
+                className="relative aspect-[5/3] overflow-hidden border-b-[3px]"
+                style={{
+                    borderBottomColor: p.accent,
+                    background: `linear-gradient(160deg, ${p.accent}2e 0%, ${p.accent}14 52%, #f2f1ef 100%)`,
+                }}
             >
                 {p.comingSoon && (
                     <span
@@ -89,10 +95,23 @@ function ProductCard({ p }) {
                         </span>
                     </div>
                 )}
+
+                {/* Accent glow — a multiply overlay that tints the photo's white
+                    studio background toward the product accent (restoring the
+                    colour-behind-the-gun vibrancy). Multiply keeps the dark gun
+                    dark, so the toy stays crisp. */}
+                <div
+                    className="pointer-events-none absolute inset-0 z-[3] mix-blend-multiply"
+                    style={{ background: `radial-gradient(88% 74% at 50% 20%, ${p.accent}c4 0%, ${p.accent}00 60%)` }}
+                />
             </div>
 
-            {/* Name + specs — their own space, so nothing overlaps the gun. */}
-            <div className="flex flex-1 flex-col p-4">
+            {/* Name + specs — their own space, so nothing overlaps the gun.
+                An accent wash tints the panel toward the product colour. */}
+            <div
+                className="flex flex-1 flex-col p-4"
+                style={{ background: `linear-gradient(180deg, ${p.accent}12 0%, ${p.accent}2b 100%)` }}
+            >
                 <span
                     className="font-inter self-start rounded-full px-2.5 py-0.5 text-[9px] font-bold uppercase tracking-[0.24em] text-white"
                     style={{ background: p.accent }}
