@@ -59,13 +59,13 @@ function ProductCard({ p }) {
 
     return (
         <div className="brutal group flex flex-col overflow-hidden rounded-3xl bg-white transition-transform duration-200 hover:-translate-y-1.5">
-            {/* DOMINANT product image — the toy is the hero. Gun sits toward the
-                top; the name + specs-at-a-glance overlay a tinted band across the
-                bottom of the photo (dogggystyle), so nothing is stacked as plain
-                text and the image stays big. */}
+            {/* Product photo — clean and edge-to-edge. The photos carry a white
+                studio background, so cover fills the frame with no letterbox and
+                blends into the card. Nothing overlays the gun; the name + specs
+                live in their own panel below (more vertical room, no overlap). */}
             <div
-                className="relative aspect-[16/9] overflow-hidden"
-                style={{ background: `linear-gradient(160deg, ${p.accent}1f 0%, ${p.accent}0f 46%, #f1f0ee 100%)` }}
+                className="relative aspect-[5/3] overflow-hidden border-b-2 border-[#1a1a1a]"
+                style={{ background: `linear-gradient(160deg, ${p.accent}1c 0%, ${p.accent}0c 52%, #f2f1ef 100%)` }}
             >
                 {p.comingSoon && (
                     <span
@@ -75,68 +75,52 @@ function ProductCard({ p }) {
                         Coming Soon
                     </span>
                 )}
-
-                {showImg && (
-                    /* object-cover, no padding, so the photo fills the frame
-                       edge-to-edge (the photos have a baked-in white background,
-                       so object-contain left an ugly white rectangle inside the
-                       accent frame). The frame is a touch wider than the photo,
-                       so cover crops ONLY the empty top/bottom margins — the gun
-                       keeps its full length and object-bottom lifts it up. */
+                {showImg ? (
                     <img
                         src={img}
                         alt={p.name}
                         onError={() => setImgError(true)}
-                        className="absolute inset-0 h-full w-full object-cover object-bottom transition-transform duration-300 group-hover:scale-[1.05]"
+                        className="absolute inset-0 h-full w-full object-cover object-center transition-transform duration-300 group-hover:scale-[1.05]"
                     />
-                )}
-                {!showImg && (
+                ) : (
                     <div className="absolute inset-0 flex items-center justify-center" style={{ color: p.accent }}>
                         <span className="font-inter text-[11px] font-semibold uppercase tracking-[0.25em] opacity-50">
                             Photo coming
                         </span>
                     </div>
                 )}
+            </div>
 
-                {/* Tinted band across the bottom — carries the name + specs.
-                    Inline gradient (not a Tailwind gradient utility) so it always
-                    renders; a non-standard opacity step like from-black/82 can
-                    silently compile to background:none and the specs vanish. */}
-                <div
-                    className="pointer-events-none absolute inset-x-0 bottom-0 z-[5] h-[70%]"
-                    style={{ background: "linear-gradient(to top, rgba(12,12,14,0.9) 0%, rgba(12,12,14,0.64) 30%, rgba(12,12,14,0.18) 62%, rgba(12,12,14,0) 100%)" }}
-                />
+            {/* Name + specs — their own space, so nothing overlaps the gun. */}
+            <div className="flex flex-1 flex-col p-4">
+                <span
+                    className="font-inter self-start rounded-full px-2.5 py-0.5 text-[9px] font-bold uppercase tracking-[0.24em] text-white"
+                    style={{ background: p.accent }}
+                >
+                    {p.sub}
+                </span>
+                <h3
+                    className="font-instrument mt-2 text-[clamp(26px,3vw,36px)] leading-[0.92]"
+                    style={{ color: p.accent }}
+                >
+                    {p.name}
+                </h3>
 
-                <div className="pointer-events-none absolute inset-x-0 bottom-0 z-10 p-3.5">
-                    <span
-                        className="font-inter inline-block rounded-full px-2.5 py-0.5 text-[9px] font-bold uppercase tracking-[0.24em] text-white"
-                        style={{ background: p.accent }}
-                    >
-                        {p.sub}
-                    </span>
-                    <h3
-                        className="font-instrument mt-1 text-[clamp(24px,2.9vw,34px)] leading-[0.9]"
-                        style={{ color: p.accent }}
-                    >
-                        {p.name}
-                    </h3>
-
-                    {/* Specs at a glance */}
-                    <div className="mt-2 flex flex-wrap gap-x-5 gap-y-1">
-                        {p.stats.slice(0, 3).map((s) => (
-                            <div key={s.label} className="flex flex-col leading-none">
-                                <span
-                                    className="font-instrument text-[16px] text-white [text-shadow:0_1px_3px_rgba(0,0,0,0.55)]"
-                                    style={p.comingSoon ? { filter: "blur(4px)" } : undefined}
-                                >
-                                    {s.value}
-                                </span>
-                                <span className="mt-1 font-inter text-[8px] font-semibold uppercase tracking-[0.18em] text-white/65">
-                                    {s.label}
-                                </span>
-                            </div>
-                        ))}
-                    </div>
+                {/* Specs at a glance — dark on the card's white, always legible. */}
+                <div className="mt-3.5 flex flex-wrap gap-x-6 gap-y-2">
+                    {p.stats.slice(0, 3).map((s) => (
+                        <div key={s.label} className="flex flex-col leading-none">
+                            <span
+                                className="font-instrument text-[20px] text-[#1a1a1a]"
+                                style={p.comingSoon ? { filter: "blur(4px)" } : undefined}
+                            >
+                                {s.value}
+                            </span>
+                            <span className="mt-1 font-inter text-[8px] font-semibold uppercase tracking-[0.2em] text-[#1a1a1a]/45">
+                                {s.label}
+                            </span>
+                        </div>
+                    ))}
                 </div>
             </div>
 
