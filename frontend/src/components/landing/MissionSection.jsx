@@ -7,21 +7,26 @@ gsap.registerPlugin(ScrollTrigger);
 /* Funky statement — warm festival palette (yellow/orange/red) plus a single
    water-blue accent, the closing word runs the animated gradient shimmer.
    Deliberately warm-dominant so it reads as summer/Holi, not a rainbow. */
+/* Brand red + yellow, alternating for rhythm. On this dark section the deep
+   brand red (#990505) would disappear, so the reds here are the brighter brand
+   red (#e11414) and the yellow is the brand yellow (#F8F31A); "engineering." is
+   a solid brand yellow rather than the shimmer (the shimmer is tuned for the
+   light pages and reads too dark here). */
 const WORDS = [
     { text: "Every" },
-    { text: "Holi,", color: "#f5b301" },
+    { text: "Holi,", color: "#F8F31A" },
     { text: "every" },
-    { text: "sunny", color: "#f97316" },
-    { text: "day,", color: "#ef4444" },
+    { text: "sunny", color: "#e11414" },
+    { text: "day,", color: "#F8F31A" },
     { text: "every" },
-    { text: "splash", color: "#0871e7" },
+    { text: "splash", color: "#e11414" },
     { text: "deserves" },
-    { text: "serious", color: "#f97316" },
-    { text: "engineering.", shimmer: true },
+    { text: "serious", color: "#e11414" },
+    { text: "engineering.", color: "#F8F31A" },
 ];
 
-/* Each stat value gets its own colour so the row reads as a vibrant set. */
-const STAT_COLORS = ["#f97316", "#0871e7", "#ef4444", "#f5b301"];
+/* Alternating brand red / yellow so the stat row reads as a vibrant set. */
+const STAT_COLORS = ["#F8F31A", "#e11414", "#F8F31A", "#e11414"];
 const STATS = [
     { value: "25m", label: "Max Range" },
     { value: "11 r/s", label: "Peak Fire Rate" },
