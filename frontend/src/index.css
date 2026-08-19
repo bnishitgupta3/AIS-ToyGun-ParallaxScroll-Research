@@ -272,10 +272,11 @@ body.sheet-open .section-dots {
    background-clip:text is unsupported. Motion added only when motion is OK. */
 .text-shimmer {
     color: #DA0213; /* fallback fill — brand red */
-    /* Brand red with a thin yellow glint sweeping through (pure yellow reads
-       poorly on the light page, so it's only a narrow specular streak, not a
-       band, keeping the word legibly red on cream). */
-    background-image: linear-gradient(100deg, #DA0213 0%, #c30909 40%, #DA0213 47%, #F8F31A 50%, #DA0213 53%, #c30909 60%, #DA0213 100%);
+    /* Brand red with a bright light band sweeping through. The band is flanked
+       by a darker red rim so the light peak reads clearly against the (bright)
+       brand red — without that contrast the sweep is invisible. The word stays
+       brand red; only the moving light dips dark/bright. */
+    background-image: linear-gradient(100deg, #DA0213 0%, #DA0213 34%, #a10510 44%, #FFF2A0 50%, #a10510 56%, #DA0213 66%, #DA0213 100%);
     background-size: 260% 100%;
     -webkit-background-clip: text;
     background-clip: text;
