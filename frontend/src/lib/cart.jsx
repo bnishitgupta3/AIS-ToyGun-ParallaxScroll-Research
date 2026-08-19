@@ -108,13 +108,21 @@ export function useCartItem(key) {
    query already containing the merchandise title and variant. Delete this
    table and read directly from the Shopify cart line. */
 export const PRODUCT_LOOKUP = {
-    "/product/mp5k": { name: "MP5K", sub: "Water Gun", accent: "#f97316" },
-    "/product/m416": { name: "M416 Water X", sub: "Water Gun", accent: "#0871E7" },
+    "/product/mp5k": { name: "MP5K", sub: "Water Gun", accent: "#f97316", price: 999 },
+    "/product/m416": { name: "M416 Water X", sub: "Water Gun", accent: "#0871E7", price: 899 },
     "/product/crimson": { name: "Crimson Blaster", sub: "Gel Blaster", accent: "#ef4444", comingSoon: true },
+    /* Squad packs (bundles) — each is a single cart line. Flagged `bundle` so
+       they're excluded from the cross-sell CATALOG below. */
+    "/bundle/duo":   { name: "Duo Pack",   sub: "2 Blasters · Bundle", accent: "#990505", price: 1699, bundle: true },
+    "/bundle/squad": { name: "Squad Pack", sub: "4 Blasters · Bundle", accent: "#990505", price: 3299, bundle: true },
+    "/bundle/party": { name: "Party Pack", sub: "6 Blasters · Bundle", accent: "#990505", price: 4799, bundle: true },
 };
 
 /* Ordered product catalogue (derived from the lookup above) for the cart
-   drawer's cross-sell / "you might also like" quick-add row. Kept here so the
-   cart's import graph stays independent of the Arsenal component. On the Shopify
-   swap this becomes a product-recommendations query. */
-export const CATALOG = Object.entries(PRODUCT_LOOKUP).map(([key, v]) => ({ key, ...v }));
+   drawer's cross-sell / "you might also like" quick-add row. Bundles are
+   excluded — they aren't cross-sell items. Kept here so the cart's import graph
+   stays independent of the Arsenal component. On the Shopify swap this becomes a
+   product-recommendations query. */
+export const CATALOG = Object.entries(PRODUCT_LOOKUP)
+    .filter(([, v]) => !v.bundle)
+    .map(([key, v]) => ({ key, ...v }));
