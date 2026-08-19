@@ -24,6 +24,10 @@ const SECTION_SETS = {
         sections: [
             { key: "hero", id: "hero", label: "Top" },
             { key: "arsenal", id: "arsenal", label: "Arsenal" },
+            // `offset` nudges the click-scroll up so this section clears the
+            // fixed nav/marquee and lands cleanly. It defaults to 0 everywhere
+            // else, so the other dots are completely unchanged.
+            { key: "squad", id: "squad-packs", label: "Squad Packs", offset: 96 },
             { key: "mission", id: "mission", label: "Mission" },
             { key: "footer", id: "footer", label: "Connect" },
         ],
@@ -104,7 +108,7 @@ export default function SectionDots({ variant = "home" }) {
             const el = document.getElementById(s.id);
             if (el) y = el.getBoundingClientRect().top + window.scrollY;
         }
-        if (y != null) window.scrollTo(0, Math.round(y));
+        if (y != null) window.scrollTo(0, Math.round(y - (s.offset || 0)));
     };
 
     return (

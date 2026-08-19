@@ -89,7 +89,7 @@ function BundleCard({ b }) {
         >
             {/* Contents — the constituent blasters on a light tile, each with a
                 quantity badge, so the pack's value is obvious at a glance. */}
-            <div className="relative flex items-center justify-center gap-3 bg-[#f1f0ed] px-4 py-7">
+            <div className="relative flex items-center justify-center gap-4 bg-[#f1f0ed] px-5 py-12">
                 {b.badge && (
                     <span
                         className="absolute left-3 top-3 z-10 rounded-full px-3 py-1 font-inter text-[10px] font-bold uppercase tracking-[0.18em]"
@@ -102,15 +102,15 @@ function BundleCard({ b }) {
                     const p = BY_LINK[it.link];
                     if (!p) return null;
                     return (
-                        <div key={it.link} className="relative">
+                        <div key={it.link} className="relative w-[47%]">
                             <img
                                 src={asset("/assets/products/" + p.image)}
                                 alt={p.name}
                                 draggable="false"
-                                className="h-16 w-24 rounded-lg object-cover object-center sm:h-20 sm:w-28"
+                                className="aspect-[4/3] w-full rounded-xl object-cover object-center"
                             />
                             <span
-                                className="absolute -bottom-2 -right-2 grid h-7 w-7 place-items-center rounded-full font-inter text-[12px] font-bold tabular-nums text-white shadow"
+                                className="absolute -bottom-2.5 -right-2.5 grid h-8 w-8 place-items-center rounded-full font-inter text-[13px] font-bold tabular-nums text-white shadow-md"
                                 style={{ background: "#990505" }}
                             >
                                 ×{it.qty}

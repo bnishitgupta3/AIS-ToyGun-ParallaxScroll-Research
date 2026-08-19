@@ -149,17 +149,45 @@ export default function BuyNowSheet({ open, product, onClose }) {
                                         {/* Name links to the product's experience
                                             page; closing the drawer as we go so it
                                             doesn't linger over the new route. */}
-                                        <Link
-                                            to={line.key}
-                                            onClick={onClose}
-                                            className="block truncate font-instrument text-[17px] leading-tight text-[#1a1a1a] underline-offset-2 transition hover:underline"
-                                        >
-                                            {line.name}
-                                        </Link>
-                                        {line.sub && (
-                                            <div className="font-inter text-[10px] font-medium uppercase tracking-[0.2em] text-[#1a1a1a]/45">
-                                                {line.sub}
-                                            </div>
+                                        {line.contents ? (
+                                            /* Bundle: the pack has no page of its own, so the
+                                               name is plain text and each blaster inside links
+                                               through to that gun's product (experience) page. */
+                                            <>
+                                                <div className="truncate font-instrument text-[17px] leading-tight text-[#1a1a1a]">
+                                                    {line.name}
+                                                </div>
+                                                <div className="mt-1 flex flex-wrap items-center gap-x-1.5 gap-y-0.5 font-inter text-[10px] font-semibold uppercase tracking-[0.16em]">
+                                                    {line.contents.map((c, i) => (
+                                                        <span key={c.link} className="inline-flex items-center gap-1">
+                                                            {i > 0 && <span className="text-[#1a1a1a]/25">·</span>}
+                                                            <span className="tabular-nums text-[#1a1a1a]/45">{c.qty}×</span>
+                                                            <Link
+                                                                to={c.link}
+                                                                onClick={onClose}
+                                                                className="text-[#990505] underline-offset-2 transition hover:underline"
+                                                            >
+                                                                {c.name}
+                                                            </Link>
+                                                        </span>
+                                                    ))}
+                                                </div>
+                                            </>
+                                        ) : (
+                                            <>
+                                                <Link
+                                                    to={line.key}
+                                                    onClick={onClose}
+                                                    className="block truncate font-instrument text-[17px] leading-tight text-[#1a1a1a] underline-offset-2 transition hover:underline"
+                                                >
+                                                    {line.name}
+                                                </Link>
+                                                {line.sub && (
+                                                    <div className="font-inter text-[10px] font-medium uppercase tracking-[0.2em] text-[#1a1a1a]/45">
+                                                        {line.sub}
+                                                    </div>
+                                                )}
+                                            </>
                                         )}
                                     </div>
                                     <div className="inline-flex items-center gap-0.5 rounded-full bg-[#1a1a1a]/[0.06] pl-0.5 pr-0.5">
