@@ -89,7 +89,7 @@ function BundleCard({ b }) {
         >
             {/* Contents — the constituent blasters on a light tile, each with a
                 quantity badge, so the pack's value is obvious at a glance. */}
-            <div className="relative bg-[#f1f0ed] px-4 py-6">
+            <div className="relative bg-[#f4f3f8] px-4 py-4">
                 {b.badge && (
                     <span
                         className="absolute left-3 top-3 z-10 rounded-full px-3 py-1 font-inter text-[10px] font-bold uppercase tracking-[0.18em] shadow-sm"
@@ -99,18 +99,20 @@ function BundleCard({ b }) {
                     </span>
                 )}
                 {/* Blasters stacked vertically with a "+" between — reads as
-                    "this gun plus this gun", and the wide gun photos sit far
-                    better full-width than squeezed side by side. */}
-                <div className="flex flex-col gap-1.5">
+                    "this gun plus this gun". object-contain keeps each gun whole
+                    (a short crop would clip the magazine); the panel matches the
+                    photo background so the fit is seamless and the card stays
+                    compact. */}
+                <div className="flex flex-col gap-0.5">
                     {b.items.map((it, idx) => {
                         const p = BY_LINK[it.link];
                         if (!p) return null;
                         return (
                             <div key={it.link} className="w-full">
                                 {idx > 0 && (
-                                    <div className="flex items-center justify-center py-1">
+                                    <div className="flex items-center justify-center py-0.5">
                                         <span
-                                            className="grid h-7 w-7 place-items-center rounded-full font-inter text-[17px] font-bold leading-none text-white shadow"
+                                            className="grid h-6 w-6 place-items-center rounded-full font-inter text-[15px] font-bold leading-none text-white shadow"
                                             style={{ background: "#990505" }}
                                         >
                                             +
@@ -122,10 +124,10 @@ function BundleCard({ b }) {
                                         src={asset("/assets/products/" + p.image)}
                                         alt={p.name}
                                         draggable="false"
-                                        className="aspect-[2/1] w-full rounded-xl object-cover object-center"
+                                        className="aspect-[5/2] w-full object-contain object-center"
                                     />
                                     <span
-                                        className="absolute bottom-2 left-2 rounded-full px-2.5 py-1 font-inter text-[11px] font-bold uppercase tracking-[0.08em] tabular-nums text-white shadow-sm"
+                                        className="absolute bottom-1 left-1 rounded-full px-2.5 py-0.5 font-inter text-[11px] font-bold uppercase tracking-[0.08em] tabular-nums text-white shadow-sm"
                                         style={{ background: "#990505" }}
                                     >
                                         {it.qty}× {p.name.split(" ")[0]}
@@ -141,30 +143,30 @@ function BundleCard({ b }) {
             <div className="h-[3px] w-full" style={{ background: "#990505" }} />
 
             {/* Name + contents summary + price. */}
-            <div className="flex flex-1 flex-col px-4 pt-4">
+            <div className="flex flex-1 flex-col px-4 pt-3.5">
                 <span
                     className="font-inter self-start rounded-full px-2.5 py-0.5 text-[9px] font-bold uppercase tracking-[0.24em]"
                     style={{ background: "#F8F31A", color: "#990505" }}
                 >
                     {units} Blasters
                 </span>
-                <h3 className="font-instrument mt-2 text-[clamp(26px,3vw,36px)] leading-[0.92] text-[#F8F31A]">
+                <h3 className="font-instrument mt-1.5 text-[clamp(24px,2.8vw,32px)] leading-[0.92] text-[#F8F31A]">
                     {b.name}
                 </h3>
-                <p className="mt-2 font-inter text-[13px] leading-relaxed text-white/60">
+                <p className="mt-1.5 font-inter text-[12px] leading-snug text-white/60">
                     {b.desc}
                 </p>
 
-                <div className="mt-auto pt-4">
+                <div className="mt-auto pt-3">
                     <PriceTag mrp={mrp} price={b.price} variant="dark" size="md" />
-                    <p className="mt-1.5 font-inter text-[11px] font-semibold uppercase tracking-[0.14em] text-white/45">
+                    <p className="mt-1 font-inter text-[11px] font-semibold uppercase tracking-[0.14em] text-white/45">
                         You save {inr(save)}
                     </p>
                 </div>
             </div>
 
             {/* Action. */}
-            <div className="mt-4 flex items-center gap-2.5 border-t border-white/10 px-4 pb-4 pt-4">
+            <div className="mt-3 flex items-center gap-2.5 border-t border-white/10 px-4 pb-4 pt-3.5">
                 <AddBundle bundleKey={b.key} />
             </div>
         </div>
