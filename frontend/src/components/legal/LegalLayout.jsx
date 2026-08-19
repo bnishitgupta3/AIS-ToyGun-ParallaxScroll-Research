@@ -21,7 +21,7 @@ export default function LegalLayout({ eyebrow, title, updated, children }) {
                     initial={{ opacity: 0, y: 12 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.7, ease: EASE }}
-                    className="font-inter text-[11px] font-semibold uppercase tracking-[0.4em] text-[#f97316]"
+                    className="font-inter text-[11px] font-semibold uppercase tracking-[0.4em] text-[#990505]"
                 >
                     {eyebrow}
                 </motion.span>

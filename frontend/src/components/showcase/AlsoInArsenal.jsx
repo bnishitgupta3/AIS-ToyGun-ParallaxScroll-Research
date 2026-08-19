@@ -76,7 +76,7 @@ export default function AlsoInArsenal({ currentLink }) {
             <div className="mx-auto max-w-6xl px-6 md:px-12">
                 <div className="flex flex-col items-start gap-3 md:flex-row md:items-end md:justify-between">
                     <div>
-                        <span className="font-mono-tactical text-xs font-bold uppercase tracking-[0.4em] text-[#f97316]">
+                        <span className="font-mono-tactical text-xs font-bold uppercase tracking-[0.4em] text-[#990505]">
                             /// Also in the Arsenal
                         </span>
                         <h2 className="font-display mt-4 text-4xl text-[#1a1a1a] sm:text-5xl">
@@ -85,7 +85,7 @@ export default function AlsoInArsenal({ currentLink }) {
                     </div>
                     <Link
                         to="/#arsenal"
-                        className="font-mono-tactical text-[11px] uppercase tracking-[0.3em] text-[#1a1a1a]/55 transition hover:text-[#f97316]"
+                        className="font-mono-tactical text-[11px] uppercase tracking-[0.3em] text-[#1a1a1a]/55 transition hover:text-[#990505]"
                     >
                         Browse the full arsenal →
                     </Link>

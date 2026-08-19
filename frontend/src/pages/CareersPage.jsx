@@ -54,11 +54,11 @@ export default function CareersPage() {
                     transition={{ duration: 0.8, ease: EASE }}
                     className="max-w-2xl"
                 >
-                    <span className="font-inter text-[11px] font-semibold uppercase tracking-[0.4em] text-[#f97316]">
+                    <span className="font-inter text-[11px] font-semibold uppercase tracking-[0.4em] text-[#990505]">
                         /// Careers
                     </span>
                     <h1 className="font-instrument mt-4 text-[clamp(40px,7.5vw,80px)] leading-[0.92] tracking-tight text-[#1a1a1a]">
-                        Come make a <span className="text-[#f97316]">splash.</span>
+                        Come make a <span className="text-[#990505]">splash.</span>
                     </h1>
                     <p className="mt-5 max-w-xl font-inter text-[15px] leading-relaxed text-[#1a1a1a]/65 sm:text-[17px]">
                         We're building India's most-loved water blaster brand from the
@@ -80,9 +80,9 @@ export default function CareersPage() {
                                 initial={{ opacity: 0, y: 16 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{ duration: 0.7, delay: 0.05 * i, ease: EASE }}
-                                className="flex flex-col rounded-2xl border border-black/10 bg-white/55 p-5 backdrop-blur-sm transition-all duration-300 hover:-translate-y-0.5 hover:border-[#f97316]/50 hover:bg-white/80 hover:shadow-[0_12px_30px_-12px_rgba(249,115,22,0.35)]"
+                                className="flex flex-col rounded-2xl border border-black/10 bg-white/55 p-5 backdrop-blur-sm transition-all duration-300 hover:-translate-y-0.5 hover:border-[#990505]/50 hover:bg-white/80 hover:shadow-[0_12px_30px_-12px_rgba(249,115,22,0.35)]"
                             >
-                                <span className="grid h-11 w-11 place-items-center rounded-xl bg-[#f97316]/10 text-[#f97316]">
+                                <span className="grid h-11 w-11 place-items-center rounded-xl bg-[#990505]/10 text-[#990505]">
                                     <Icon size={20} strokeWidth={2} />
                                 </span>
                                 <h3 className="font-instrument mt-4 text-[20px] leading-tight text-[#1a1a1a]">
@@ -118,9 +118,9 @@ export default function CareersPage() {
                     initial={{ opacity: 0, y: 18 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.9, delay: 0.1, ease: EASE }}
-                    className="relative mt-16 overflow-hidden rounded-3xl border border-[#f97316]/20 bg-gradient-to-br from-[#FFF4E6] to-[#FCEAD3] p-8 sm:p-12"
+                    className="relative mt-16 overflow-hidden rounded-3xl border border-[#990505]/20 bg-gradient-to-br from-[#FFF4E6] to-[#FCEAD3] p-8 sm:p-12"
                 >
-                    <div className="pointer-events-none absolute -right-10 -top-10 h-48 w-48 rounded-full bg-[#FF8A3D]/20 blur-[80px]" />
+                    <div className="pointer-events-none absolute -right-10 -top-10 h-48 w-48 rounded-full bg-[#990505]/20 blur-[80px]" />
                     <div className="relative max-w-2xl">
                         <h2 className="font-instrument text-[clamp(26px,4vw,40px)] leading-tight text-[#1a1a1a]">
                             No open role that fits? Tell us anyway.
@@ -132,7 +132,7 @@ export default function CareersPage() {
                         </p>
                         <a
                             href="mailto:careers@soniqtoys.in?subject=I%20want%20to%20work%20at%20SONIQ"
-                            className="group relative mt-7 inline-flex items-center gap-2 overflow-hidden rounded-full bg-[#f97316] px-7 py-3.5 font-inter text-[13px] font-semibold uppercase tracking-[0.15em] text-white shadow-[inset_0_-4px_4px_rgba(255,255,255,0.39)] transition-all hover:brightness-110"
+                            className="group relative mt-7 inline-flex items-center gap-2 overflow-hidden rounded-full bg-[#990505] px-7 py-3.5 font-inter text-[13px] font-semibold uppercase tracking-[0.15em] text-white shadow-[inset_0_-4px_4px_rgba(255,255,255,0.39)] transition-all hover:brightness-110"
                         >
                             <span
                                 aria-hidden="true"
@@ -150,7 +150,7 @@ export default function CareersPage() {
 
                 <p className="mt-10 font-inter text-[13px] text-[#1a1a1a]/45">
                     Curious about the brand first? Read our{" "}
-                    <Link to="/about" className="text-[#f97316] underline-offset-2 hover:underline">
+                    <Link to="/about" className="text-[#990505] underline-offset-2 hover:underline">
                         story
                     </Link>
                     .

@@ -47,7 +47,7 @@ export default function CookieConsent() {
             <p className="flex-1 font-inter text-[13px] leading-relaxed text-[#1a1a1a]/75">
                 We use cookies for basic analytics to improve the site. You can
                 accept or decline. See our{" "}
-                <Link to="/privacy" className="font-semibold text-[#f97316] underline underline-offset-2">
+                <Link to="/privacy" className="font-semibold text-[#990505] underline underline-offset-2">
                     Privacy Policy
                 </Link>
                 .
@@ -63,7 +63,7 @@ export default function CookieConsent() {
                 <button
                     type="button"
                     onClick={accept}
-                    className="flex-1 rounded-full bg-[#f97316] px-5 py-2.5 font-inter text-[12px] font-semibold uppercase tracking-[0.15em] text-white shadow-[inset_0_-4px_4px_rgba(255,255,255,0.35)] transition hover:brightness-110 sm:flex-none"
+                    className="flex-1 rounded-full bg-[#990505] px-5 py-2.5 font-inter text-[12px] font-semibold uppercase tracking-[0.15em] text-white shadow-[inset_0_-4px_4px_rgba(255,255,255,0.35)] transition hover:brightness-110 sm:flex-none"
                 >
                     Accept
                 </button>

@@ -115,7 +115,7 @@ export default function BuyNowSheet({ open, product, onClose }) {
                 </button>
 
                 <div className="flex h-full flex-col px-7 pb-10 pt-10 md:px-10 md:pt-16">
-                    <span className="font-inter text-[11px] font-semibold uppercase tracking-[0.35em] text-[#f97316]">
+                    <span className="font-inter text-[11px] font-semibold uppercase tracking-[0.35em] text-[#990505]">
                         {hasItems ? "/// Your cart" : "/// Almost here"}
                     </span>
 
@@ -198,21 +198,21 @@ export default function BuyNowSheet({ open, product, onClose }) {
                                     <span>2026</span>
                                 </div>
                                 <div className="h-1.5 w-full overflow-hidden rounded-full bg-[#1a1a1a]/10">
-                                    <div className="buy-now-charge h-full rounded-full bg-[#f97316]" />
+                                    <div className="buy-now-charge h-full rounded-full bg-[#990505]" />
                                 </div>
                             </div>
 
                             <ul className="mt-9 space-y-3 font-inter text-[14px] text-[#1a1a1a]/75">
                                 <li className="flex items-start gap-2.5">
-                                    <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-[#f97316]" />
+                                    <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-[#990505]" />
                                     Early-access pricing for everyone on the list
                                 </li>
                                 <li className="flex items-start gap-2.5">
-                                    <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-[#f97316]" />
+                                    <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-[#990505]" />
                                     Free shipping across India on launch week
                                 </li>
                                 <li className="flex items-start gap-2.5">
-                                    <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-[#f97316]" />
+                                    <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-[#990505]" />
                                     First refills bundled, while stocks last
                                 </li>
                             </ul>
@@ -293,7 +293,7 @@ export default function BuyNowSheet({ open, product, onClose }) {
                         <NotifyMe
                             productName={product?.name || (hasItems ? "checkout" : "launch")}
                             source={hasItems ? "checkout-launch" : "buy-now-launch"}
-                            accent="#f97316"
+                            accent="#990505"
                         />
                         <p className="mt-3 text-center font-inter text-[11px] uppercase tracking-[0.22em] text-[#1a1a1a]/40">
                             Powered by SONIQ · India · 2026

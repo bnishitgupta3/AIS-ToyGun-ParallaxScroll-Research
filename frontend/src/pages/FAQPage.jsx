@@ -7,7 +7,7 @@ export default function FAQPage() {
             <p>
                 Everything you need to know about SONIQ blasters, orders and play.
                 Still stuck? Reach us any time on the{" "}
-                <Link to="/contact" className="text-[#f97316] underline-offset-2 hover:underline">
+                <Link to="/contact" className="text-[#990505] underline-offset-2 hover:underline">
                     Contact
                 </Link>{" "}
                 page.
@@ -35,7 +35,7 @@ export default function FAQPage() {
                 <p>
                     Yes. We ship pan-India through trusted courier partners. Shipping
                     timelines, charges and coverage are detailed on our{" "}
-                    <Link to="/returns" className="text-[#f97316] underline-offset-2 hover:underline">
+                    <Link to="/returns" className="text-[#990505] underline-offset-2 hover:underline">
                         Returns &amp; Shipping
                     </Link>{" "}
                     page.
@@ -57,7 +57,7 @@ export default function FAQPage() {
                     are damaged, defective or not as described, in original,
                     unused condition. Used gel beads/refills are not returnable for
                     hygiene reasons unless defective. See{" "}
-                    <Link to="/returns" className="text-[#f97316] underline-offset-2 hover:underline">
+                    <Link to="/returns" className="text-[#990505] underline-offset-2 hover:underline">
                         Returns &amp; Shipping
                     </Link>{" "}
                     for the full policy and how to raise a request.
@@ -67,7 +67,7 @@ export default function FAQPage() {
             <Section heading="My blaster arrived damaged or defective. What do I do?">
                 <p>
                     Please report it within 48 hours of delivery by emailing{" "}
-                    <a href="mailto:support@soniqtoys.in" className="text-[#f97316] underline-offset-2 hover:underline">
+                    <a href="mailto:support@soniqtoys.in" className="text-[#990505] underline-offset-2 hover:underline">
                         support@soniqtoys.in
                     </a>{" "}
                     with your order ID and photos or a short video of the issue.
@@ -87,7 +87,7 @@ export default function FAQPage() {
                 <p>
                     Once your order ships, you will receive a tracking link by email
                     and SMS. For any help, contact{" "}
-                    <a href="mailto:support@soniqtoys.in" className="text-[#f97316] underline-offset-2 hover:underline">
+                    <a href="mailto:support@soniqtoys.in" className="text-[#990505] underline-offset-2 hover:underline">
                         support@soniqtoys.in
                     </a>{" "}
                     with your order ID.

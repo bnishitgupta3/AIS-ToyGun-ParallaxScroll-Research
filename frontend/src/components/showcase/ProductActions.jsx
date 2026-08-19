@@ -18,7 +18,7 @@ import { useCart, useCartItem } from "@/lib/cart";
        onClick with a window.location.href to cart.checkoutUrl. */
 export default function ProductActions({
     product,
-    accent = "#f97316",
+    accent = "#990505",
     variant = "light",
 }) {
     const { openDrawer } = useCart();

@@ -2,7 +2,7 @@ import useEmblaCarousel from "embla-carousel-react";
 
 const CLIPS = [
     { id: 1, label: "Backyard Blitz", handle: "@xander_ops", views: "2.4M", color: "from-blue-900/70" },
-    { id: 2, label: "Range Test: 20m", handle: "@tactical.talia", views: "1.8M", color: "from-orange-900/70" },
+    { id: 2, label: "Range Test: 20m", handle: "@tactical.talia", views: "1.8M", color: "from-[#5c0a0a]/70" },
     { id: 3, label: "Full-Auto Review", handle: "@gelblast_kai", views: "3.1M", color: "from-zinc-700/80" },
     { id: 4, label: "vs. Supersoaker", handle: "@summer.siege", views: "5.7M", color: "from-purple-900/70" },
     { id: 5, label: "Crimson Unbox", handle: "@redteam.gears", views: "900K", color: "from-red-900/70" },
@@ -23,7 +23,7 @@ export default function FieldTestSection() {
             <div className="px-6 md:px-20">
                 <div className="mb-12 flex items-end justify-between">
                     <div>
-                        <span className="font-mono-tactical text-xs font-bold uppercase tracking-[0.4em] text-orange-500">
+                        <span className="font-mono-tactical text-xs font-bold uppercase tracking-[0.4em] text-[#e11414]">
                             /// Field Test
                         </span>
                         <h2 className="font-display mt-3 text-5xl text-white md:text-6xl">
@@ -34,7 +34,7 @@ export default function FieldTestSection() {
                         <button
                             type="button"
                             onClick={() => emblaApi?.scrollPrev()}
-                            className="flex h-11 w-11 items-center justify-center rounded-full border border-zinc-700 text-zinc-400 transition-colors hover:border-orange-500 hover:text-orange-500"
+                            className="flex h-11 w-11 items-center justify-center rounded-full border border-zinc-700 text-zinc-400 transition-colors hover:border-[#e11414] hover:text-[#e11414]"
                             aria-label="Previous"
                         >
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
@@ -42,7 +42,7 @@ export default function FieldTestSection() {
                         <button
                             type="button"
                             onClick={() => emblaApi?.scrollNext()}
-                            className="flex h-11 w-11 items-center justify-center rounded-full border border-zinc-700 text-zinc-400 transition-colors hover:border-orange-500 hover:text-orange-500"
+                            className="flex h-11 w-11 items-center justify-center rounded-full border border-zinc-700 text-zinc-400 transition-colors hover:border-[#e11414] hover:text-[#e11414]"
                             aria-label="Next"
                         >
                             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
@@ -79,7 +79,7 @@ export default function FieldTestSection() {
                                     {clip.label}
                                 </div>
                                 <div className="mt-2 flex items-center justify-between">
-                                    <span className="font-mono-tactical text-[11px] uppercase tracking-widest text-orange-400">
+                                    <span className="font-mono-tactical text-[11px] uppercase tracking-widest text-[#e11414]">
                                         {clip.handle}
                                     </span>
                                     <span className="font-mono-tactical text-[10px] text-zinc-500">
@@ -88,7 +88,7 @@ export default function FieldTestSection() {
                                 </div>
                             </div>
 
-                            <div className="absolute right-3 top-3 rounded-full bg-orange-500 px-2.5 py-1">
+                            <div className="absolute right-3 top-3 rounded-full bg-[#e11414] px-2.5 py-1">
                                 <span className="font-mono-tactical text-[9px] font-bold uppercase text-black">
                                     UGC
                                 </span>

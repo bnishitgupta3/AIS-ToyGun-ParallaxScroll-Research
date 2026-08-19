@@ -44,7 +44,7 @@ export default function AboutPage() {
                     initial={{ opacity: 0, y: 12 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.8, ease: EASE }}
-                    className="font-inter text-[11px] font-semibold uppercase tracking-[0.4em] text-[#f97316]"
+                    className="font-inter text-[11px] font-semibold uppercase tracking-[0.4em] text-[#990505]"
                 >
                     /// About SONIQ Toys
                 </motion.span>
@@ -109,7 +109,7 @@ export default function AboutPage() {
                                 transition={{ duration: 0.7, delay: i * 0.1, ease: EASE }}
                                 className="rounded-2xl border border-black/10 bg-white/50 p-7 backdrop-blur-sm"
                             >
-                                <span className="font-inter text-[11px] font-semibold uppercase tracking-[0.25em] text-[#f97316]">
+                                <span className="font-inter text-[11px] font-semibold uppercase tracking-[0.25em] text-[#990505]">
                                     0{i + 1}
                                 </span>
                                 <h3 className="font-instrument mt-3 text-2xl text-[#1a1a1a]">
@@ -135,7 +135,7 @@ export default function AboutPage() {
                     </div>
                     <Link
                         to="/"
-                        className="group relative inline-flex items-center gap-2 overflow-hidden rounded-full bg-[#f97316] px-7 py-3 font-inter text-[13px] font-semibold text-white shadow-[inset_0_-4px_4px_rgba(255,255,255,0.39)] transition-all hover:brightness-110"
+                        className="group relative inline-flex items-center gap-2 overflow-hidden rounded-full bg-[#990505] px-7 py-3 font-inter text-[13px] font-semibold text-white shadow-[inset_0_-4px_4px_rgba(255,255,255,0.39)] transition-all hover:brightness-110"
                     >
                         <span
                             aria-hidden="true"
