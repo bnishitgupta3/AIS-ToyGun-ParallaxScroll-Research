@@ -19,7 +19,7 @@ const BUNDLES = [
         id: "duo",
         key: "/bundle/duo",
         name: "Duo Pack",
-        tagline: "Two blasters, one squad. Grab a friend and go.",
+        desc: "One MP5K and one M416, ready to soak. The perfect two player kit to gear up with a friend for Holi mornings and sunny standoffs.",
         items: [{ link: "/product/mp5k", qty: 1 }, { link: "/product/m416", qty: 1 }],
         price: 1699,
     },
@@ -27,7 +27,7 @@ const BUNDLES = [
         id: "squad",
         key: "/bundle/squad",
         name: "Squad Pack",
-        tagline: "Four-strong. The whole crew, fully loaded.",
+        desc: "Two MP5Ks and two M416s, fully loaded for a four way water war. Our most picked pack, at a bigger saving than buying each on its own.",
         items: [{ link: "/product/mp5k", qty: 2 }, { link: "/product/m416", qty: 2 }],
         price: 3299,
         badge: "Most Popular",
@@ -36,7 +36,7 @@ const BUNDLES = [
         id: "party",
         key: "/bundle/party",
         name: "Party Pack",
-        tagline: "Six blasters for the whole street. Total drench.",
+        desc: "Three of each, six blasters in all, for the whole crew. Maximum drench and our deepest saving, the entire street soaked.",
         items: [{ link: "/product/mp5k", qty: 3 }, { link: "/product/m416", qty: 3 }],
         price: 4799,
     },
@@ -89,35 +89,52 @@ function BundleCard({ b }) {
         >
             {/* Contents — the constituent blasters on a light tile, each with a
                 quantity badge, so the pack's value is obvious at a glance. */}
-            <div className="relative flex items-center justify-center gap-4 bg-[#f1f0ed] px-5 py-12">
+            <div className="relative bg-[#f1f0ed] px-4 py-6">
                 {b.badge && (
                     <span
-                        className="absolute left-3 top-3 z-10 rounded-full px-3 py-1 font-inter text-[10px] font-bold uppercase tracking-[0.18em]"
+                        className="absolute left-3 top-3 z-10 rounded-full px-3 py-1 font-inter text-[10px] font-bold uppercase tracking-[0.18em] shadow-sm"
                         style={{ background: "#F8F31A", color: "#990505" }}
                     >
                         {b.badge}
                     </span>
                 )}
-                {b.items.map((it) => {
-                    const p = BY_LINK[it.link];
-                    if (!p) return null;
-                    return (
-                        <div key={it.link} className="relative w-[47%]">
-                            <img
-                                src={asset("/assets/products/" + p.image)}
-                                alt={p.name}
-                                draggable="false"
-                                className="aspect-[4/3] w-full rounded-xl object-cover object-center"
-                            />
-                            <span
-                                className="absolute -bottom-2.5 -right-2.5 grid h-8 w-8 place-items-center rounded-full font-inter text-[13px] font-bold tabular-nums text-white shadow-md"
-                                style={{ background: "#990505" }}
-                            >
-                                ×{it.qty}
-                            </span>
-                        </div>
-                    );
-                })}
+                {/* Blasters stacked vertically with a "+" between — reads as
+                    "this gun plus this gun", and the wide gun photos sit far
+                    better full-width than squeezed side by side. */}
+                <div className="flex flex-col gap-1.5">
+                    {b.items.map((it, idx) => {
+                        const p = BY_LINK[it.link];
+                        if (!p) return null;
+                        return (
+                            <div key={it.link} className="w-full">
+                                {idx > 0 && (
+                                    <div className="flex items-center justify-center py-1">
+                                        <span
+                                            className="grid h-7 w-7 place-items-center rounded-full font-inter text-[17px] font-bold leading-none text-white shadow"
+                                            style={{ background: "#990505" }}
+                                        >
+                                            +
+                                        </span>
+                                    </div>
+                                )}
+                                <div className="relative">
+                                    <img
+                                        src={asset("/assets/products/" + p.image)}
+                                        alt={p.name}
+                                        draggable="false"
+                                        className="aspect-[2/1] w-full rounded-xl object-cover object-center"
+                                    />
+                                    <span
+                                        className="absolute bottom-2 left-2 rounded-full px-2.5 py-1 font-inter text-[11px] font-bold uppercase tracking-[0.08em] tabular-nums text-white shadow-sm"
+                                        style={{ background: "#990505" }}
+                                    >
+                                        {it.qty}× {p.name.split(" ")[0]}
+                                    </span>
+                                </div>
+                            </div>
+                        );
+                    })}
+                </div>
             </div>
 
             {/* Accent seam. */}
@@ -134,8 +151,8 @@ function BundleCard({ b }) {
                 <h3 className="font-instrument mt-2 text-[clamp(26px,3vw,36px)] leading-[0.92] text-[#F8F31A]">
                     {b.name}
                 </h3>
-                <p className="mt-1.5 font-inter text-[12px] leading-snug text-white/55">
-                    {b.tagline}
+                <p className="mt-2 font-inter text-[13px] leading-relaxed text-white/60">
+                    {b.desc}
                 </p>
 
                 <div className="mt-auto pt-4">
