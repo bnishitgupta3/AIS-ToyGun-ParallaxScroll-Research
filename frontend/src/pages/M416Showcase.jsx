@@ -10,6 +10,8 @@ const M416_PRODUCT = {
     eyebrow:     "/// SONIQ Toys · 2026",
     accentColor: "#3b82f6",   // electric blue
     accentDeep:  "#1d4ed8",
+    mrp:         1099,
+    price:       899,
     specs: [
         { label: "PLAY TIME",     value: "45 min*" },
         { label: "RANGE",         value: "7-9 m" },

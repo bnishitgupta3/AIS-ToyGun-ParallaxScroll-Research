@@ -1,4 +1,5 @@
 import ProductActions from "@/components/showcase/ProductActions";
+import PriceTag from "@/components/PriceTag";
 
 /* Real MP5K product specs. The * on PLAY TIME mirrors the industry pattern
    (EVs quote "up to X" range; we quote "up to 45 min" play time and explain
@@ -12,7 +13,7 @@ const specs = [
     { label: "MODE",          value: "Automatic",      id: "spec-mode" },
 ];
 
-const MP5K = { name: "MP5K", link: "/product/mp5k" };
+const MP5K = { name: "MP5K", link: "/product/mp5k", mrp: 1199, price: 999 };
 
 export default function SpecsPanel() {
     return (
@@ -87,6 +88,9 @@ export default function SpecsPanel() {
                     *Up to 45 min under optimal conditions. Real-world play
                     time varies with usage, temperature and refills.
                 </p>
+
+                {/* Price — bold sale price + struck MRP just above the CTA. */}
+                <PriceTag mrp={MP5K.mrp} price={MP5K.price} variant="light" size="lg" className="mt-5" />
 
                 {/* Primary conversion cluster — Buy Now (primary) + Add to Cart
                     (secondary) sit at the point of highest intent: right after

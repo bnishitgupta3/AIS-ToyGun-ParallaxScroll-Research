@@ -109,6 +109,8 @@ export const PRODUCTS = [
         image: "mp5k.jpg",
         accent: "#f97316",
         sub: "Water Gun",
+        mrp: 1199,
+        price: 999,
         stats: [
             { label: "Range", value: "8-10 m" },
             { label: "Tank", value: "300 ml" },
@@ -124,6 +126,8 @@ export const PRODUCTS = [
         image: "m416.jpg",
         accent: "#0871E7",
         sub: "Water Gun",
+        mrp: 1099,
+        price: 899,
         stats: [
             { label: "Range", value: "7-9 m" },
             { label: "Tank", value: "300 ml" },

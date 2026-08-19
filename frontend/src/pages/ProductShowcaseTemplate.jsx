@@ -17,6 +17,7 @@ import SectionDots from "@/components/landing/SectionDots";
 import GenericGunScene from "@/components/scene/GenericGunScene";
 import ParallaxBackground from "@/components/showcase/ParallaxBackground";
 import ProductActions from "@/components/showcase/ProductActions";
+import PriceTag from "@/components/PriceTag";
 import NotifyMe from "@/components/showcase/NotifyMe";
 import AlsoInArsenal from "@/components/showcase/AlsoInArsenal";
 import { useGLTF } from "@react-three/drei";
@@ -459,6 +460,18 @@ export default function ProductShowcaseTemplate({ product: rawProduct }) {
                                         Real-world play time varies with usage,
                                         temperature and refills.
                                     </p>
+                                )}
+
+                                {/* Price — bold sale price + struck MRP, right
+                                    above the buy cluster (highest-intent spot). */}
+                                {!product.comingSoon && (
+                                    <PriceTag
+                                        mrp={product.mrp}
+                                        price={product.price}
+                                        variant="light"
+                                        size="lg"
+                                        className="mt-5"
+                                    />
                                 )}
 
                                 {/* Primary cluster. Launched products get Buy

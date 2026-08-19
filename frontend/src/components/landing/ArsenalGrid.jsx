@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { useCartItem } from "@/lib/cart";
 import NotifyMe from "@/components/showcase/NotifyMe";
+import PriceTag from "@/components/PriceTag";
 import { PRODUCTS } from "@/components/landing/ArsenalSection";
 import { asset } from "@/lib/asset";
 
@@ -126,6 +127,10 @@ function ProductCard({ p }) {
                         </div>
                     ))}
                 </div>
+
+                {/* Price — brand pop on the dark card: yellow sale price, struck
+                    MRP, discount chip. Anchored to the bottom, next to the CTA. */}
+                <PriceTag mrp={p.mrp} price={p.price} variant="dark" size="md" className="mt-auto pt-4" />
             </div>
 
             {/* Action row — Add to Cart is the primary CTA; "Experience it" is a
