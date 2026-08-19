@@ -16,7 +16,7 @@ export default function NotFoundPage() {
             <LandingNav />
 
             {/* soft accent blobs */}
-            <div className="pointer-events-none absolute left-[15%] top-[25%] h-48 w-48 rounded-full bg-[#990505]/12 blur-3xl" />
+            <div className="pointer-events-none absolute left-[15%] top-[25%] h-48 w-48 rounded-full bg-[#DA0213]/12 blur-3xl" />
             <div className="pointer-events-none absolute right-[18%] bottom-[20%] h-56 w-56 rounded-full bg-[#0871E7]/10 blur-3xl" />
 
             <main className="relative z-10 flex flex-1 flex-col items-center justify-center px-6 text-center">
@@ -24,7 +24,7 @@ export default function NotFoundPage() {
                     initial={{ opacity: 0, y: 12 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.7, ease: EASE }}
-                    className="font-inter text-[11px] font-semibold uppercase tracking-[0.45em] text-[#990505]"
+                    className="font-inter text-[11px] font-semibold uppercase tracking-[0.45em] text-[#DA0213]"
                 >
                     /// Error 404
                 </motion.span>
@@ -57,7 +57,7 @@ export default function NotFoundPage() {
                 >
                     <Link
                         to="/"
-                        className="group relative inline-flex items-center gap-2 overflow-hidden rounded-full bg-[#990505] px-7 py-3 font-inter text-[13px] font-semibold text-white shadow-[inset_0_-4px_4px_rgba(255,255,255,0.39)] transition-all hover:brightness-110"
+                        className="group relative inline-flex items-center gap-2 overflow-hidden rounded-full bg-[#DA0213] px-7 py-3 font-inter text-[13px] font-semibold text-white shadow-[inset_0_-4px_4px_rgba(255,255,255,0.39)] transition-all hover:brightness-110"
                     >
                         <span
                             aria-hidden="true"

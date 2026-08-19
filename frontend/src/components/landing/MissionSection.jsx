@@ -8,25 +8,25 @@ gsap.registerPlugin(ScrollTrigger);
    water-blue accent, the closing word runs the animated gradient shimmer.
    Deliberately warm-dominant so it reads as summer/Holi, not a rainbow. */
 /* Brand red + yellow, alternating for rhythm. On this dark section the deep
-   brand red (#990505) would disappear, so the reds here are the brighter brand
-   red (#e11414) and the yellow is the brand yellow (#F8F31A); "engineering." is
+   brand red (#DA0213) would disappear, so the reds here are the brighter brand
+   red (#DA0213) and the yellow is the brand yellow (#F8F31A); "engineering." is
    a solid brand yellow rather than the shimmer (the shimmer is tuned for the
    light pages and reads too dark here). */
 const WORDS = [
     { text: "Every" },
     { text: "Holi,", color: "#F8F31A" },
     { text: "every" },
-    { text: "sunny", color: "#e11414" },
+    { text: "sunny", color: "#DA0213" },
     { text: "day,", color: "#F8F31A" },
     { text: "every" },
-    { text: "splash", color: "#e11414" },
+    { text: "splash", color: "#DA0213" },
     { text: "deserves" },
-    { text: "serious", color: "#e11414" },
+    { text: "serious", color: "#DA0213" },
     { text: "engineering.", color: "#F8F31A" },
 ];
 
 /* Alternating brand red / yellow so the stat row reads as a vibrant set. */
-const STAT_COLORS = ["#F8F31A", "#e11414", "#F8F31A", "#e11414"];
+const STAT_COLORS = ["#F8F31A", "#DA0213", "#F8F31A", "#DA0213"];
 const STATS = [
     { value: "25m", label: "Max Range" },
     { value: "11 r/s", label: "Peak Fire Rate" },
@@ -85,7 +85,7 @@ export default function MissionSection({ missionRef }) {
             className="relative z-10 w-full bg-zinc-950 px-6 py-32 md:px-20 md:py-44"
         >
             <div ref={innerRef} className="mx-auto max-w-6xl">
-                <span className="font-mono-tactical text-xs font-bold uppercase tracking-[0.4em] text-[#e11414]">
+                <span className="font-mono-tactical text-xs font-bold uppercase tracking-[0.4em] text-[#DA0213]">
                     /// The Mission
                 </span>
 

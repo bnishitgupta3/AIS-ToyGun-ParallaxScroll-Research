@@ -168,7 +168,7 @@ export default function ArsenalGrid({ arsenalRef }) {
             className="relative z-10 w-full px-6 py-24 md:px-12 md:py-32"
         >
             <div className="mx-auto max-w-7xl">
-                <span className="font-inter text-xs font-semibold uppercase tracking-[0.4em] text-[#990505]">
+                <span className="font-inter text-xs font-semibold uppercase tracking-[0.4em] text-[#DA0213]">
                     /// The Arsenal
                 </span>
                 <h2 className="font-instrument mt-4 text-[clamp(40px,7vw,84px)] leading-[0.9] text-[#1a1a1a]">

@@ -46,7 +46,7 @@ export default function HeroSection({ heroRef }) {
             >
                 <motion.span
                     variants={rise}
-                    className="mb-5 font-inter text-[10px] font-semibold uppercase tracking-[0.4em] text-[#990505] sm:text-[12px]"
+                    className="mb-5 font-inter text-[10px] font-semibold uppercase tracking-[0.4em] text-[#DA0213] sm:text-[12px]"
                 >
                     /// SONIQ Toys · Made for Sunlit Days, All Year
                 </motion.span>
@@ -76,7 +76,7 @@ export default function HeroSection({ heroRef }) {
                 <motion.div variants={rise} className="relative mt-9 inline-flex flex-col items-center">
                     <a
                         href="#arsenal"
-                        className="group relative inline-flex items-center gap-2 overflow-hidden rounded-full bg-[#990505] px-7 py-3 font-inter text-[13px] font-semibold text-white shadow-[inset_0_-4px_4px_rgba(255,255,255,0.39)] transition-all hover:brightness-110"
+                        className="group relative inline-flex items-center gap-2 overflow-hidden rounded-full bg-[#DA0213] px-7 py-3 font-inter text-[13px] font-semibold text-white shadow-[inset_0_-4px_4px_rgba(255,255,255,0.39)] transition-all hover:brightness-110"
                     >
                         <span
                             aria-hidden="true"

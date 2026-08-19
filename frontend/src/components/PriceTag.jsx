@@ -9,7 +9,7 @@
    Returns null when there is no price (e.g. a coming-soon product), so callers
    can drop it in unconditionally. */
 
-const BRAND_RED = "#990505";
+const BRAND_RED = "#DA0213";
 const BRAND_YELLOW = "#F8F31A";
 
 const inr = (n) => "₹" + Number(n).toLocaleString("en-IN");

@@ -271,11 +271,11 @@ body.sheet-open .section-dots {
    gradient is clipped to the glyphs; falls back to a solid accent where
    background-clip:text is unsupported. Motion added only when motion is OK. */
 .text-shimmer {
-    color: #990505; /* fallback fill — brand red */
+    color: #DA0213; /* fallback fill — brand red */
     /* Brand red with a thin yellow glint sweeping through (pure yellow reads
        poorly on the light page, so it's only a narrow specular streak, not a
        band, keeping the word legibly red on cream). */
-    background-image: linear-gradient(100deg, #990505 0%, #c30909 40%, #e11414 47%, #F8F31A 50%, #e11414 53%, #c30909 60%, #990505 100%);
+    background-image: linear-gradient(100deg, #DA0213 0%, #c30909 40%, #DA0213 47%, #F8F31A 50%, #DA0213 53%, #c30909 60%, #DA0213 100%);
     background-size: 260% 100%;
     -webkit-background-clip: text;
     background-clip: text;

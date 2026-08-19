@@ -28,8 +28,8 @@ export default function ComingSoonPage() {
             }}
         >
             {/* warm glow blobs for depth/energy */}
-            <div className="pointer-events-none absolute -left-32 top-1/3 h-[420px] w-[420px] rounded-full bg-[#990505]/30 blur-[130px]" />
-            <div className="pointer-events-none absolute -right-24 -top-24 h-[400px] w-[400px] rounded-full bg-[#990505]/25 blur-[130px]" />
+            <div className="pointer-events-none absolute -left-32 top-1/3 h-[420px] w-[420px] rounded-full bg-[#DA0213]/30 blur-[130px]" />
+            <div className="pointer-events-none absolute -right-24 -top-24 h-[400px] w-[400px] rounded-full bg-[#DA0213]/25 blur-[130px]" />
 
             {/* Top bar — logo (left) + launch badge (right) */}
             <header className="absolute inset-x-0 top-0 z-30 flex items-center justify-between px-6 py-6 sm:px-10">
@@ -55,14 +55,14 @@ export default function ComingSoonPage() {
                     transition={{ duration: 0.9, ease: EASE }}
                     className="flex w-full flex-col items-center text-center md:w-[52%] md:items-start md:text-left"
                 >
-                    <span className="font-inter text-[11px] font-semibold uppercase tracking-[0.4em] text-[#990505]">
+                    <span className="font-inter text-[11px] font-semibold uppercase tracking-[0.4em] text-[#DA0213]">
                         /// SONIQ Toys · Made in India
                     </span>
 
                     <h1 className="font-instrument mt-4 text-[clamp(46px,8.5vw,94px)] leading-[0.9] tracking-tight text-[#1a1a1a]">
                         Get ready to
                         <br className="hidden sm:block" /> get{" "}
-                        <span className="text-[#990505]">drenched.</span>
+                        <span className="text-[#DA0213]">drenched.</span>
                     </h1>
 
                     <p className="mt-5 max-w-md font-inter text-[15px] leading-relaxed text-[#1a1a1a]/65 sm:text-[17px]">
@@ -73,7 +73,7 @@ export default function ComingSoonPage() {
 
                     {/* Email capture */}
                     {submitted ? (
-                        <p className="mt-8 font-inter text-[15px] font-medium text-[#990505]">
+                        <p className="mt-8 font-inter text-[15px] font-medium text-[#DA0213]">
                             You're in. We'll call you to the frontline the moment it drops. ✓
                         </p>
                     ) : (
@@ -90,11 +90,11 @@ export default function ComingSoonPage() {
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
                                 placeholder="you@email.com"
-                                className="w-full flex-1 rounded-full border border-black/15 bg-white/70 px-6 py-3.5 font-inter text-[15px] text-[#1a1a1a] placeholder-[#1a1a1a]/35 outline-none backdrop-blur-sm transition-colors focus:border-[#990505]"
+                                className="w-full flex-1 rounded-full border border-black/15 bg-white/70 px-6 py-3.5 font-inter text-[15px] text-[#1a1a1a] placeholder-[#1a1a1a]/35 outline-none backdrop-blur-sm transition-colors focus:border-[#DA0213]"
                             />
                             <button
                                 type="submit"
-                                className="group relative shrink-0 overflow-hidden rounded-full bg-[#990505] px-7 py-3.5 font-inter text-[13px] font-semibold uppercase tracking-[0.15em] text-white shadow-[inset_0_-4px_4px_rgba(255,255,255,0.39)] transition-all hover:brightness-110"
+                                className="group relative shrink-0 overflow-hidden rounded-full bg-[#DA0213] px-7 py-3.5 font-inter text-[13px] font-semibold uppercase tracking-[0.15em] text-white shadow-[inset_0_-4px_4px_rgba(255,255,255,0.39)] transition-all hover:brightness-110"
                             >
                                 <span
                                     aria-hidden="true"
@@ -113,7 +113,7 @@ export default function ComingSoonPage() {
                         </div>
                         <div className="h-1.5 w-full overflow-hidden rounded-full bg-[#1a1a1a]/10">
                             <motion.div
-                                className="h-full rounded-full bg-[#990505]"
+                                className="h-full rounded-full bg-[#DA0213]"
                                 animate={{ width: ["8%", "92%", "8%"] }}
                                 transition={{ duration: 3.2, repeat: Infinity, ease: "easeInOut" }}
                             />
