@@ -132,7 +132,7 @@ export default function SectionDots({ variant = "home" }) {
                         <span
                             className={`block rounded-full transition-all duration-300 ${
                                 active
-                                    ? "h-2.5 w-2.5 bg-[#f97316]"
+                                    ? "h-2.5 w-2.5 bg-[#990505]"
                                     : "h-2 w-2 bg-zinc-400/70 group-hover:bg-zinc-500"
                             }`}
                         />

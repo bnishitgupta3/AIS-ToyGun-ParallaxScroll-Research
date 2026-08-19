@@ -42,7 +42,7 @@ function Reel({ hidden }) {
 
 export default function TopMarquee() {
     return (
-        <div className="marquee fixed inset-x-0 top-0 z-[60] flex h-9 items-center overflow-hidden border-b-2 border-[#1a1a1a] bg-[#f97316] text-white">
+        <div className="marquee fixed inset-x-0 top-0 z-[60] flex h-9 items-center overflow-hidden border-b-2 border-[#1a1a1a] bg-[#990505] text-white">
             {/* two identical reels; translateX(-50%) == exactly one reel */}
             <div className="marquee-track flex min-w-max">
                 <Reel />

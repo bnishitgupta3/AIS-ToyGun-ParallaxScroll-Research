@@ -39,7 +39,7 @@ function CartButton({ onAfterClick }) {
             {total > 0 && (
                 <span
                     aria-hidden="true"
-                    className="absolute -right-0.5 -top-0.5 grid h-[18px] min-w-[18px] place-items-center rounded-full bg-[#f97316] px-1 font-inter text-[10px] font-bold leading-none text-white"
+                    className="absolute -right-0.5 -top-0.5 grid h-[18px] min-w-[18px] place-items-center rounded-full bg-[#990505] px-1 font-inter text-[10px] font-bold leading-none text-white"
                 >
                     {total > 99 ? "99+" : total}
                 </span>
@@ -125,7 +125,7 @@ export default function LandingNav() {
                         <a
                             href="#arsenal"
                             onClick={(e) => goSection(e, "#arsenal")}
-                            className="group relative hidden cursor-pointer overflow-hidden rounded-full bg-[#f97316] px-5 py-2 text-white shadow-[inset_0_-4px_4px_rgba(255,255,255,0.39)] outline outline-1 outline-[#f97316] -outline-offset-1 transition-all duration-200 hover:brightness-110 md:inline-block"
+                            className="group relative hidden cursor-pointer overflow-hidden rounded-full bg-[#990505] px-5 py-2 text-white shadow-[inset_0_-4px_4px_rgba(255,255,255,0.39)] outline outline-1 outline-[#990505] -outline-offset-1 transition-all duration-200 hover:brightness-110 md:inline-block"
                         >
                             <span
                                 aria-hidden="true"
@@ -178,7 +178,7 @@ export default function LandingNav() {
                         <a
                             href="#arsenal"
                             onClick={(e) => goSection(e, "#arsenal")}
-                            className="mt-2 inline-flex items-center justify-center rounded-full bg-[#f97316] px-5 py-3 font-inter text-[14px] font-semibold text-white"
+                            className="mt-2 inline-flex items-center justify-center rounded-full bg-[#990505] px-5 py-3 font-inter text-[14px] font-semibold text-white"
                         >
                             Explore the Arsenal
                         </a>
