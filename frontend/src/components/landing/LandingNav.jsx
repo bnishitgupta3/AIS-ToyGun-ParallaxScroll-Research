@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useCart } from "@/lib/cart";
 import { scrollToSection } from "@/lib/scrollToSection";
+import { asset } from "@/lib/asset";
 
 /* Homepage section anchors (smooth-scroll on home, route-then-scroll elsewhere) */
 const SECTION_LINKS = [
@@ -88,9 +89,15 @@ export default function LandingNav() {
                     <Link
                         to="/"
                         onClick={goHome}
-                        className="font-logo text-[28px] leading-none tracking-tight text-[#1a1a1a] select-none"
+                        className="select-none"
+                        aria-label="SONIQ — home"
                     >
-                        SONIQ
+                        <img
+                            src={asset("/assets/logo.png")}
+                            alt="SONIQ"
+                            draggable="false"
+                            className="h-9 w-auto"
+                        />
                     </Link>
 
                     {/* Desktop links */}

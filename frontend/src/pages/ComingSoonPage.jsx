@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import ComingSoonGun from "@/components/landing/ComingSoonGun";
 import { isPrerendering } from "@/lib/isPrerendering";
+import { asset } from "@/lib/asset";
 
 const EASE = [0.16, 1, 0.3, 1];
 const PRERENDER = isPrerendering();
@@ -32,11 +33,13 @@ export default function ComingSoonPage() {
 
             {/* Top bar — logo (left) + launch badge (right) */}
             <header className="absolute inset-x-0 top-0 z-30 flex items-center justify-between px-6 py-6 sm:px-10">
-                <Link
-                    to="/"
-                    className="font-instrument text-[26px] leading-none tracking-tight text-[#1a1a1a] sm:text-[30px]"
-                >
-                    SONIQ
+                <Link to="/" className="select-none" aria-label="SONIQ — home">
+                    <img
+                        src={asset("/assets/logo.png")}
+                        alt="SONIQ"
+                        draggable="false"
+                        className="h-8 w-auto sm:h-9"
+                    />
                 </Link>
                 <span className="rounded-full border border-[#1a1a1a]/15 bg-white/50 px-3.5 py-1.5 font-inter text-[10px] font-semibold uppercase tracking-[0.25em] text-[#1a1a1a]/60 backdrop-blur-sm">
                     Launching 2026

@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { postSignup } from "@/lib/notify";
 import DottedArrow from "@/components/landing/DottedArrow";
+import { asset } from "@/lib/asset";
 
 const NAV_LINKS = {
     Products: [
@@ -52,12 +53,12 @@ export default function LandingFooter() {
                 {/* Brand + Newsletter */}
                 <div className="grid grid-cols-1 gap-14 md:grid-cols-2">
                     <div>
-                        <div className="flex items-center gap-3">
-                            <div className="h-3 w-3 rounded-full bg-orange-500" />
-                            <span className="font-mono-tactical text-sm font-bold uppercase tracking-[0.3em] text-white">
-                                SONIQ Toys
-                            </span>
-                        </div>
+                        <img
+                            src={asset("/assets/logo.png")}
+                            alt="SONIQ Toys"
+                            draggable="false"
+                            className="h-8 w-auto"
+                        />
                         <p className="mt-5 max-w-[36ch] text-sm leading-relaxed text-zinc-400">
                             Engineering precision-grade water guns and gel blasters
                             for players who love serious play.
