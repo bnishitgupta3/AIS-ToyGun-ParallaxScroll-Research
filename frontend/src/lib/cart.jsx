@@ -63,14 +63,31 @@ export function CartProvider({ children }) {
         setDrawer({ open: false, product: null });
     }, []);
 
+    // "total" counts actual BLASTERS: a bundle contributes its unit count
+    // (Duo=2, Squad=4, Party=6), a regular product counts its qty. (Referencing
+    // PRODUCT_LOOKUP is safe — this runs at render, after the module loads.)
     const total = useMemo(
-        () => Object.values(items).reduce((s, q) => s + q, 0),
+        () =>
+            Object.entries(items).reduce(
+                (s, [key, q]) => s + q * (PRODUCT_LOOKUP[key]?.units || 1),
+                0,
+            ),
+        [items],
+    );
+
+    // Cart price subtotal (₹) — bundles and products both carry a `price`.
+    const subtotal = useMemo(
+        () =>
+            Object.entries(items).reduce(
+                (s, [key, q]) => s + q * (PRODUCT_LOOKUP[key]?.price || 0),
+                0,
+            ),
         [items],
     );
 
     const value = useMemo(
-        () => ({ items, setQty, total, drawer, openDrawer, closeDrawer }),
-        [items, setQty, total, drawer, openDrawer, closeDrawer],
+        () => ({ items, setQty, total, subtotal, drawer, openDrawer, closeDrawer }),
+        [items, setQty, total, subtotal, drawer, openDrawer, closeDrawer],
     );
 
     return <CartContext.Provider value={value}>{children}</CartContext.Provider>;
@@ -113,11 +130,11 @@ export const PRODUCT_LOOKUP = {
     "/product/crimson": { name: "Crimson Blaster", sub: "Gel Blaster", accent: "#ef4444", comingSoon: true },
     /* Squad packs (bundles) — each is a single cart line. Flagged `bundle` so
        they're excluded from the cross-sell CATALOG below. */
-    "/bundle/duo":   { name: "Duo Pack",   sub: "Bundle", accent: "#DA0213", price: 1699, bundle: true,
+    "/bundle/duo":   { name: "Duo Pack",   sub: "Bundle", accent: "#DA0213", price: 1699, bundle: true, units: 2,
         contents: [{ link: "/product/mp5k", qty: 1, name: "MP5K" }, { link: "/product/m416", qty: 1, name: "M416" }] },
-    "/bundle/squad": { name: "Squad Pack", sub: "Bundle", accent: "#DA0213", price: 3299, bundle: true,
+    "/bundle/squad": { name: "Squad Pack", sub: "Bundle", accent: "#DA0213", price: 3299, bundle: true, units: 4,
         contents: [{ link: "/product/mp5k", qty: 2, name: "MP5K" }, { link: "/product/m416", qty: 2, name: "M416" }] },
-    "/bundle/party": { name: "Party Pack", sub: "Bundle", accent: "#DA0213", price: 4799, bundle: true,
+    "/bundle/party": { name: "Party Pack", sub: "Bundle", accent: "#DA0213", price: 4799, bundle: true, units: 6,
         contents: [{ link: "/product/mp5k", qty: 3, name: "MP5K" }, { link: "/product/m416", qty: 3, name: "M416" }] },
 };
 

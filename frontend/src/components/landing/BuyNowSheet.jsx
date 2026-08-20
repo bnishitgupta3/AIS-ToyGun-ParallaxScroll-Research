@@ -4,6 +4,8 @@ import { Link } from "react-router-dom";
 import { useCart, PRODUCT_LOOKUP, CATALOG } from "@/lib/cart";
 import NotifyMe from "@/components/showcase/NotifyMe";
 
+const inr = (n) => "₹" + Number(n).toLocaleString("en-IN");
+
 /* "Coming soon" + cart-review panel — slides in from the RIGHT on desktop
    (md+) and from the BOTTOM as a partial sheet on mobile (~70% of viewport).
    Mobile gets a sheet (not a full takeover) so the underlying page context
@@ -22,7 +24,7 @@ import NotifyMe from "@/components/showcase/NotifyMe";
      • "Notify me at launch" (the placeholder CTA) becomes "Checkout" and
        redirects to `cart.checkoutUrl`. */
 export default function BuyNowSheet({ open, product, onClose }) {
-    const { items, setQty, total } = useCart();
+    const { items, setQty, total, subtotal } = useCart();
     const hasItems = total > 0;
     // Build a render list of { key, name, qty } from the items map.
     const lines = Object.entries(items).map(([key, qty]) => ({
@@ -189,6 +191,11 @@ export default function BuyNowSheet({ open, product, onClose }) {
                                                 )}
                                             </>
                                         )}
+                                        {line.price != null && (
+                                            <div className="mt-1 font-inter text-[13px] font-bold tabular-nums text-[#DA0213]">
+                                                {inr(line.price * line.qty)}
+                                            </div>
+                                        )}
                                     </div>
                                     <div className="inline-flex items-center gap-0.5 rounded-full bg-[#1a1a1a]/[0.06] pl-0.5 pr-0.5">
                                         <button
@@ -214,6 +221,26 @@ export default function BuyNowSheet({ open, product, onClose }) {
                                 </li>
                             ))}
                         </ul>
+                    )}
+
+                    {/* Subtotal — real blaster count + price sum. */}
+                    {hasItems && (
+                        <div className="mt-5 border-t border-[#1a1a1a]/10 pt-4">
+                            <div className="flex items-baseline justify-between">
+                                <div className="font-inter text-[13px] font-semibold text-[#1a1a1a]/70">
+                                    Subtotal
+                                    <span className="ml-1.5 text-[#1a1a1a]/40">
+                                        · {total} blaster{total === 1 ? "" : "s"}
+                                    </span>
+                                </div>
+                                <div className="font-inter text-[22px] font-extrabold tabular-nums text-[#DA0213]">
+                                    {inr(subtotal)}
+                                </div>
+                            </div>
+                            <p className="mt-1.5 font-inter text-[11px] text-[#1a1a1a]/40">
+                                Inclusive of all taxes. Shipping shown at checkout.
+                            </p>
+                        </div>
                     )}
 
                     {/* ── Anticipation flourish (only when cart is empty —
