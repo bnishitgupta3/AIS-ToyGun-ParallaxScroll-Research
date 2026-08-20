@@ -28,9 +28,9 @@ const WORDS = [
 /* Alternating brand red / yellow so the stat row reads as a vibrant set. */
 const STAT_COLORS = ["#F8F31A", "#DA0213", "#F8F31A", "#DA0213"];
 const STATS = [
-    { value: "25m", label: "Max Range" },
-    { value: "11 r/s", label: "Peak Fire Rate" },
-    { value: "3×", label: "More Capacity" },
+    { value: "10 m", label: "Max Range" },
+    { value: "5 /s", label: "Peak Fire Rate" },
+    { value: "2×", label: "More Capacity" },
     { value: "100%", label: "Electric Drive" },
 ];
 
