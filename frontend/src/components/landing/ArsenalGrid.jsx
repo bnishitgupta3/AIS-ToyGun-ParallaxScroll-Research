@@ -5,6 +5,7 @@ import NotifyMe from "@/components/showcase/NotifyMe";
 import PriceTag from "@/components/PriceTag";
 import { PRODUCTS } from "@/components/landing/ArsenalSection";
 import { asset } from "@/lib/asset";
+import { trackEvent } from "@/lib/analytics";
 
 /* ── Redesigned Arsenal — a fast, shoppable D2C product grid ──
    Replaces the pinned 3-D carousel: high-end studio photos, clear names,
@@ -20,13 +21,21 @@ const launchSource = (name) =>
 
 /* Per-card add-to-cart: an "Add" button that becomes a − N + stepper, wired to
    the shared cart so the nav badge + drawer stay in sync. */
-function AddToCart({ accent, cartKey }) {
+function AddToCart({ accent, cartKey, name, price }) {
     const { qty, inc, dec, set } = useCartItem(cartKey);
+    const add = () => {
+        set(1);
+        trackEvent("add_to_cart", {
+            currency: "INR",
+            value: price || 0,
+            items: [{ item_id: cartKey, item_name: name }],
+        });
+    };
     if (qty === 0) {
         return (
             <button
                 type="button"
-                onClick={() => set(1)}
+                onClick={add}
                 className="brutal flex h-11 w-full items-center justify-center gap-2 rounded-full font-inter text-[12px] font-bold uppercase tracking-[0.18em] text-white transition hover:brightness-105"
                 style={{ background: accent }}
             >
@@ -141,7 +150,7 @@ function ProductCard({ p }) {
                 ) : (
                     <>
                         <div className="flex-1">
-                            <AddToCart accent={p.accent} cartKey={p.link} />
+                            <AddToCart accent={p.accent} cartKey={p.link} name={p.name} price={p.price} />
                         </div>
                         <Link
                             to={p.link}

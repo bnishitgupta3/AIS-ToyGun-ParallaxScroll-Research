@@ -2,6 +2,7 @@ import { useCartItem } from "@/lib/cart";
 import PriceTag from "@/components/PriceTag";
 import { PRODUCTS } from "@/components/landing/ArsenalSection";
 import { asset } from "@/lib/asset";
+import { trackEvent } from "@/lib/analytics";
 
 /* ── Squad Packs — bundle combos that add to the cart as a single line ──
    Sits right below the Arsenal. Each pack combines the launched blasters at a
@@ -48,13 +49,21 @@ const bundleUnits = (b) => b.items.reduce((s, it) => s + it.qty, 0);
 
 /* Add-to-cart for a pack: "Add Squad" → − N + stepper, wired to the shared cart
    (nav badge + Buy-Now sheet stay in sync). Brand red fill, yellow label. */
-function AddBundle({ bundleKey }) {
+function AddBundle({ bundleKey, name, price }) {
     const { qty, inc, dec, set } = useCartItem(bundleKey);
+    const add = () => {
+        set(1);
+        trackEvent("add_to_cart", {
+            currency: "INR",
+            value: price || 0,
+            items: [{ item_id: bundleKey, item_name: name, item_category: "bundle" }],
+        });
+    };
     if (qty === 0) {
         return (
             <button
                 type="button"
-                onClick={() => set(1)}
+                onClick={add}
                 className="brutal-accent flex h-11 w-full items-center justify-center gap-2 rounded-full font-inter text-[12px] font-bold uppercase tracking-[0.16em] transition hover:brightness-110"
                 style={{ background: "#DA0213", color: "#F8F31A" }}
             >
@@ -167,7 +176,7 @@ function BundleCard({ b }) {
 
             {/* Action. */}
             <div className="mt-3 flex items-center gap-2.5 border-t border-white/10 px-4 pb-4 pt-3.5">
-                <AddBundle bundleKey={b.key} />
+                <AddBundle bundleKey={b.key} name={b.name} price={b.price} />
             </div>
         </div>
     );
