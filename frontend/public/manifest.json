@@ -1,0 +1,13 @@
+{
+  "short_name": "SONIQ",
+  "name": "SONIQ Toys · Premium Water Guns & Gel Blasters",
+  "icons": [
+    { "src": "/favicon.ico", "sizes": "16x16 32x32 48x48", "type": "image/x-icon" },
+    { "src": "/logo192.png", "type": "image/png", "sizes": "192x192", "purpose": "any maskable" },
+    { "src": "/logo512.png", "type": "image/png", "sizes": "512x512", "purpose": "any maskable" }
+  ],
+  "start_url": "/",
+  "display": "standalone",
+  "theme_color": "#DA0213",
+  "background_color": "#f4f2ec"
+}
