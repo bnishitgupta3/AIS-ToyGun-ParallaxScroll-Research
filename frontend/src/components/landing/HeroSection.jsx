@@ -44,6 +44,17 @@ export default function HeroSection({ heroRef }) {
                 animate={start ? "show" : "hidden"}
                 className="relative z-20 flex flex-col items-center"
             >
+                {/* Hidden (visibility) but keeps its box + mb-5 so the heading
+                    stays exactly where it was — user wanted the line gone, not
+                    the layout to shift up. */}
+                <motion.span
+                    variants={rise}
+                    aria-hidden="true"
+                    className="invisible mb-5 font-inter text-[10px] font-semibold uppercase tracking-[0.4em] text-[#DA0213] sm:text-[12px]"
+                >
+                    /// SONIQ Toys · Made for Sunlit Days, All Year
+                </motion.span>
+
                 <motion.h1
                     variants={rise}
                     className="font-instrument !font-bold text-[clamp(40px,8.6vw,92px)] leading-[0.88] tracking-tight text-white drop-shadow-[0_2px_24px_rgba(0,0,0,0.55)]"
