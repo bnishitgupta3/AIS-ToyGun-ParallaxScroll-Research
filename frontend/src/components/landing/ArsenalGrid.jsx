@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useCartItem } from "@/lib/cart";
 import NotifyMe from "@/components/showcase/NotifyMe";
@@ -67,6 +67,24 @@ function ProductCard({ p }) {
     const img = p.image ? asset("/assets/products/" + p.image) : null;
     const showImg = img && !imgError;
 
+    // Optional second "hover" photo: drop <name>-hover.jpg beside <name>.jpg
+    // (e.g. mp5k-hover.jpg) and the card cross-fades to it on hover. We probe
+    // for the file; if it's missing the card just keeps the single image, so
+    // this is safe to ship before the hover photos exist.
+    const hoverSrc = p.image
+        ? asset("/assets/products/" + p.image.replace(/\.(jpe?g|png|webp)$/i, "-hover.$1"))
+        : null;
+    const [hoverOk, setHoverOk] = useState(false);
+    useEffect(() => {
+        if (!hoverSrc) return;
+        let alive = true;
+        const probe = new Image();
+        probe.onload = () => alive && setHoverOk(probe.naturalWidth > 0);
+        probe.onerror = () => alive && setHoverOk(false);
+        probe.src = hoverSrc;
+        return () => { alive = false; };
+    }, [hoverSrc]);
+
     return (
         <div
             className="brutal-accent group flex flex-col overflow-hidden rounded-3xl bg-[#18181b] transition-transform duration-200 hover:-translate-y-1.5"
@@ -86,12 +104,22 @@ function ProductCard({ p }) {
                     </span>
                 )}
                 {showImg ? (
-                    <img
-                        src={img}
-                        alt={p.name}
-                        onError={() => setImgError(true)}
-                        className="absolute inset-0 h-full w-full object-cover object-center transition-transform duration-500 group-hover:scale-[1.06]"
-                    />
+                    <>
+                        <img
+                            src={img}
+                            alt={p.name}
+                            onError={() => setImgError(true)}
+                            className={`absolute inset-0 h-full w-full object-cover object-center transition duration-500 group-hover:scale-[1.06] ${hoverOk ? "group-hover:opacity-0" : ""}`}
+                        />
+                        {hoverOk && (
+                            <img
+                                src={hoverSrc}
+                                alt=""
+                                aria-hidden="true"
+                                className="absolute inset-0 h-full w-full object-cover object-center opacity-0 transition duration-500 group-hover:scale-[1.06] group-hover:opacity-100"
+                            />
+                        )}
+                    </>
                 ) : (
                     <div className="absolute inset-0 flex items-center justify-center" style={{ color: p.accent }}>
                         <span className="font-inter text-[11px] font-semibold uppercase tracking-[0.25em] opacity-50">
