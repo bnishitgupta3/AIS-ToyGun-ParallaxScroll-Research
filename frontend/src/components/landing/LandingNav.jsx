@@ -25,7 +25,7 @@ function CartButton({ onAfterClick }) {
     return (
         <button
             type="button"
-            aria-label={total > 0 ? `Open cart (${total} items)` : "Open cart"}
+            aria-label={total > 0 ? `Open cart (${total} item${total === 1 ? "" : "s"})` : "Open cart"}
             onClick={() => {
                 openDrawer(null);
                 onAfterClick && onAfterClick();

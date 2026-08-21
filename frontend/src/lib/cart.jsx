@@ -63,10 +63,17 @@ export function CartProvider({ children }) {
         setDrawer({ open: false, product: null });
     }, []);
 
-    // "total" counts actual BLASTERS: a bundle contributes its unit count
-    // (Duo=2, Squad=4, Party=6), a regular product counts its qty. (Referencing
-    // PRODUCT_LOOKUP is safe — this runs at render, after the module loads.)
+    // "total" = number of line items — the nav cart badge shows this, so a Squad
+    // Pack counts as 1, not 4.
     const total = useMemo(
+        () => Object.values(items).reduce((s, q) => s + q, 0),
+        [items],
+    );
+
+    // "blasters" = actual blaster count (a bundle contributes its unit count:
+    // Duo=2, Squad=4, Party=6) — used for the "N blasters ready" copy INSIDE the
+    // cart. (Referencing PRODUCT_LOOKUP is safe — runs at render, module loaded.)
+    const blasters = useMemo(
         () =>
             Object.entries(items).reduce(
                 (s, [key, q]) => s + q * (PRODUCT_LOOKUP[key]?.units || 1),
@@ -86,8 +93,8 @@ export function CartProvider({ children }) {
     );
 
     const value = useMemo(
-        () => ({ items, setQty, total, subtotal, drawer, openDrawer, closeDrawer }),
-        [items, setQty, total, subtotal, drawer, openDrawer, closeDrawer],
+        () => ({ items, setQty, total, blasters, subtotal, drawer, openDrawer, closeDrawer }),
+        [items, setQty, total, blasters, subtotal, drawer, openDrawer, closeDrawer],
     );
 
     return <CartContext.Provider value={value}>{children}</CartContext.Provider>;

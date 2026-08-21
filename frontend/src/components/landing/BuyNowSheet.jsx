@@ -24,7 +24,7 @@ const inr = (n) => "₹" + Number(n).toLocaleString("en-IN");
      • "Notify me at launch" (the placeholder CTA) becomes "Checkout" and
        redirects to `cart.checkoutUrl`. */
 export default function BuyNowSheet({ open, product, onClose }) {
-    const { items, setQty, total, subtotal } = useCart();
+    const { items, setQty, total, blasters, subtotal } = useCart();
     const hasItems = total > 0;
     // Build a render list of { key, name, qty } from the items map.
     const lines = Object.entries(items).map(([key, qty]) => ({
@@ -123,9 +123,9 @@ export default function BuyNowSheet({ open, product, onClose }) {
 
                     <h2 className="font-instrument mt-3 text-[clamp(28px,5.5vw,46px)] leading-[0.95] tracking-tight text-[#1a1a1a]">
                         {hasItems
-                            ? total === 1
+                            ? blasters === 1
                                 ? "1 blaster ready."
-                                : `${total} blasters ready.`
+                                : `${blasters} blasters ready.`
                             : "Checkout is loading up."}
                     </h2>
 
@@ -230,7 +230,7 @@ export default function BuyNowSheet({ open, product, onClose }) {
                                 <div className="font-inter text-[13px] font-semibold text-[#1a1a1a]/70">
                                     Subtotal
                                     <span className="ml-1.5 text-[#1a1a1a]/40">
-                                        · {total} blaster{total === 1 ? "" : "s"}
+                                        · {blasters} blaster{blasters === 1 ? "" : "s"}
                                     </span>
                                 </div>
                                 <div className="font-inter text-[22px] font-extrabold tabular-nums text-[#DA0213]">
