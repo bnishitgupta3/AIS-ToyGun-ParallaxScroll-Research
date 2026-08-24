@@ -1,4 +1,4 @@
-import { createContext, useCallback, useContext, useMemo, useState } from "react";
+import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 
 /* ═══════════════════════════════════════════════════════════════════════════
    Cart context — single source of truth for everything cart-related.
@@ -92,9 +92,40 @@ export function CartProvider({ children }) {
         [items],
     );
 
+    // ── Squad Pack upsell signals ───────────────────────────────────────────
+    // Individual = non-bundle line items. Once the order starts to look like
+    // group play — 2+ different blasters OR 3+ total units — a Squad Pack
+    // becomes the better deal, so we surface it. We DON'T nudge once a bundle is
+    // already in the cart (that's the thing we're upselling).
+    const [individualSkus, individualUnits, hasBundle] = useMemo(() => {
+        let skus = 0, units = 0, bundle = false;
+        for (const [key, q] of Object.entries(items)) {
+            if (q <= 0) continue;
+            if (PRODUCT_LOOKUP[key]?.bundle) bundle = true;
+            else { skus += 1; units += q; }
+        }
+        return [skus, units, bundle];
+    }, [items]);
+    const squadNudge = !hasBundle && (individualSkus >= 2 || individualUnits >= 3);
+
+    // Auto-open the cart the moment the order crosses into "group play"
+    // territory. Fires on the false→true transition ONLY — a shopper who closes
+    // it isn't fought on every later add; it re-arms if the cart drops back
+    // below the threshold. High-AOV D2C move: surface the bundle upsell exactly
+    // when it's relevant, not on every single add.
+    const nudgeArmed = useRef(false);
+    useEffect(() => {
+        if (squadNudge && !nudgeArmed.current) {
+            nudgeArmed.current = true;
+            setDrawer((d) => (d.open ? d : { open: true, product: null }));
+        } else if (!squadNudge) {
+            nudgeArmed.current = false;
+        }
+    }, [squadNudge]);
+
     const value = useMemo(
-        () => ({ items, setQty, total, blasters, subtotal, drawer, openDrawer, closeDrawer }),
-        [items, setQty, total, blasters, subtotal, drawer, openDrawer, closeDrawer],
+        () => ({ items, setQty, total, blasters, subtotal, squadNudge, drawer, openDrawer, closeDrawer }),
+        [items, setQty, total, blasters, subtotal, squadNudge, drawer, openDrawer, closeDrawer],
     );
 
     return <CartContext.Provider value={value}>{children}</CartContext.Provider>;
@@ -153,3 +184,15 @@ export const PRODUCT_LOOKUP = {
 export const CATALOG = Object.entries(PRODUCT_LOOKUP)
     .filter(([, v]) => !v.bundle)
     .map(([key, v]) => ({ key, ...v }));
+
+/* Biggest rupee saving of any bundle vs buying its contents individually —
+   powers the "save up to ₹X" Squad Pack upsell copy in the cart. Derived from
+   the table so it stays correct if prices ever change. */
+export const MAX_BUNDLE_SAVING = Math.max(
+    0,
+    ...Object.values(PRODUCT_LOOKUP)
+        .filter((v) => v.bundle && v.contents)
+        .map((v) =>
+            v.contents.reduce((s, c) => s + c.qty * (PRODUCT_LOOKUP[c.link]?.price || 0), 0) - v.price,
+        ),
+);

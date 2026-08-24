@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
-import { Link } from "react-router-dom";
-import { useCart, PRODUCT_LOOKUP, CATALOG } from "@/lib/cart";
+import { Link, useNavigate, useLocation } from "react-router-dom";
+import { useCart, PRODUCT_LOOKUP, CATALOG, MAX_BUNDLE_SAVING } from "@/lib/cart";
+import { scrollToSection } from "@/lib/scrollToSection";
 import NotifyMe from "@/components/showcase/NotifyMe";
 
 const inr = (n) => "₹" + Number(n).toLocaleString("en-IN");
@@ -24,8 +25,22 @@ const inr = (n) => "₹" + Number(n).toLocaleString("en-IN");
      • "Notify me at launch" (the placeholder CTA) becomes "Checkout" and
        redirects to `cart.checkoutUrl`. */
 export default function BuyNowSheet({ open, product, onClose }) {
-    const { items, setQty, total, blasters, subtotal } = useCart();
+    const { items, setQty, total, blasters, subtotal, squadNudge } = useCart();
     const hasItems = total > 0;
+    const navigate = useNavigate();
+    const location = useLocation();
+
+    // Squad Pack upsell → jump to the #squad-packs section. Close the drawer
+    // first; on the homepage scroll straight there, otherwise route home and let
+    // LandingPage's scrollTo handler land it.
+    const goToSquadPacks = () => {
+        onClose();
+        if (location.pathname === "/") {
+            setTimeout(() => scrollToSection("#squad-packs"), 60);
+        } else {
+            navigate("/", { state: { scrollTo: "#squad-packs" } });
+        }
+    };
     // Build a render list of { key, name, qty } from the items map.
     const lines = Object.entries(items).map(([key, qty]) => ({
         key,
@@ -241,6 +256,41 @@ export default function BuyNowSheet({ open, product, onClose }) {
                                 Inclusive of all taxes. Shipping shown at checkout.
                             </p>
                         </div>
+                    )}
+
+                    {/* ── Squad Pack upsell ── Fires once the order looks like
+                          group play (2+ blasters or 3+ units) and no bundle is
+                          in yet. Quantified saving + one tap through to the
+                          packs section — the AOV lever that pairs with the
+                          auto-open. */}
+                    {squadNudge && (
+                        <button
+                            type="button"
+                            onClick={goToSquadPacks}
+                            className="group mt-5 flex w-full items-center gap-3.5 rounded-2xl border border-[#DA0213]/25 bg-[#DA0213]/[0.05] p-4 text-left transition hover:bg-[#DA0213]/[0.09]"
+                        >
+                            <span className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-[#DA0213]/[0.12] text-[#DA0213]">
+                                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                    <circle cx="9" cy="8" r="3.2" />
+                                    <path d="M15.5 6.2a3 3 0 0 1 0 5.6" />
+                                    <path d="M3.5 19a5.5 5.5 0 0 1 11 0" />
+                                    <path d="M17 13.7a5.5 5.5 0 0 1 3.5 5.1" />
+                                </svg>
+                            </span>
+                            <span className="min-w-0 flex-1">
+                                <span className="block font-instrument text-[19px] leading-tight text-[#1a1a1a]">
+                                    Playing as a squad?
+                                </span>
+                                <span className="mt-0.5 block font-inter text-[12.5px] leading-snug text-[#1a1a1a]/60">
+                                    Grab a Squad Pack and save up to{" "}
+                                    <b className="font-bold text-[#DA0213]">{inr(MAX_BUNDLE_SAVING)}</b>{" "}
+                                    vs buying singly.
+                                </span>
+                            </span>
+                            <span className="shrink-0 whitespace-nowrap font-inter text-[11px] font-bold uppercase tracking-[0.14em] text-[#DA0213] transition group-hover:translate-x-0.5">
+                                Shop →
+                            </span>
+                        </button>
                     )}
 
                     {/* ── Anticipation flourish (only when cart is empty —
