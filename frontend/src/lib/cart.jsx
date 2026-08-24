@@ -106,22 +106,27 @@ export function CartProvider({ children }) {
         }
         return [skus, units, bundle];
     }, [items]);
-    const squadNudge = !hasBundle && (individualSkus >= 2 || individualUnits >= 3);
+    // The order looks like "group play" once there are 2+ different blasters or
+    // 3+ individual units. The Squad Pack NUDGE banner shows then — but only if a
+    // bundle isn't already in the cart (don't upsell what they just bought).
+    const groupPlay = individualSkus >= 2 || individualUnits >= 3;
+    const squadNudge = groupPlay && !hasBundle;
 
-    // Auto-open the cart the moment the order crosses into "group play"
-    // territory. Fires on the false→true transition ONLY — a shopper who closes
-    // it isn't fought on every later add; it re-arms if the cart drops back
-    // below the threshold. High-AOV D2C move: surface the bundle upsell exactly
-    // when it's relevant, not on every single add.
-    const nudgeArmed = useRef(false);
+    // Auto-open the cart when the order crosses into group play OR a Squad Pack
+    // (bundle) lands in it — a bundle is a 4-6 unit, checkout-worthy add, so it
+    // should always pop the cart even though the nudge stays hidden. Fires on the
+    // false→true transition ONLY (via a ref), so a shopper who closes it isn't
+    // fought on every later add; it re-arms if the cart drops back below.
+    const autoOpen = groupPlay || hasBundle;
+    const openArmed = useRef(false);
     useEffect(() => {
-        if (squadNudge && !nudgeArmed.current) {
-            nudgeArmed.current = true;
+        if (autoOpen && !openArmed.current) {
+            openArmed.current = true;
             setDrawer((d) => (d.open ? d : { open: true, product: null }));
-        } else if (!squadNudge) {
-            nudgeArmed.current = false;
+        } else if (!autoOpen) {
+            openArmed.current = false;
         }
-    }, [squadNudge]);
+    }, [autoOpen]);
 
     const value = useMemo(
         () => ({ items, setQty, total, blasters, subtotal, squadNudge, drawer, openDrawer, closeDrawer }),
