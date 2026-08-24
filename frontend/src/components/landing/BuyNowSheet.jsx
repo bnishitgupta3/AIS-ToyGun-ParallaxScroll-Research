@@ -105,7 +105,7 @@ export default function BuyNowSheet({ open, product, onClose }) {
                 role="dialog"
                 aria-modal="true"
                 aria-label="Buy Now"
-                className={`absolute left-0 right-0 bottom-0 max-h-[78vh] overflow-y-auto rounded-t-3xl bg-white shadow-2xl transition-transform duration-300 ease-out
+                className={`absolute left-0 right-0 bottom-0 flex max-h-[90vh] flex-col rounded-t-3xl bg-white shadow-2xl transition-transform duration-300 ease-out
                     md:left-auto md:right-0 md:top-0 md:bottom-0 md:h-full md:max-h-none md:w-[440px] md:rounded-l-3xl md:rounded-tr-none
                     ${!visible ? "invisible" : ""}
                     ${
@@ -131,7 +131,10 @@ export default function BuyNowSheet({ open, product, onClose }) {
                     </svg>
                 </button>
 
-                <div className="flex h-full flex-col px-7 pb-10 pt-10 md:px-10 md:pt-16">
+                {/* Scroll body — the item list + cross-sell scroll here, so the
+                    sticky action bar below stays put (fixes the "can't tell it
+                    scrolls / CTA buried at the bottom" feel on phones). */}
+                <div className="flex-1 min-h-0 overflow-y-auto overscroll-contain px-7 pb-6 pt-10 md:px-10 md:pt-16">
                     <span className="font-inter text-[11px] font-semibold uppercase tracking-[0.35em] text-[#DA0213]">
                         {hasItems ? "/// Your cart" : "/// Almost here"}
                     </span>
@@ -212,25 +215,42 @@ export default function BuyNowSheet({ open, product, onClose }) {
                                             </div>
                                         )}
                                     </div>
-                                    <div className="inline-flex items-center gap-0.5 rounded-full bg-[#1a1a1a]/[0.06] pl-0.5 pr-0.5">
+                                    <div className="flex shrink-0 items-center gap-2">
+                                        <div className="inline-flex items-center gap-0.5 rounded-full bg-[#1a1a1a]/[0.06] pl-0.5 pr-0.5">
+                                            <button
+                                                type="button"
+                                                aria-label={`Remove one ${line.name}`}
+                                                onClick={() => setQty(line.key, line.qty - 1)}
+                                                className="grid h-7 w-7 place-items-center rounded-full text-lg leading-none text-[#1a1a1a]/70 transition hover:bg-[#1a1a1a]/10 hover:text-[#1a1a1a]"
+                                            >
+                                                −
+                                            </button>
+                                            <span className="min-w-[1.5ch] text-center font-inter text-[13px] font-bold tabular-nums text-[#1a1a1a]">
+                                                {line.qty}
+                                            </span>
+                                            <button
+                                                type="button"
+                                                aria-label={`Add one ${line.name}`}
+                                                onClick={() => setQty(line.key, line.qty + 1)}
+                                                className="grid h-7 w-7 place-items-center rounded-full text-lg leading-none text-[#1a1a1a]/70 transition hover:bg-[#1a1a1a]/10 hover:text-[#1a1a1a]"
+                                            >
+                                                +
+                                            </button>
+                                        </div>
+                                        {/* One-click remove of the WHOLE line (qty→0),
+                                            not a −1 step. */}
                                         <button
                                             type="button"
-                                            aria-label={`Remove one ${line.name}`}
-                                            onClick={() => setQty(line.key, line.qty - 1)}
-                                            className="grid h-7 w-7 place-items-center rounded-full text-lg leading-none text-[#1a1a1a]/70 transition hover:bg-[#1a1a1a]/10 hover:text-[#1a1a1a]"
+                                            aria-label={`Remove ${line.name} from cart`}
+                                            onClick={() => setQty(line.key, 0)}
+                                            className="grid h-8 w-8 shrink-0 place-items-center rounded-full text-[#1a1a1a]/35 transition hover:bg-[#DA0213]/10 hover:text-[#DA0213]"
                                         >
-                                            −
-                                        </button>
-                                        <span className="min-w-[1.5ch] text-center font-inter text-[13px] font-bold tabular-nums text-[#1a1a1a]">
-                                            {line.qty}
-                                        </span>
-                                        <button
-                                            type="button"
-                                            aria-label={`Add one ${line.name}`}
-                                            onClick={() => setQty(line.key, line.qty + 1)}
-                                            className="grid h-7 w-7 place-items-center rounded-full text-lg leading-none text-[#1a1a1a]/70 transition hover:bg-[#1a1a1a]/10 hover:text-[#1a1a1a]"
-                                        >
-                                            +
+                                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">
+                                                <path d="M3 6h18" />
+                                                <path d="M8 6V4.5A1.5 1.5 0 0 1 9.5 3h5A1.5 1.5 0 0 1 16 4.5V6" />
+                                                <path d="M6 6v13a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V6" />
+                                                <path d="M10 11v5M14 11v5" />
+                                            </svg>
                                         </button>
                                     </div>
                                 </li>
@@ -238,25 +258,7 @@ export default function BuyNowSheet({ open, product, onClose }) {
                         </ul>
                     )}
 
-                    {/* Subtotal — real blaster count + price sum. */}
-                    {hasItems && (
-                        <div className="mt-5 border-t border-[#1a1a1a]/10 pt-4">
-                            <div className="flex items-baseline justify-between">
-                                <div className="font-inter text-[13px] font-semibold text-[#1a1a1a]/70">
-                                    Subtotal
-                                    <span className="ml-1.5 text-[#1a1a1a]/40">
-                                        · {blasters} blaster{blasters === 1 ? "" : "s"}
-                                    </span>
-                                </div>
-                                <div className="font-inter text-[22px] font-extrabold tabular-nums text-[#DA0213]">
-                                    {inr(subtotal)}
-                                </div>
-                            </div>
-                            <p className="mt-1.5 font-inter text-[11px] text-[#1a1a1a]/40">
-                                Inclusive of all taxes. Shipping shown at checkout.
-                            </p>
-                        </div>
-                    )}
+                    {/* (Subtotal now lives in the sticky action bar below.) */}
 
                     {/* ── Squad Pack upsell ── Fires once the order looks like
                           group play (2+ blasters or 3+ units) and no bundle is
@@ -389,21 +391,44 @@ export default function BuyNowSheet({ open, product, onClose }) {
                         </div>
                     )}
 
-                    <div className="mt-auto pt-10">
-                        {/* Inline email capture — collects the launch/checkout
-                            waitlist straight into Formspree (no redirect to the
-                            coming-soon page). SHOPIFY SWAP: once checkout ships,
-                            swap this for a "Checkout" button that sends
-                            window.location to `cart.checkoutUrl` when hasItems. */}
-                        <NotifyMe
-                            productName={product?.name || (hasItems ? "checkout" : "launch")}
-                            source={hasItems ? "checkout-launch" : "buy-now-launch"}
-                            accent="#DA0213"
-                        />
-                        <p className="mt-3 text-center font-inter text-[11px] uppercase tracking-[0.22em] text-[#1a1a1a]/40">
-                            Powered by SONIQ · India · 2026
-                        </p>
-                    </div>
+                </div>
+
+                {/* ── Sticky action bar ── Pinned to the bottom of the sheet so
+                      the subtotal + CTA are always reachable without scrolling to
+                      the end (the mobile pain point); the list above scrolls on
+                      its own. Safe-area padding clears the iOS home indicator, and
+                      the soft top-shadow signals there's content scrolling above. */}
+                <div className="relative z-10 shrink-0 border-t border-[#1a1a1a]/10 bg-white px-7 pb-[max(1.75rem,env(safe-area-inset-bottom))] pt-4 shadow-[0_-8px_22px_-16px_rgba(0,0,0,0.25)] md:px-10">
+                    {hasItems && (
+                        <div className="mb-3.5">
+                            <div className="flex items-baseline justify-between">
+                                <div className="font-inter text-[13px] font-semibold text-[#1a1a1a]/70">
+                                    Subtotal
+                                    <span className="ml-1.5 text-[#1a1a1a]/40">
+                                        · {blasters} blaster{blasters === 1 ? "" : "s"}
+                                    </span>
+                                </div>
+                                <div className="font-inter text-[22px] font-extrabold tabular-nums text-[#DA0213]">
+                                    {inr(subtotal)}
+                                </div>
+                            </div>
+                            <p className="mt-1 font-inter text-[11px] text-[#1a1a1a]/40">
+                                Inclusive of all taxes. Shipping shown at checkout.
+                            </p>
+                        </div>
+                    )}
+                    {/* Inline email capture — collects the launch/checkout waitlist
+                        straight into Formspree. SHOPIFY SWAP: once checkout ships,
+                        swap this for a "Checkout" button that sends window.location
+                        to `cart.checkoutUrl` when hasItems. */}
+                    <NotifyMe
+                        productName={product?.name || (hasItems ? "checkout" : "launch")}
+                        source={hasItems ? "checkout-launch" : "buy-now-launch"}
+                        accent="#DA0213"
+                    />
+                    <p className="mt-3 text-center font-inter text-[11px] uppercase tracking-[0.22em] text-[#1a1a1a]/40">
+                        Powered by SONIQ · India · 2026
+                    </p>
                 </div>
             </div>
         </div>,
