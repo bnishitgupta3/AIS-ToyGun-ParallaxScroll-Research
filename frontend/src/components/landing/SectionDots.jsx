@@ -114,7 +114,7 @@ export default function SectionDots({ variant = "home" }) {
     return (
         <div
             aria-hidden={!visible}
-            className={`section-dots fixed right-3 top-1/2 z-40 flex -translate-y-1/2 flex-col items-center gap-4 transition-opacity duration-300 sm:right-5 ${
+            className={`section-dots fixed right-1.5 top-1/2 z-40 flex -translate-y-1/2 flex-col items-center gap-4 transition-opacity duration-300 sm:right-5 ${
                 visible ? "opacity-100" : "pointer-events-none opacity-0"
             }`}
         >
@@ -127,7 +127,7 @@ export default function SectionDots({ variant = "home" }) {
                         onClick={() => go(s)}
                         aria-label={`Go to ${s.label}`}
                         aria-current={active ? "true" : undefined}
-                        className="group relative flex items-center justify-center p-1.5"
+                        className="group relative flex items-center justify-center p-1 sm:p-1.5"
                     >
                         {/* Hover label, sits to the left of the dot column */}
                         <span className="pointer-events-none absolute right-full mr-3 whitespace-nowrap rounded-full bg-[#1a1a1a] px-2.5 py-1 font-inter text-[11px] font-medium text-white opacity-0 shadow-sm transition-opacity duration-200 group-hover:opacity-100">
