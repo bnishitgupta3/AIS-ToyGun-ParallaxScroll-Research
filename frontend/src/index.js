@@ -33,11 +33,17 @@ const app = (
 );
 
 // react-snap pre-renders each route to static HTML at build time so search
-// engines and AI crawlers (which often don't run JS) can read the content.
-// When that pre-rendered markup is present we hydrate it; otherwise we mount
-// fresh (normal dev / non-prerendered serving).
-if (rootEl.hasChildNodes()) {
-  ReactDOM.hydrateRoot(rootEl, app);
-} else {
-  ReactDOM.createRoot(rootEl).render(app);
-}
+// engines and AI crawlers (which often don't run JS) still read the content.
+//
+// We deliberately DO NOT hydrate that markup. React 19's strict hydration throws
+// (minified error #418 — a server/client mismatch) on the smallest difference:
+// framer-motion initial states, the FOUC reveal gate, browser-only values, etc.
+// On the pre-rendered production build that thrown error unmounted the ENTIRE app
+// to a blank white page while navigating — the "site goes blank, needs reload"
+// bug. (It never showed in dev/local because a non-prerendered root is empty and
+// already takes the createRoot path.)
+//
+// Always createRoot + render instead: crawlers still get the pre-rendered HTML,
+// real browsers do a clean client render over it (the FOUC gate hides the swap),
+// and there is no hydration step left to mismatch.
+ReactDOM.createRoot(rootEl).render(app);
