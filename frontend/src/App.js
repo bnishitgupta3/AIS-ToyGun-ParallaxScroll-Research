@@ -1,45 +1,31 @@
 import "@/App.css";
-import { Component, lazy, Suspense, useEffect, useRef } from "react";
+import { Component, useEffect, useRef } from "react";
 import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import gsap from "gsap";
 import { useProgress } from "@react-three/drei";
 
-import LandingPage            from "@/pages/LandingPage";  // eager: the homepage stays in the initial bundle
-
-/* Wrap React.lazy so a FAILED dynamic import never blanks the page. A failed
-   import almost always means the visitor's tab is holding a now-stale build (we
-   deployed while they were browsing), so the old chunk 404s. One hard reload
-   pulls the fresh index.html + current chunks. The 10s throttle stops a reload
-   loop if a chunk is genuinely missing — then <AppErrorBoundary> takes over. */
-const lazyWithReload = (importer) =>
-    lazy(() =>
-        importer().catch((err) => {
-            const last = Number(sessionStorage.getItem("__chunkReloadAt")) || 0;
-            if (Date.now() - last > 10000) {
-                sessionStorage.setItem("__chunkReloadAt", String(Date.now()));
-                window.location.reload();
-                return new Promise(() => {}); // hang on the Suspense fallback until the reload takes over
-            }
-            throw err;
-        }),
-    );
-
-/* Every OTHER route is code-split — each ships as its own chunk that only
-   downloads when the visitor actually navigates there. This keeps the homepage's
-   initial bundle lean; the three product showcase pages in particular pull in the
-   heavy 3-D template, so keeping them out of the first load is the big win. */
-const AboutPage              = lazyWithReload(() => import("@/pages/AboutPage"));
-const ComingSoonPage         = lazyWithReload(() => import("@/pages/ComingSoonPage"));
-const NotFoundPage           = lazyWithReload(() => import("@/pages/NotFoundPage"));
-const PrivacyPolicyPage      = lazyWithReload(() => import("@/pages/PrivacyPolicyPage"));
-const TermsPage              = lazyWithReload(() => import("@/pages/TermsPage"));
-const ReturnsShippingPage    = lazyWithReload(() => import("@/pages/ReturnsShippingPage"));
-const FAQPage                = lazyWithReload(() => import("@/pages/FAQPage"));
-const ContactPage            = lazyWithReload(() => import("@/pages/ContactPage"));
-const CareersPage            = lazyWithReload(() => import("@/pages/CareersPage"));
-const ProductShowcase        = lazyWithReload(() => import("@/pages/ProductShowcase"));       // MP5K
-const M416Showcase           = lazyWithReload(() => import("@/pages/M416Showcase"));
-const CrimsonBlasterShowcase = lazyWithReload(() => import("@/pages/CrimsonBlasterShowcase"));
+/* ── All routes are EAGER (no route-level code-splitting) ──
+   Code-splitting (React.lazy) was reverted after it caused "o is not a function"
+   crashes on real devices: a lazy route chunk (e.g. the Contact page's) could
+   resolve a shared module id (framer-motion) to the wrong thing at runtime —
+   a chunk/runtime version mismatch that only showed on some visitors, not in
+   testing. Bundling every page into the main graph removes lazy chunks entirely,
+   so that whole class of mismatch cannot happen. The perf cost is small (three.js
+   already dominates the bundle). DO NOT reintroduce React.lazy here without
+   solving the chunk-versioning story first. */
+import LandingPage            from "@/pages/LandingPage";
+import AboutPage              from "@/pages/AboutPage";
+import ComingSoonPage         from "@/pages/ComingSoonPage";
+import NotFoundPage           from "@/pages/NotFoundPage";
+import PrivacyPolicyPage      from "@/pages/PrivacyPolicyPage";
+import TermsPage              from "@/pages/TermsPage";
+import ReturnsShippingPage    from "@/pages/ReturnsShippingPage";
+import FAQPage                from "@/pages/FAQPage";
+import ContactPage           from "@/pages/ContactPage";
+import CareersPage           from "@/pages/CareersPage";
+import ProductShowcase        from "@/pages/ProductShowcase";
+import M416Showcase           from "@/pages/M416Showcase";
+import CrimsonBlasterShowcase from "@/pages/CrimsonBlasterShowcase";
 import RouteSeo              from "@/components/seo/RouteSeo";
 import BuyNowSheet           from "@/components/landing/BuyNowSheet";
 import CookieConsent         from "@/components/CookieConsent";
@@ -138,17 +124,6 @@ function GlobalBuyNowSheet() {
     return <BuyNowSheet open={drawer.open} product={drawer.product} onClose={closeDrawer} />;
 }
 
-/* Fallback while a code-split route chunk downloads — a centered brand spinner
-   on white. The homepage is eager, so this only ever appears on secondary
-   routes, and only for the moment a chunk is in flight. */
-function RouteFallback() {
-    return (
-        <div className="grid min-h-screen place-items-center bg-white">
-            <div className="h-8 w-8 animate-spin rounded-full border-2 border-[#DA0213]/25 border-t-[#DA0213]" />
-        </div>
-    );
-}
-
 /* Last line of defence: catch ANY render error (a stale-chunk import that got
    past the reload throttle, or a component crash) and show a Reload card instead
    of a blank white page. Without this, one thrown error unmounts the whole app. */
@@ -209,7 +184,6 @@ function App() {
             <CookieConsent />
             <GlobalBuyNowSheet />
             <AppErrorBoundary>
-            <Suspense fallback={<RouteFallback />}>
             <Routes>
                 {/* Home — full D2C landing page */}
                 <Route path="/"               element={<LandingPage />} />
@@ -237,7 +211,6 @@ function App() {
                 <Route path="/404"            element={<NotFoundPage />} />
                 <Route path="*"              element={<NotFoundPage />} />
             </Routes>
-            </Suspense>
             </AppErrorBoundary>
         </BrowserRouter>
         </CartProvider>
