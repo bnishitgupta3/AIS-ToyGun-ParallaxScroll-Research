@@ -142,6 +142,13 @@ class AppErrorBoundary extends Component {
             where: info && info.componentStack ? String(info.componentStack).trim().slice(0, 1400) : "",
         });
     }
+    componentDidUpdate(prevProps) {
+        // Reset on route change, so navigating away from a page that errored
+        // recovers automatically instead of showing the card forever.
+        if (prevProps.resetKey !== this.props.resetKey && this.state.crashed) {
+            this.setState({ crashed: false, msg: "", where: "" });
+        }
+    }
     render() {
         if (!this.state.crashed) return this.props.children;
         return (
@@ -172,6 +179,13 @@ class AppErrorBoundary extends Component {
     }
 }
 
+/* Feeds the current pathname to the boundary as a reset key, so a crash on one
+   page clears automatically when the visitor navigates to another. */
+function RoutedErrorBoundary({ children }) {
+    const { pathname } = useLocation();
+    return <AppErrorBoundary resetKey={pathname}>{children}</AppErrorBoundary>;
+}
+
 function App() {
     return (
         <CartProvider>
@@ -183,7 +197,7 @@ function App() {
             <TopMarquee />
             <CookieConsent />
             <GlobalBuyNowSheet />
-            <AppErrorBoundary>
+            <RoutedErrorBoundary>
             <Routes>
                 {/* Home — full D2C landing page */}
                 <Route path="/"               element={<LandingPage />} />
@@ -211,7 +225,7 @@ function App() {
                 <Route path="/404"            element={<NotFoundPage />} />
                 <Route path="*"              element={<NotFoundPage />} />
             </Routes>
-            </AppErrorBoundary>
+            </RoutedErrorBoundary>
         </BrowserRouter>
         </CartProvider>
     );

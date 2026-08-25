@@ -1,13 +1,16 @@
 import { useEffect } from "react";
-import { motion } from "framer-motion";
 import LandingNav from "@/components/landing/LandingNav";
 import LandingFooter from "@/components/landing/LandingFooter";
-
-const EASE = [0.16, 1, 0.3, 1];
 
 /**
  * Shared wrapper for long-form content pages (privacy, terms, returns).
  * Branded dot-grid theme + global navbar + footer.
+ *
+ * NOTE: framer-motion (motion.span / motion.h1) was removed here. On some real
+ * mobile browsers accessing `motion.<tag>` threw "o is not a function" at render,
+ * which crashed the whole page (the error never reproduced in desktop testing).
+ * The entrance animation is now a lightweight CSS fade-up (`.reveal-up`), so
+ * there is no framer-motion code left to fail. Do NOT reintroduce motion.* here.
  */
 export default function LegalLayout({ eyebrow, title, updated, children }) {
     useEffect(() => window.scrollTo(0, 0), []);
@@ -17,23 +20,13 @@ export default function LegalLayout({ eyebrow, title, updated, children }) {
             <LandingNav />
 
             <main className="mx-auto max-w-3xl px-6 pb-24 pt-36 sm:px-8 md:pt-44">
-                <motion.span
-                    initial={{ opacity: 0, y: 12 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.7, ease: EASE }}
-                    className="font-inter text-[11px] font-semibold uppercase tracking-[0.4em] text-[#DA0213]"
-                >
+                <span className="reveal-up font-inter text-[11px] font-semibold uppercase tracking-[0.4em] text-[#DA0213]">
                     {eyebrow}
-                </motion.span>
+                </span>
 
-                <motion.h1
-                    initial={{ opacity: 0, y: 16 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.9, ease: EASE }}
-                    className="font-instrument mt-4 text-[clamp(34px,6vw,60px)] leading-[0.95] tracking-tight text-[#1a1a1a]"
-                >
+                <h1 className="reveal-up font-instrument mt-4 text-[clamp(34px,6vw,60px)] leading-[0.95] tracking-tight text-[#1a1a1a]">
                     {title}
-                </motion.h1>
+                </h1>
 
                 {updated && (
                     <p className="mt-4 font-inter text-[12px] uppercase tracking-[0.2em] text-[#1a1a1a]/40">

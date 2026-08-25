@@ -191,6 +191,20 @@ body.sheet-open .section-dots {
     100% { width: 8%; }
 }
 
+/* Lightweight entrance fade-up. Replaces framer-motion on the content/legal
+   pages (motion.* threw "o is not a function" on some real mobile browsers and
+   crashed the page). CSS-only, so nothing can throw at render. */
+@keyframes revealUp {
+    from { opacity: 0; transform: translateY(12px); }
+    to   { opacity: 1; transform: none; }
+}
+.reveal-up {
+    animation: revealUp 0.7s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+@media (prefers-reduced-motion: reduce) {
+    .reveal-up { animation: none; }
+}
+
 /* ── Landing-page dot grid background ── */
 .dot-grid {
     background-color: #F3F4ED;

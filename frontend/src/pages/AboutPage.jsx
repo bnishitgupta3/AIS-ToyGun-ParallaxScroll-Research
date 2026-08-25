@@ -1,11 +1,12 @@
 import { useEffect } from "react";
 import { Link } from "react-router-dom";
-import { motion } from "framer-motion";
 
 import LandingNav from "@/components/landing/LandingNav";
 import LandingFooter from "@/components/landing/LandingFooter";
 
-const EASE = [0.16, 1, 0.3, 1];
+/* framer-motion removed: motion.* threw "o is not a function" on some real
+   mobile browsers and crashed the page. Entrance animation is now the CSS
+   `.reveal-up` class (index.css). Do NOT reintroduce motion.* here. */
 
 const STATS = [
     { value: "2026", label: "Founded" },
@@ -40,32 +41,17 @@ export default function AboutPage() {
 
             <main className="mx-auto max-w-5xl px-6 pb-24 pt-36 sm:px-8 md:pt-44">
                 {/* ── Hero ── */}
-                <motion.span
-                    initial={{ opacity: 0, y: 12 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.8, ease: EASE }}
-                    className="font-inter text-[11px] font-semibold uppercase tracking-[0.4em] text-[#DA0213]"
-                >
+                <span className="reveal-up font-inter text-[11px] font-semibold uppercase tracking-[0.4em] text-[#DA0213]">
                     /// About SONIQ Toys
-                </motion.span>
+                </span>
 
-                <motion.h1
-                    initial={{ opacity: 0, scale: 0.96 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    transition={{ duration: 1.3, ease: EASE }}
-                    className="font-instrument mt-5 text-[clamp(40px,8vw,84px)] leading-[0.95] tracking-tight text-[#1a1a1a]"
-                >
+                <h1 className="reveal-up font-instrument mt-5 text-[clamp(40px,8vw,84px)] leading-[0.95] tracking-tight text-[#1a1a1a]">
                     We build the blasters
                     <br />
                     <span className="text-[#1a1a1a]/50">every sunlit day deserves.</span>
-                </motion.h1>
+                </h1>
 
-                <motion.p
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 1.1, delay: 0.25, ease: EASE }}
-                    className="mt-8 max-w-2xl font-inter text-[16px] leading-relaxed text-[#1a1a1a]/65 md:text-[18px]"
-                >
+                <p className="reveal-up mt-8 max-w-2xl font-inter text-[16px] leading-relaxed text-[#1a1a1a]/65 md:text-[18px]">
                     SONIQ Toys was born from a love of play. Every Holi and
                     every sunny weekend deserves a blaster that's a joy to
                     hold and a thrill to fire. So we brought serious
@@ -73,15 +59,10 @@ export default function AboutPage() {
                     and drum-fed capacity, built for beaches, water parks,
                     society lawns, farmhouse pools, rooftops and the backyards
                     where the best memories get made, the year round.
-                </motion.p>
+                </p>
 
                 {/* ── Stats ── */}
-                <motion.div
-                    initial={{ opacity: 0, y: 24 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 1, delay: 0.4, ease: EASE }}
-                    className="mt-16 grid grid-cols-2 gap-8 border-t border-black/10 pt-10 md:grid-cols-4"
-                >
+                <div className="reveal-up mt-16 grid grid-cols-2 gap-8 border-t border-black/10 pt-10 md:grid-cols-4">
                     {STATS.map((s) => (
                         <div key={s.label}>
                             <div className="font-instrument text-4xl text-[#1a1a1a] md:text-5xl">
@@ -92,7 +73,7 @@ export default function AboutPage() {
                             </div>
                         </div>
                     ))}
-                </motion.div>
+                </div>
 
                 {/* ── Values ── */}
                 <div className="mt-24">
@@ -101,13 +82,9 @@ export default function AboutPage() {
                     </h2>
                     <div className="mt-10 grid grid-cols-1 gap-6 md:grid-cols-3">
                         {VALUES.map((v, i) => (
-                            <motion.div
+                            <div
                                 key={v.title}
-                                initial={{ opacity: 0, y: 24 }}
-                                whileInView={{ opacity: 1, y: 0 }}
-                                viewport={{ once: true, margin: "-80px" }}
-                                transition={{ duration: 0.7, delay: i * 0.1, ease: EASE }}
-                                className="rounded-2xl border border-black/10 bg-white/50 p-7 backdrop-blur-sm"
+                                className="reveal-up rounded-2xl border border-black/10 bg-white/50 p-7 backdrop-blur-sm"
                             >
                                 <span className="font-inter text-[11px] font-semibold uppercase tracking-[0.25em] text-[#DA0213]">
                                     0{i + 1}
@@ -118,7 +95,7 @@ export default function AboutPage() {
                                 <p className="mt-3 font-inter text-[14px] leading-relaxed text-[#1a1a1a]/60">
                                     {v.body}
                                 </p>
-                            </motion.div>
+                            </div>
                         ))}
                     </div>
                 </div>

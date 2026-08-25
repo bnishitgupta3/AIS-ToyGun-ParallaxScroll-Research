@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { motion } from "framer-motion";
 import { Mail, ShieldCheck, Briefcase, PhoneCall, Send } from "lucide-react";
 import LandingNav from "@/components/landing/LandingNav";
 import LandingFooter from "@/components/landing/LandingFooter";
 import { postToFormspree } from "@/lib/notify";
 
-const EASE = [0.16, 1, 0.3, 1];
+/* framer-motion removed (motion.* crashed on some real mobile browsers with
+   "o is not a function"); entrance uses the CSS `.reveal-up` class instead. */
 
 const CHANNELS = [
     {
@@ -72,12 +72,7 @@ export default function ContactPage() {
 
             <main className="mx-auto max-w-6xl px-6 pb-24 pt-36 sm:px-8 md:pt-44">
                 {/* ── Hero ── */}
-                <motion.div
-                    initial={{ opacity: 0, y: 14 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.8, ease: EASE }}
-                    className="max-w-2xl"
-                >
+                <div className="reveal-up max-w-2xl">
                     <span className="font-inter text-[11px] font-semibold uppercase tracking-[0.4em] text-[#DA0213]">
                         /// We're listening
                     </span>
@@ -89,17 +84,12 @@ export default function ContactPage() {
                         partnership in mind? Pick a channel below or send us a note,
                         we read every message.
                     </p>
-                </motion.div>
+                </div>
 
                 {/* ── Two-column: channels + form ── */}
                 <div className="mt-14 grid grid-cols-1 gap-10 lg:grid-cols-[1.05fr_0.95fr] lg:gap-14">
                     {/* Channel cards */}
-                    <motion.div
-                        initial={{ opacity: 0, y: 18 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.9, delay: 0.1, ease: EASE }}
-                        className="grid grid-cols-1 gap-4 sm:grid-cols-2"
-                    >
+                    <div className="reveal-up grid grid-cols-1 gap-4 sm:grid-cols-2">
                         {CHANNELS.map(({ icon: Icon, title, blurb, value, href }) => (
                             <a
                                 key={title}
@@ -120,15 +110,10 @@ export default function ContactPage() {
                                 </span>
                             </a>
                         ))}
-                    </motion.div>
+                    </div>
 
                     {/* Message form */}
-                    <motion.div
-                        initial={{ opacity: 0, y: 18 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.9, delay: 0.2, ease: EASE }}
-                        className="rounded-3xl border border-black/10 bg-white/70 p-6 backdrop-blur-sm sm:p-8"
-                    >
+                    <div className="reveal-up rounded-3xl border border-black/10 bg-white/70 p-6 backdrop-blur-sm sm:p-8">
                         <h2 className="font-instrument text-[26px] leading-tight text-[#1a1a1a]">
                             Send us a message
                         </h2>
@@ -204,7 +189,7 @@ export default function ContactPage() {
                                 </p>
                             </form>
                         )}
-                    </motion.div>
+                    </div>
                 </div>
 
                 {/* ── Footer note ── */}

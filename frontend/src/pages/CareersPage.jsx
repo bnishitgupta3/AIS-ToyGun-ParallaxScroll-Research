@@ -1,11 +1,11 @@
 import { useEffect } from "react";
 import { Link } from "react-router-dom";
-import { motion } from "framer-motion";
 import { Rocket, Hammer, MapPin, Heart, ArrowRight } from "lucide-react";
 import LandingNav from "@/components/landing/LandingNav";
 import LandingFooter from "@/components/landing/LandingFooter";
 
-const EASE = [0.16, 1, 0.3, 1];
+/* framer-motion removed (motion.* crashed on some real mobile browsers with
+   "o is not a function"); entrance uses the CSS `.reveal-up` class instead. */
 
 const VALUES = [
     {
@@ -48,12 +48,7 @@ export default function CareersPage() {
 
             <main className="mx-auto max-w-6xl px-6 pb-24 pt-36 sm:px-8 md:pt-44">
                 {/* ── Hero ── */}
-                <motion.div
-                    initial={{ opacity: 0, y: 14 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.8, ease: EASE }}
-                    className="max-w-2xl"
-                >
+                <div className="reveal-up max-w-2xl">
                     <span className="font-inter text-[11px] font-semibold uppercase tracking-[0.4em] text-[#DA0213]">
                         /// Careers
                     </span>
@@ -66,7 +61,7 @@ export default function CareersPage() {
                         with making play better. If that sounds like your kind of
                         mischief, let's talk.
                     </p>
-                </motion.div>
+                </div>
 
                 {/* ── Values ── */}
                 <div className="mt-16">
@@ -75,12 +70,9 @@ export default function CareersPage() {
                     </h2>
                     <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
                         {VALUES.map(({ icon: Icon, title, blurb }, i) => (
-                            <motion.div
+                            <div
                                 key={title}
-                                initial={{ opacity: 0, y: 16 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                transition={{ duration: 0.7, delay: 0.05 * i, ease: EASE }}
-                                className="flex flex-col rounded-2xl border border-black/10 bg-white/55 p-5 backdrop-blur-sm transition-all duration-300 hover:-translate-y-0.5 hover:border-[#DA0213]/50 hover:bg-white/80 hover:shadow-[0_12px_30px_-12px_rgba(249,115,22,0.35)]"
+                                className="reveal-up flex flex-col rounded-2xl border border-black/10 bg-white/55 p-5 backdrop-blur-sm transition-all duration-300 hover:-translate-y-0.5 hover:border-[#DA0213]/50 hover:bg-white/80 hover:shadow-[0_12px_30px_-12px_rgba(249,115,22,0.35)]"
                             >
                                 <span className="grid h-11 w-11 place-items-center rounded-xl bg-[#DA0213]/10 text-[#DA0213]">
                                     <Icon size={20} strokeWidth={2} />
@@ -91,7 +83,7 @@ export default function CareersPage() {
                                 <p className="mt-1.5 font-inter text-[13px] leading-relaxed text-[#1a1a1a]/55">
                                     {blurb}
                                 </p>
-                            </motion.div>
+                            </div>
                         ))}
                     </div>
                 </div>
@@ -114,12 +106,7 @@ export default function CareersPage() {
                 </div>
 
                 {/* ── Open application CTA ── */}
-                <motion.div
-                    initial={{ opacity: 0, y: 18 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.9, delay: 0.1, ease: EASE }}
-                    className="relative mt-16 overflow-hidden rounded-3xl border border-[#DA0213]/20 bg-gradient-to-br from-[#FFF4E6] to-[#FCEAD3] p-8 sm:p-12"
-                >
+                <div className="reveal-up relative mt-16 overflow-hidden rounded-3xl border border-[#DA0213]/20 bg-gradient-to-br from-[#FFF4E6] to-[#FCEAD3] p-8 sm:p-12">
                     <div className="pointer-events-none absolute -right-10 -top-10 h-48 w-48 rounded-full bg-[#DA0213]/20 blur-[80px]" />
                     <div className="relative max-w-2xl">
                         <h2 className="font-instrument text-[clamp(26px,4vw,40px)] leading-tight text-[#1a1a1a]">
@@ -146,7 +133,7 @@ export default function CareersPage() {
                             />
                         </a>
                     </div>
-                </motion.div>
+                </div>
 
                 <p className="mt-10 font-inter text-[13px] text-[#1a1a1a]/45">
                     Curious about the brand first? Read our{" "}
