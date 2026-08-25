@@ -105,7 +105,7 @@ export default function BuyNowSheet({ open, product, onClose }) {
                 role="dialog"
                 aria-modal="true"
                 aria-label="Buy Now"
-                className={`absolute left-0 right-0 bottom-0 flex max-h-[90vh] flex-col rounded-t-3xl bg-white shadow-2xl transition-transform duration-300 ease-out
+                className={`absolute left-0 right-0 bottom-0 flex max-h-[75vh] flex-col rounded-t-3xl bg-white shadow-2xl transition-transform duration-300 ease-out
                     md:left-auto md:right-0 md:top-0 md:bottom-0 md:h-full md:max-h-none md:w-[440px] md:rounded-l-3xl md:rounded-tr-none
                     ${!visible ? "invisible" : ""}
                     ${
@@ -426,9 +426,6 @@ export default function BuyNowSheet({ open, product, onClose }) {
                         source={hasItems ? "checkout-launch" : "buy-now-launch"}
                         accent="#DA0213"
                     />
-                    <p className="mt-3 text-center font-inter text-[11px] uppercase tracking-[0.22em] text-[#1a1a1a]/40">
-                        Powered by SONIQ · India · 2026
-                    </p>
                 </div>
             </div>
         </div>,
