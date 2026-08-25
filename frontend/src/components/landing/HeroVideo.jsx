@@ -167,13 +167,14 @@ export default function HeroVideo() {
                 height: "calc(100vh + 160px)",
                 opacity: fade,
                 transition: "opacity 120ms linear",
-                /* Once fully scrolled past the hero, take the two stacked video
-                   layers OUT of compositing entirely. At opacity:0 they'd still
-                   be composited every frame, and on iOS keeping two live
-                   hardware-decoded video layers under the Arsenal contributed to
-                   the bottom-half flicker. visibility:hidden stops the paint
-                   while keeping playback state, so scrolling back up is instant. */
-                visibility: fade <= 0.01 ? "hidden" : "visible",
+                /* NOTE: intentionally NO visibility:hidden here. We used to hide
+                   the layer once scrolled past to save compositing — but on real
+                   devices visibility:hidden SUSPENDS the video's decode pipeline,
+                   so a FAST scroll back up from the footer showed a frozen/stale
+                   frame for ~2s while it re-decoded (the reported lag). Keeping it
+                   painted at opacity:0 (with the translateZ / willChange GPU hints
+                   on each <video> below) keeps the decode warm, so returning to
+                   the hero is instant. */
             }}
             aria-hidden="true"
         >
