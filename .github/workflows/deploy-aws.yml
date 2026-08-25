@@ -1,0 +1,79 @@
+name: Deploy to AWS (soniqtoys.com)
+
+# Ships THIS branch to the S3 bucket + CloudFront distribution that serve
+# www.soniqtoys.com. The apex soniqtoys.com already 301-redirects to www, so
+# both hostnames are covered by one deploy.
+#
+# Triggers:
+#   • push to redesign/arsenal-photo-grid → auto-deploys on every commit (the
+#     same pattern as the Cloudflare preview). Delete this block if you'd rather
+#     deploy manually only.
+#   • workflow_dispatch → a manual "Run workflow" button. NOTE: GitHub only shows
+#     that button when this file also exists on the repo's DEFAULT branch (main).
+on:
+  push:
+    branches: [redesign/arsenal-photo-grid]
+  workflow_dispatch:
+
+# Never let two prod deploys race; cancel an in-flight one if a newer push lands.
+concurrency:
+  group: aws-prod-deploy
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-22.04
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install dependencies
+        run: npm ci --legacy-peer-deps || npm install --legacy-peer-deps
+
+      # react-snap prerenders each route with a headless Chromium — these are the
+      # shared libraries it needs on Ubuntu.
+      - name: Chromium libraries for react-snap
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libnss3 libatk-bridge2.0-0 libatk1.0-0 libcups2 \
+            libdrm2 libgbm1 libgtk-3-0 libasound2 libxcomposite1 libxdamage1 \
+            libxfixes3 libxrandr2 libxkbcommon0 libpango-1.0-0 libcairo2 libxshmfence1
+
+      - name: Build (prerendered, with GA)
+        env:
+          CI: "false"
+          GENERATE_SOURCEMAP: "false"
+          # Public Measurement ID — only baked into the AWS prod build, never the
+          # Cloudflare preview (which builds the branch without this env).
+          REACT_APP_GA_MEASUREMENT_ID: G-RZVSQDS03C
+        # `craco build` always produces build/; if the react-snap prerender step
+        # fails we still deploy the standard SPA build rather than block the release.
+        run: npm run build:prerendered || echo "::warning::react-snap prerender failed; deploying the standard build/ instead"
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ vars.AWS_REGION || 'us-east-1' }}
+
+      - name: Sync to S3
+        run: |
+          # 1) Fingerprinted static assets — filenames change every build, so cache
+          #    them forever. --delete prunes assets that are no longer in the build.
+          aws s3 sync build "s3://${{ vars.S3_BUCKET }}" --delete \
+            --cache-control "public,max-age=31536000,immutable" \
+            --exclude "*.html" --exclude "*.json" --exclude "*.txt" --exclude "*.xml"
+          # 2) HTML + manifests + robots/sitemap — must never be stale, so no-cache.
+          aws s3 sync build "s3://${{ vars.S3_BUCKET }}" \
+            --cache-control "public,max-age=0,must-revalidate" \
+            --exclude "*" --include "*.html" --include "*.json" --include "*.txt" --include "*.xml"
+
+      - name: Invalidate CloudFront
+        run: aws cloudfront create-invalidation --distribution-id "${{ vars.CLOUDFRONT_DISTRIBUTION_ID }}" --paths "/*"
