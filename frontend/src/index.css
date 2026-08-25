@@ -204,7 +204,6 @@ body.sheet-open .section-dots {
 @media (prefers-reduced-motion: reduce) {
     .reveal-up { animation: none; }
 }
-
 /* ── Landing-page dot grid background ── */
 .dot-grid {
     background-color: #F3F4ED;

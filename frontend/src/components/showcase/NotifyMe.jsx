@@ -57,8 +57,11 @@ export default function NotifyMe({
             );
         }
         return (
-            <div className="flex flex-col items-center">
-                <form onSubmit={handleSubmit} className="flex items-center gap-2" noValidate>
+            <div className="flex w-full flex-col items-center">
+                {/* Full-width, single row: the email input flexes to fill the card
+                    while the button stays fixed — so on narrow mobile cards the
+                    button is never pushed off the edge (it used to be clipped). */}
+                <form onSubmit={handleSubmit} className="flex w-full items-center gap-2" noValidate>
                     <input
                         type="email"
                         required
@@ -66,17 +69,17 @@ export default function NotifyMe({
                         onChange={(e) => setEmail(e.target.value)}
                         placeholder="Email me at launch"
                         disabled={submitting}
-                        className="h-11 w-[210px] rounded-full border border-black/15 bg-white px-4 font-inter text-[13px] text-[#1a1a1a] placeholder-[#1a1a1a]/40 outline-none transition-colors disabled:opacity-60 sm:w-[230px]"
+                        className="h-11 min-w-0 flex-1 rounded-full border border-black/15 bg-white px-4 font-inter text-[13px] text-[#1a1a1a] placeholder-[#1a1a1a]/40 outline-none transition-colors disabled:opacity-60"
                         onFocus={(e) => (e.currentTarget.style.borderColor = accent)}
                         onBlur={(e) => (e.currentTarget.style.borderColor = "rgba(0,0,0,0.15)")}
                     />
                     <button
                         type="submit"
                         disabled={submitting}
-                        className="inline-flex h-11 shrink-0 items-center gap-1.5 rounded-full px-5 font-inter text-[12px] font-semibold uppercase tracking-[0.16em] text-white shadow-[inset_0_-4px_4px_rgba(255,255,255,0.28)] transition-all hover:brightness-110 disabled:opacity-70"
+                        className="inline-flex h-11 shrink-0 items-center gap-1.5 rounded-full px-4 font-inter text-[12px] font-semibold uppercase tracking-[0.12em] text-white shadow-[inset_0_-4px_4px_rgba(255,255,255,0.28)] transition-all hover:brightness-110 disabled:opacity-70"
                         style={{ background: accent }}
                     >
-                        {submitting ? "…" : "Notify Me"}
+                        {submitting ? "…" : "Notify"}
                     </button>
                 </form>
                 {status === "error" && (

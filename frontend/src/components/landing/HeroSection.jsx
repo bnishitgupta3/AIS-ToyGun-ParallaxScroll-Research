@@ -1,63 +1,48 @@
 import { useEffect, useState } from "react";
-import { motion } from "@/lib/motionShim";
 import DottedArrow from "@/components/landing/DottedArrow";
 
-const EASE = [0.16, 1, 0.3, 1];
-
-const container = {
-    hidden: {},
-    show: { transition: { staggerChildren: 0.14, delayChildren: 0.05 } },
-};
-const rise = {
-    hidden: { opacity: 0, y: 30, filter: "blur(8px)" },
-    show: {
-        opacity: 1,
-        y: 0,
-        filter: "blur(0px)",
-        transition: { duration: 1.05, ease: EASE },
-    },
-};
-
 /**
- * Hero — Spyra-style video background (rendered behind the canvas) with the
- * headline + 3-D gun on top. The text reveal is GATED behind a short timer so
- * it begins AFTER the page-load FOUC fade — otherwise the animation finishes
- * while the body is still hidden and the text just appears static.
+ * Hero — video background (behind the canvas) with the headline + 3-D gun on top.
+ * Entrance is a plain opacity/translate TRANSITION gated on a JS `start` timer
+ * (fires ~950ms in, just after the FOUC body reveal). We use a transition rather
+ * than a keyframe animation on purpose: the shown state is a normal class
+ * (`opacity-100`), so it can never get "stuck" invisible if the animation is
+ * interrupted. framer-motion was removed site-wide; this is its replacement.
+ * Mobile spacing is tightened so the CTA doesn't crowd the 3-D gun on small screens.
  */
 export default function HeroSection({ heroRef }) {
     const [start, setStart] = useState(false);
     useEffect(() => {
-        // The body reveals within ~900ms; start the hero reveal just after.
+        // The body reveals within ~900ms; begin the hero reveal just after.
         const t = setTimeout(() => setStart(true), 950);
         return () => clearTimeout(t);
     }, []);
+
+    // Shared entrance transition. `start` flips hidden -> shown; per-element
+    // transitionDelay (inline) staggers them.
+    const rise =
+        "transition-all duration-[900ms] ease-[cubic-bezier(0.16,1,0.3,1)] " +
+        (start ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6");
 
     return (
         <section
             ref={heroRef}
             id="hero"
-            className="relative flex min-h-[100svh] w-full flex-col items-center overflow-hidden px-6 pt-[12vh] text-center sm:px-8"
+            className="relative flex min-h-[100svh] w-full flex-col items-center overflow-hidden px-6 pt-[10vh] text-center sm:px-8 sm:pt-[12vh]"
         >
-            <motion.div
-                variants={container}
-                initial="hidden"
-                animate={start ? "show" : "hidden"}
-                className="relative z-20 flex flex-col items-center"
-            >
-                {/* Hidden (visibility) but keeps its box + mb-5 so the heading
-                    stays exactly where it was — user wanted the line gone, not
-                    the layout to shift up. */}
-                <motion.span
-                    variants={rise}
+            <div className="relative z-20 flex flex-col items-center">
+                {/* Hidden (visibility) but keeps its box + margin so the heading
+                    stays put — the line is intentionally not shown. */}
+                <span
                     aria-hidden="true"
-                    className="invisible mb-5 font-inter text-[10px] font-semibold uppercase tracking-[0.4em] text-[#DA0213] sm:text-[12px]"
+                    className="invisible mb-4 font-inter text-[10px] font-semibold uppercase tracking-[0.4em] text-[#DA0213] sm:mb-5 sm:text-[12px]"
                 >
                     /// SONIQ Toys · Made for Sunlit Days, All Year
-                </motion.span>
+                </span>
 
-                <motion.h1
-                    variants={rise}
-                    className="font-instrument !font-bold text-[clamp(40px,8.6vw,92px)] leading-[0.88] tracking-tight text-white drop-shadow-[0_2px_24px_rgba(0,0,0,0.55)]"
+                <h1
+                    className={`${rise} font-instrument !font-bold text-[clamp(36px,8.6vw,92px)] leading-[0.9] tracking-tight text-white drop-shadow-[0_2px_24px_rgba(0,0,0,0.55)] sm:leading-[0.88]`}
+                    style={{ transitionDelay: "0ms" }}
                 >
                     {/* Multi-tone + motion: 'Holi' sways in sunshine yellow,
                         and the payoff line runs an animated colour gradient. */}
@@ -65,19 +50,22 @@ export default function HeroSection({ heroRef }) {
                     to high-noon,
                     <br />
                     <span className="text-shimmer">soak every moment.</span>
-                </motion.h1>
+                </h1>
 
-                <motion.p
-                    variants={rise}
-                    className="mt-6 max-w-2xl font-inter text-[15px] leading-relaxed text-white/75 sm:text-[17px]"
+                <p
+                    className={`${rise} mt-4 max-w-2xl font-inter text-[13.5px] leading-relaxed text-white/75 sm:mt-6 sm:text-[17px]`}
+                    style={{ transitionDelay: "140ms" }}
                 >
                     Precision water blasters built for Holi mornings, sunny
                     weekends and every splash in between: beaches, water parks,
                     society lawns, farmhouse pools, rooftops and your own
                     backyard. Whenever the sun's out, play harder.
-                </motion.p>
+                </p>
 
-                <motion.div variants={rise} className="relative mt-9 inline-flex flex-col items-center">
+                <div
+                    className={`${rise} relative mt-6 inline-flex flex-col items-center sm:mt-9`}
+                    style={{ transitionDelay: "280ms" }}
+                >
                     <a
                         href="#arsenal"
                         className="group relative inline-flex items-center gap-2 overflow-hidden rounded-full bg-[#DA0213] px-7 py-3 font-inter text-[13px] font-semibold text-white shadow-[inset_0_-4px_4px_rgba(255,255,255,0.39)] transition-all hover:brightness-110"
@@ -99,15 +87,13 @@ export default function HeroSection({ heroRef }) {
                             psst, start here
                         </span>
                     </div>
-                </motion.div>
-            </motion.div>
+                </div>
+            </div>
 
             {/* Scroll cue — bottom-centre */}
-            <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: start ? 1 : 0 }}
-                transition={{ delay: start ? 0.8 : 0, duration: 0.8 }}
-                className="pointer-events-none absolute bottom-7 left-1/2 z-20 flex -translate-x-1/2 flex-col items-center gap-1.5"
+            <div
+                className={`pointer-events-none absolute bottom-7 left-1/2 z-20 flex -translate-x-1/2 flex-col items-center gap-1.5 transition-opacity duration-700 ${start ? "opacity-100" : "opacity-0"}`}
+                style={{ transitionDelay: "550ms" }}
             >
                 <span className="font-inter text-[10px] uppercase tracking-[0.3em] text-white/55">
                     Scroll to explore
@@ -115,7 +101,7 @@ export default function HeroSection({ heroRef }) {
                 <div className="relative h-8 w-4 rounded-full border border-white/40">
                     <div className="scroll-nub absolute left-1/2 top-1.5 h-1.5 w-0.5 -translate-x-1/2 rounded-full bg-white/60" />
                 </div>
-            </motion.div>
+            </div>
         </section>
     );
 }
