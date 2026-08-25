@@ -133,6 +133,8 @@ function BundleCard({ b }) {
                                         src={asset("/assets/products/" + p.image)}
                                         alt={p.name}
                                         draggable="false"
+                                        loading="lazy"
+                                        decoding="async"
                                         className="aspect-[5/2] w-full object-contain object-center"
                                     />
                                     <span

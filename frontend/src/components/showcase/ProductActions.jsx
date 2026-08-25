@@ -1,4 +1,5 @@
 import { useCart, useCartItem } from "@/lib/cart";
+import { trackEvent } from "@/lib/analytics";
 
 /* Product-page CTA cluster: Buy Now (primary) + Add to Cart (secondary).
    First Add click turns the button into a − N + stepper at the same
@@ -23,7 +24,23 @@ export default function ProductActions({
 }) {
     const { openDrawer } = useCart();
     // Cart key = product link; required for the global cart to track this item.
-    const { qty, inc, dec, set } = useCartItem(product?.link || product?.currentLink || "");
+    const cartKey = product?.link || product?.currentLink || "";
+    const { qty, inc, dec, set } = useCartItem(cartKey);
+
+    // Buy Now = ensure this product is IN the cart, then open the drawer right
+    // away. If it isn't added yet, add one (and fire add_to_cart); if it's
+    // already there, just open — don't silently bump the quantity.
+    const buyNow = () => {
+        if (qty === 0) {
+            set(1);
+            trackEvent("add_to_cart", {
+                currency: "INR",
+                value: product?.price || 0,
+                items: [{ item_id: cartKey, item_name: product?.name }],
+            });
+        }
+        openDrawer(product);
+    };
 
     const isDark = variant === "dark";
     const baseInk = isDark ? "#ffffff" : "#1a1a1a";
@@ -36,7 +53,7 @@ export default function ProductActions({
             {/* Buy Now — primary, filled in accent color */}
             <button
                 type="button"
-                onClick={() => openDrawer(product)}
+                onClick={buyNow}
                 className={`${brutalCls}group relative inline-flex flex-1 items-center justify-center gap-2 overflow-hidden rounded-full px-7 py-3.5 font-inter text-[13px] font-semibold uppercase tracking-[0.2em] text-white shadow-[inset_0_-4px_4px_rgba(255,255,255,0.35)] transition-all hover:brightness-110`}
                 style={{ background: accent }}
             >

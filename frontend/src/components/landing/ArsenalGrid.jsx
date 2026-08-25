@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import { useCartItem } from "@/lib/cart";
 import NotifyMe from "@/components/showcase/NotifyMe";
@@ -68,22 +68,15 @@ function ProductCard({ p }) {
     const showImg = img && !imgError;
 
     // Optional second "hover" photo: drop <name>-hover.jpg beside <name>.jpg
-    // (e.g. mp5k-hover.jpg) and the card cross-fades to it on hover. We probe
-    // for the file; if it's missing the card just keeps the single image, so
-    // this is safe to ship before the hover photos exist.
+    // (e.g. mp5k-hover.jpg) and the card cross-fades to it on hover. It's
+    // rendered lazily and hidden if it 404s (onError) — safe to ship before a
+    // product's hover photo exists, and it costs nothing at initial load (no
+    // eager probe, and the <img> itself is loading="lazy").
     const hoverSrc = p.image
         ? asset("/assets/products/" + p.image.replace(/\.(jpe?g|png|webp)$/i, "-hover.$1"))
         : null;
-    const [hoverOk, setHoverOk] = useState(false);
-    useEffect(() => {
-        if (!hoverSrc) return;
-        let alive = true;
-        const probe = new Image();
-        probe.onload = () => alive && setHoverOk(probe.naturalWidth > 0);
-        probe.onerror = () => alive && setHoverOk(false);
-        probe.src = hoverSrc;
-        return () => { alive = false; };
-    }, [hoverSrc]);
+    const [hoverFailed, setHoverFailed] = useState(false);
+    const showHover = !!hoverSrc && !hoverFailed;
 
     return (
         <div
@@ -108,14 +101,19 @@ function ProductCard({ p }) {
                         <img
                             src={img}
                             alt={p.name}
+                            loading="lazy"
+                            decoding="async"
                             onError={() => setImgError(true)}
-                            className={`absolute inset-0 h-full w-full object-cover object-center transition duration-500 group-hover:scale-[1.06] ${hoverOk ? "group-hover:opacity-0" : ""}`}
+                            className={`absolute inset-0 h-full w-full object-cover object-center transition duration-500 group-hover:scale-[1.06] ${showHover ? "group-hover:opacity-0" : ""}`}
                         />
-                        {hoverOk && (
+                        {showHover && (
                             <img
                                 src={hoverSrc}
                                 alt=""
                                 aria-hidden="true"
+                                loading="lazy"
+                                decoding="async"
+                                onError={() => setHoverFailed(true)}
                                 className="absolute inset-0 h-full w-full object-cover object-center opacity-0 transition duration-500 group-hover:scale-[1.06] group-hover:opacity-100"
                             />
                         )}

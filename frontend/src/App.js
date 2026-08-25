@@ -1,22 +1,27 @@
 import "@/App.css";
-import { useEffect, useRef } from "react";
+import { lazy, Suspense, useEffect, useRef } from "react";
 import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import gsap from "gsap";
 import { useProgress } from "@react-three/drei";
 
-import LandingPage            from "@/pages/LandingPage";
-import AboutPage              from "@/pages/AboutPage";
-import ComingSoonPage         from "@/pages/ComingSoonPage";
-import NotFoundPage          from "@/pages/NotFoundPage";
-import PrivacyPolicyPage     from "@/pages/PrivacyPolicyPage";
-import TermsPage             from "@/pages/TermsPage";
-import ReturnsShippingPage   from "@/pages/ReturnsShippingPage";
-import FAQPage               from "@/pages/FAQPage";
-import ContactPage          from "@/pages/ContactPage";
-import CareersPage          from "@/pages/CareersPage";
-import ProductShowcase        from "@/pages/ProductShowcase";       // existing MP5K page
-import M416Showcase           from "@/pages/M416Showcase";
-import CrimsonBlasterShowcase from "@/pages/CrimsonBlasterShowcase";
+import LandingPage            from "@/pages/LandingPage";  // eager: the homepage stays in the initial bundle
+
+/* Every OTHER route is code-split — each ships as its own chunk that only
+   downloads when the visitor actually navigates there. This keeps the homepage's
+   initial bundle lean; the three product showcase pages in particular pull in the
+   heavy 3-D template, so keeping them out of the first load is the big win. */
+const AboutPage              = lazy(() => import("@/pages/AboutPage"));
+const ComingSoonPage         = lazy(() => import("@/pages/ComingSoonPage"));
+const NotFoundPage           = lazy(() => import("@/pages/NotFoundPage"));
+const PrivacyPolicyPage      = lazy(() => import("@/pages/PrivacyPolicyPage"));
+const TermsPage              = lazy(() => import("@/pages/TermsPage"));
+const ReturnsShippingPage    = lazy(() => import("@/pages/ReturnsShippingPage"));
+const FAQPage                = lazy(() => import("@/pages/FAQPage"));
+const ContactPage            = lazy(() => import("@/pages/ContactPage"));
+const CareersPage            = lazy(() => import("@/pages/CareersPage"));
+const ProductShowcase        = lazy(() => import("@/pages/ProductShowcase"));       // MP5K
+const M416Showcase           = lazy(() => import("@/pages/M416Showcase"));
+const CrimsonBlasterShowcase = lazy(() => import("@/pages/CrimsonBlasterShowcase"));
 import RouteSeo              from "@/components/seo/RouteSeo";
 import BuyNowSheet           from "@/components/landing/BuyNowSheet";
 import CookieConsent         from "@/components/CookieConsent";
@@ -104,6 +109,17 @@ function GlobalBuyNowSheet() {
     return <BuyNowSheet open={drawer.open} product={drawer.product} onClose={closeDrawer} />;
 }
 
+/* Fallback while a code-split route chunk downloads — a centered brand spinner
+   on white. The homepage is eager, so this only ever appears on secondary
+   routes, and only for the moment a chunk is in flight. */
+function RouteFallback() {
+    return (
+        <div className="grid min-h-screen place-items-center bg-white">
+            <div className="h-8 w-8 animate-spin rounded-full border-2 border-[#DA0213]/25 border-t-[#DA0213]" />
+        </div>
+    );
+}
+
 function App() {
     return (
         <CartProvider>
@@ -115,6 +131,7 @@ function App() {
             <TopMarquee />
             <CookieConsent />
             <GlobalBuyNowSheet />
+            <Suspense fallback={<RouteFallback />}>
             <Routes>
                 {/* Home — full D2C landing page */}
                 <Route path="/"               element={<LandingPage />} />
@@ -142,6 +159,7 @@ function App() {
                 <Route path="/404"            element={<NotFoundPage />} />
                 <Route path="*"              element={<NotFoundPage />} />
             </Routes>
+            </Suspense>
         </BrowserRouter>
         </CartProvider>
     );

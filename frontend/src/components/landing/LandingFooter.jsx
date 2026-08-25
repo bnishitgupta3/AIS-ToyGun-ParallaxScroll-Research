@@ -57,6 +57,8 @@ export default function LandingFooter() {
                             src={asset("/assets/logo.png")}
                             alt="SONIQ Toys"
                             draggable="false"
+                            loading="lazy"
+                            decoding="async"
                             className="h-8 w-auto"
                         />
                         <p className="mt-5 max-w-[36ch] text-sm leading-relaxed text-zinc-400">
