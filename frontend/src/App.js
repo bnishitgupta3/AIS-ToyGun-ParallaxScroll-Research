@@ -133,6 +133,7 @@ class AppErrorBoundary extends Component {
         return {
             crashed: true,
             msg: (error && (error.message || String(error))) || "Unknown error",
+            stack: error && error.stack ? String(error.stack).slice(0, 1600) : "",
         };
     }
     componentDidCatch(error, info) {
@@ -171,7 +172,7 @@ class AppErrorBoundary extends Component {
                         error + which component threw, so it's readable from a phone
                         screenshot. */}
                     <pre className="mt-5 max-h-[48vh] overflow-auto whitespace-pre-wrap break-words rounded-xl bg-[#1a1a1a]/[0.05] p-3 text-left font-mono text-[10px] leading-snug text-[#DA0213]">
-                        {this.state.msg + (this.state.where ? "\n\nthrown at:\n" + this.state.where : "")}
+                        {(this.state.stack || this.state.msg) + (this.state.where ? "\n\ncomponents:\n" + this.state.where : "")}
                     </pre>
                 </div>
             </div>

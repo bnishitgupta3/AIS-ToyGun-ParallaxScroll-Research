@@ -48,7 +48,10 @@ jobs:
       - name: Build (prerendered, with GA)
         env:
           CI: "false"
-          GENERATE_SOURCEMAP: "false"
+          # TEMP: source maps on so a crash location decodes to the exact source
+          # line (chasing an "o is not a function" that only repros on real
+          # devices). Turn back to "false" once the bug is fixed.
+          GENERATE_SOURCEMAP: "true"
           # Public Measurement ID — only baked into the AWS prod build, never the
           # Cloudflare preview (which builds the branch without this env).
           REACT_APP_GA_MEASUREMENT_ID: G-RZVSQDS03C
