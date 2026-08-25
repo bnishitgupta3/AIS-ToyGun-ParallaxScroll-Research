@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { motion } from "framer-motion";
+import { motion } from "@/lib/motionShim";
 import ComingSoonGun from "@/components/landing/ComingSoonGun";
 import { isPrerendering } from "@/lib/isPrerendering";
 import { asset } from "@/lib/asset";

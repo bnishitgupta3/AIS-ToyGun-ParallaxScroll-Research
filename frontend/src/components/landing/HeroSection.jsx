@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { motion } from "framer-motion";
+import { motion } from "@/lib/motionShim";
 import DottedArrow from "@/components/landing/DottedArrow";
 
 const EASE = [0.16, 1, 0.3, 1];
