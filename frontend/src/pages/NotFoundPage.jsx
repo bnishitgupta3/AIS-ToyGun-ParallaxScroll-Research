@@ -9,7 +9,10 @@ const EASE = [0.16, 1, 0.3, 1];
  * Branded 404 — on-theme, playful, water-fight flavoured.
  */
 export default function NotFoundPage() {
-    useEffect(() => window.scrollTo(0, 0), []);
+    // Braces required — an implicit return leaks scrollTo()'s value (GSAP patches
+    // it to be non-undefined on mobile) as the effect cleanup → "o is not a
+    // function" crash on unmount. Keep the block body (returns undefined).
+    useEffect(() => { window.scrollTo(0, 0); }, []);
 
     return (
         <div className="dot-grid relative flex min-h-[100svh] flex-col overflow-hidden text-[#1a1a1a]">

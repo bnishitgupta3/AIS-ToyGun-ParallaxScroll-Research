@@ -40,7 +40,10 @@ const CHANNELS = [
 ];
 
 export default function ContactPage() {
-    useEffect(() => window.scrollTo(0, 0), []);
+    // Braces required — an implicit return returns scrollTo()'s value, which
+    // GSAP's mobile scroll-normalization makes non-undefined; React then calls it
+    // as this effect's cleanup on unmount → "o is not a function" crash on mobile.
+    useEffect(() => { window.scrollTo(0, 0); }, []);
 
     const [form, setForm] = useState({ name: "", email: "", message: "" });
     const set = (k) => (e) => setForm((f) => ({ ...f, [k]: e.target.value }));

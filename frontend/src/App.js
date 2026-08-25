@@ -128,33 +128,27 @@ function GlobalBuyNowSheet() {
    past the reload throttle, or a component crash) and show a Reload card instead
    of a blank white page. Without this, one thrown error unmounts the whole app. */
 class AppErrorBoundary extends Component {
-    state = { crashed: false, msg: "", where: "" };
-    static getDerivedStateFromError(error) {
-        return {
-            crashed: true,
-            msg: (error && (error.message || String(error))) || "Unknown error",
-            stack: error && error.stack ? String(error.stack).slice(0, 1600) : "",
-        };
+    state = { crashed: false };
+    static getDerivedStateFromError() {
+        return { crashed: true };
     }
     componentDidCatch(error, info) {
+        // Log for debugging (invisible to users); no on-screen error dump.
         // eslint-disable-next-line no-console
         console.error("AppErrorBoundary caught:", error, info && info.componentStack);
-        this.setState({
-            where: info && info.componentStack ? String(info.componentStack).trim().slice(0, 1400) : "",
-        });
     }
     componentDidUpdate(prevProps) {
         // Reset on route change, so navigating away from a page that errored
         // recovers automatically instead of showing the card forever.
         if (prevProps.resetKey !== this.props.resetKey && this.state.crashed) {
-            this.setState({ crashed: false, msg: "", where: "" });
+            this.setState({ crashed: false });
         }
     }
     render() {
         if (!this.state.crashed) return this.props.children;
         return (
-            <div className="min-h-screen bg-white px-5 py-12">
-                <div className="mx-auto max-w-lg text-center">
+            <div className="grid min-h-screen place-items-center bg-white px-6 text-center">
+                <div>
                     <p className="mb-4 font-inter text-[15px] text-[#1a1a1a]/80">
                         Something went wrong loading this page.
                     </p>
@@ -168,12 +162,6 @@ class AppErrorBoundary extends Component {
                     >
                         Reload
                     </button>
-                    {/* TEMP diagnostic (removed once the bug is pinned): show the real
-                        error + which component threw, so it's readable from a phone
-                        screenshot. */}
-                    <pre className="mt-5 max-h-[48vh] overflow-auto whitespace-pre-wrap break-words rounded-xl bg-[#1a1a1a]/[0.05] p-3 text-left font-mono text-[10px] leading-snug text-[#DA0213]">
-                        {(this.state.stack || this.state.msg) + (this.state.where ? "\n\ncomponents:\n" + this.state.where : "")}
-                    </pre>
                 </div>
             </div>
         );

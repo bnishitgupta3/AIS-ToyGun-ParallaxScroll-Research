@@ -13,7 +13,12 @@ import LandingFooter from "@/components/landing/LandingFooter";
  * there is no framer-motion code left to fail. Do NOT reintroduce motion.* here.
  */
 export default function LegalLayout({ eyebrow, title, updated, children }) {
-    useEffect(() => window.scrollTo(0, 0), []);
+    // NOTE: braces are REQUIRED. An implicit return here returns whatever
+    // window.scrollTo() returns — normally undefined, but GSAP's mobile scroll
+    // normalization patches scrollTo to return a value, which React then treats
+    // as the effect's cleanup and calls on unmount → "o is not a function" crash
+    // when navigating away (mobile only). Keep the block body so it returns undefined.
+    useEffect(() => { window.scrollTo(0, 0); }, []);
 
     return (
         <div className="dot-grid relative min-h-screen overflow-x-hidden text-[#1a1a1a]">

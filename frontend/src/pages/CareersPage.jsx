@@ -40,7 +40,10 @@ const TEAMS = [
 ];
 
 export default function CareersPage() {
-    useEffect(() => window.scrollTo(0, 0), []);
+    // Braces required — see LegalLayout: an implicit return leaks scrollTo()'s
+    // (GSAP-patched, non-undefined on mobile) return value as the effect cleanup,
+    // which React calls on unmount → "o is not a function" crash.
+    useEffect(() => { window.scrollTo(0, 0); }, []);
 
     return (
         <div className="dot-grid relative min-h-screen overflow-x-hidden text-[#1a1a1a]">
