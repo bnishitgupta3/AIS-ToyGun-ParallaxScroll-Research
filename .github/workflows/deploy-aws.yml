@@ -65,9 +65,13 @@ jobs:
 
       - name: Sync to S3
         run: |
-          # 1) Fingerprinted static assets — filenames change every build, so cache
-          #    them forever. --delete prunes assets that are no longer in the build.
-          aws s3 sync build "s3://${{ vars.S3_BUCKET }}" --delete \
+          # 1) Fingerprinted static assets (JS/CSS/media) — filenames change every
+          #    build, so cache them forever. NO --delete on purpose: keeping the
+          #    PREVIOUS build's chunks around means a visitor whose tab is still on
+          #    the old build won't 404 a code-split chunk mid-navigation (the
+          #    "blank page after deploy" bug). These immutable files are cheap;
+          #    prune old ones occasionally with an S3 lifecycle rule if desired.
+          aws s3 sync build "s3://${{ vars.S3_BUCKET }}" \
             --cache-control "public,max-age=31536000,immutable" \
             --exclude "*.html" --exclude "*.json" --exclude "*.txt" --exclude "*.xml"
           # 2) HTML + manifests + robots/sitemap — must never be stale, so no-cache.

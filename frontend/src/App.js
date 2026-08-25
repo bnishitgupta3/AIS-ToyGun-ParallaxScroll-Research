@@ -1,27 +1,45 @@
 import "@/App.css";
-import { lazy, Suspense, useEffect, useRef } from "react";
+import { Component, lazy, Suspense, useEffect, useRef } from "react";
 import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import gsap from "gsap";
 import { useProgress } from "@react-three/drei";
 
 import LandingPage            from "@/pages/LandingPage";  // eager: the homepage stays in the initial bundle
 
+/* Wrap React.lazy so a FAILED dynamic import never blanks the page. A failed
+   import almost always means the visitor's tab is holding a now-stale build (we
+   deployed while they were browsing), so the old chunk 404s. One hard reload
+   pulls the fresh index.html + current chunks. The 10s throttle stops a reload
+   loop if a chunk is genuinely missing — then <AppErrorBoundary> takes over. */
+const lazyWithReload = (importer) =>
+    lazy(() =>
+        importer().catch((err) => {
+            const last = Number(sessionStorage.getItem("__chunkReloadAt")) || 0;
+            if (Date.now() - last > 10000) {
+                sessionStorage.setItem("__chunkReloadAt", String(Date.now()));
+                window.location.reload();
+                return new Promise(() => {}); // hang on the Suspense fallback until the reload takes over
+            }
+            throw err;
+        }),
+    );
+
 /* Every OTHER route is code-split — each ships as its own chunk that only
    downloads when the visitor actually navigates there. This keeps the homepage's
    initial bundle lean; the three product showcase pages in particular pull in the
    heavy 3-D template, so keeping them out of the first load is the big win. */
-const AboutPage              = lazy(() => import("@/pages/AboutPage"));
-const ComingSoonPage         = lazy(() => import("@/pages/ComingSoonPage"));
-const NotFoundPage           = lazy(() => import("@/pages/NotFoundPage"));
-const PrivacyPolicyPage      = lazy(() => import("@/pages/PrivacyPolicyPage"));
-const TermsPage              = lazy(() => import("@/pages/TermsPage"));
-const ReturnsShippingPage    = lazy(() => import("@/pages/ReturnsShippingPage"));
-const FAQPage                = lazy(() => import("@/pages/FAQPage"));
-const ContactPage            = lazy(() => import("@/pages/ContactPage"));
-const CareersPage            = lazy(() => import("@/pages/CareersPage"));
-const ProductShowcase        = lazy(() => import("@/pages/ProductShowcase"));       // MP5K
-const M416Showcase           = lazy(() => import("@/pages/M416Showcase"));
-const CrimsonBlasterShowcase = lazy(() => import("@/pages/CrimsonBlasterShowcase"));
+const AboutPage              = lazyWithReload(() => import("@/pages/AboutPage"));
+const ComingSoonPage         = lazyWithReload(() => import("@/pages/ComingSoonPage"));
+const NotFoundPage           = lazyWithReload(() => import("@/pages/NotFoundPage"));
+const PrivacyPolicyPage      = lazyWithReload(() => import("@/pages/PrivacyPolicyPage"));
+const TermsPage              = lazyWithReload(() => import("@/pages/TermsPage"));
+const ReturnsShippingPage    = lazyWithReload(() => import("@/pages/ReturnsShippingPage"));
+const FAQPage                = lazyWithReload(() => import("@/pages/FAQPage"));
+const ContactPage            = lazyWithReload(() => import("@/pages/ContactPage"));
+const CareersPage            = lazyWithReload(() => import("@/pages/CareersPage"));
+const ProductShowcase        = lazyWithReload(() => import("@/pages/ProductShowcase"));       // MP5K
+const M416Showcase           = lazyWithReload(() => import("@/pages/M416Showcase"));
+const CrimsonBlasterShowcase = lazyWithReload(() => import("@/pages/CrimsonBlasterShowcase"));
 import RouteSeo              from "@/components/seo/RouteSeo";
 import BuyNowSheet           from "@/components/landing/BuyNowSheet";
 import CookieConsent         from "@/components/CookieConsent";
@@ -53,10 +71,21 @@ function Analytics() {
    Also re-hides body so the next page also waits for its assets. */
 function ScrollToTop() {
     const { pathname } = useLocation();
+    const first = useRef(true);
     useEffect(() => {
         window.scrollTo(0, 0);
-        // Re-arm the FOUC gate for the incoming page
-        document.body.classList.add("loading");
+        // The <body class="loading"> FOUC gate (set in index.html) is a ONE-TIME
+        // thing that <BodyReveal> clears after the first paint. We must NOT re-hide
+        // the body on client-side navigation: the old code re-added `loading` here,
+        // but reveal() only runs once, so nothing removed it again and the page got
+        // stuck BLANK the moment the reveal's leftover inline style was cleared.
+        // First render: leave the gate to BodyReveal. Every later navigation:
+        // defensively ensure the body is NOT hidden.
+        if (first.current) {
+            first.current = false;
+        } else {
+            document.body.classList.remove("loading");
+        }
         if (typeof window !== "undefined" && window.ScrollTrigger) {
             requestAnimationFrame(() => window.ScrollTrigger.refresh());
         }
@@ -120,6 +149,38 @@ function RouteFallback() {
     );
 }
 
+/* Last line of defence: catch ANY render error (a stale-chunk import that got
+   past the reload throttle, or a component crash) and show a Reload card instead
+   of a blank white page. Without this, one thrown error unmounts the whole app. */
+class AppErrorBoundary extends Component {
+    state = { crashed: false };
+    static getDerivedStateFromError() {
+        return { crashed: true };
+    }
+    render() {
+        if (!this.state.crashed) return this.props.children;
+        return (
+            <div className="grid min-h-screen place-items-center bg-white px-6 text-center">
+                <div>
+                    <p className="mb-4 font-inter text-[15px] text-[#1a1a1a]/80">
+                        Something went wrong loading this page.
+                    </p>
+                    <button
+                        type="button"
+                        onClick={() => {
+                            sessionStorage.removeItem("__chunkReloadAt");
+                            window.location.reload();
+                        }}
+                        className="rounded-full bg-[#DA0213] px-6 py-2.5 font-inter text-[14px] font-semibold text-white"
+                    >
+                        Reload
+                    </button>
+                </div>
+            </div>
+        );
+    }
+}
+
 function App() {
     return (
         <CartProvider>
@@ -131,6 +192,7 @@ function App() {
             <TopMarquee />
             <CookieConsent />
             <GlobalBuyNowSheet />
+            <AppErrorBoundary>
             <Suspense fallback={<RouteFallback />}>
             <Routes>
                 {/* Home — full D2C landing page */}
@@ -160,6 +222,7 @@ function App() {
                 <Route path="*"              element={<NotFoundPage />} />
             </Routes>
             </Suspense>
+            </AppErrorBoundary>
         </BrowserRouter>
         </CartProvider>
     );
