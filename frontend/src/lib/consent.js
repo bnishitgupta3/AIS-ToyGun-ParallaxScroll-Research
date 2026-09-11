@@ -4,7 +4,7 @@
    explicitly accepts. Choice persists in localStorage so the banner only shows
    once. Values: "granted" | "denied" | null (undecided). */
 
-const KEY = "soniq-cookie-consent";
+const KEY = "uyp-cookie-consent";
 
 export function getConsent() {
     if (typeof window === "undefined") return null;

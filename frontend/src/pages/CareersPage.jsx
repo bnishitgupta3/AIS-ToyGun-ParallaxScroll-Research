@@ -69,7 +69,7 @@ export default function CareersPage() {
                 {/* ── Values ── */}
                 <div className="mt-16">
                     <h2 className="font-inter text-[12px] font-semibold uppercase tracking-[0.3em] text-[#1a1a1a]/40">
-                        Why SONIQ
+                        Why Up Your Play
                     </h2>
                     <div className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
                         {VALUES.map(({ icon: Icon, title, blurb }, i) => (
@@ -117,11 +117,11 @@ export default function CareersPage() {
                         </h2>
                         <p className="mt-3 font-inter text-[15px] leading-relaxed text-[#1a1a1a]/65">
                             We hire for sharpness and spark over tidy résumés. Tell us
-                            who you are and what you'd build at SONIQ, and we'll find a
+                            who you are and what you'd build at Up Your Play, and we'll find a
                             way to talk.
                         </p>
                         <a
-                            href="mailto:careers@soniqtoys.in?subject=I%20want%20to%20work%20at%20SONIQ"
+                            href="mailto:careers@soniqtoys.in?subject=I%20want%20to%20work%20at%20Up%20Your%20Play"
                             className="group relative mt-7 inline-flex items-center gap-2 overflow-hidden rounded-full bg-[#DA0213] px-7 py-3.5 font-inter text-[13px] font-semibold uppercase tracking-[0.15em] text-white shadow-[inset_0_-4px_4px_rgba(255,255,255,0.39)] transition-all hover:brightness-110"
                         >
                             <span

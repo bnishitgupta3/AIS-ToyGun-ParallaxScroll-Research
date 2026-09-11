@@ -90,11 +90,11 @@ export default function LandingNav() {
                         to="/"
                         onClick={goHome}
                         className="select-none"
-                        aria-label="SONIQ — home"
+                        aria-label="Up Your Play — home"
                     >
                         <img
                             src={asset("/assets/logo.png")}
-                            alt="SONIQ"
+                            alt="Up Your Play"
                             draggable="false"
                             className="h-9 w-auto"
                         />

@@ -1,10 +1,10 @@
-# SONIQ Toys — robots.txt
+# Up Your Play — robots.txt
 # Search engines and AI assistants are explicitly welcome to crawl the site.
 
 User-agent: *
 Allow: /
 
-# ── AI / LLM crawlers (explicitly allowed so SONIQ can surface in AI answers) ──
+# ── AI / LLM crawlers (explicitly allowed so Up Your Play can surface in AI answers) ──
 User-agent: GPTBot
 Allow: /
 

@@ -5,7 +5,7 @@ export default function FAQPage() {
     return (
         <LegalLayout eyebrow="/// Support" title="Frequently Asked Questions">
             <p>
-                Everything you need to know about SONIQ blasters, orders and play.
+                Everything you need to know about Up Your Play blasters, orders and play.
                 Still stuck? Reach us any time on the{" "}
                 <Link to="/contact" className="text-[#DA0213] underline-offset-2 hover:underline">
                     Contact
@@ -13,7 +13,7 @@ export default function FAQPage() {
                 page.
             </p>
 
-            <Section heading="What are SONIQ blasters built for?">
+            <Section heading="What are Up Your Play blasters built for?">
                 <p>
                     Year-round, all-weather play. Holi mornings, farmhouse pools,
                     rooftop ambushes, society lawns and backyard showdowns, our

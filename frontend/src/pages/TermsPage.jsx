@@ -4,7 +4,7 @@ export default function TermsPage() {
     return (
         <LegalLayout eyebrow="/// Legal" title="Terms & Conditions" updated="16 June 2026">
             <p>
-                These Terms & Conditions govern your access to and use of the SONIQ
+                These Terms & Conditions govern your access to and use of the Up Your Play
                 Toys website and the purchase of our products. They are
                 governed by the Indian Contract Act, 1872, the Consumer Protection
                 Act, 2019, the Consumer Protection (E-Commerce) Rules, 2020, and
@@ -51,7 +51,7 @@ export default function TermsPage() {
             <Section heading="5. Intellectual property">
                 <p>
                     All content on this website, including the brand name, logos,
-                    designs, 3D models, text and imagery, is the property of SONIQ
+                    designs, 3D models, text and imagery, is the property of Up Your Play
                     Toys and protected under applicable Indian IP laws. You may
                     not reproduce or use it without written permission.
                 </p>

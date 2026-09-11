@@ -7,7 +7,7 @@ const CRIMSON_PRODUCT = {
     code:        "Crimson·MB",
     category:    "Gel Blaster",
     tagline:     "Gel Blaster · High Velocity · Full Auto",
-    eyebrow:     "/// SONIQ Toys · 2026",
+    eyebrow:     "/// Up Your Play · 2026",
     accentColor: "#ef4444",   // tactical red
     accentDeep:  "#b91c1c",
     specs: [

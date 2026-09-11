@@ -230,7 +230,7 @@ body.sheet-open .section-dots {
                     headings, repo-wide. Re-pointed via --font-display so the
                     whole type system swaps from one place.
    .font-mono-tactical → Inter  (all technical labels / nav / spec rows)
-   .font-logo     → Instrument Serif  (the SONIQ logo only) */
+   .font-logo     → Instrument Serif  (the Up Your Play logo only) */
 .font-display {
     font-family: var(--font-display);
     font-weight: 600;

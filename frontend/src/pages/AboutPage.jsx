@@ -42,7 +42,7 @@ export default function AboutPage() {
             <main className="mx-auto max-w-5xl px-6 pb-24 pt-36 sm:px-8 md:pt-44">
                 {/* ── Hero ── */}
                 <span className="reveal-up font-inter text-[11px] font-semibold uppercase tracking-[0.4em] text-[#DA0213]">
-                    /// About SONIQ Toys
+                    /// About Up Your Play
                 </span>
 
                 <h1 className="reveal-up font-instrument mt-5 text-[clamp(40px,8vw,84px)] leading-[0.95] tracking-tight text-[#1a1a1a]">
@@ -52,7 +52,7 @@ export default function AboutPage() {
                 </h1>
 
                 <p className="reveal-up mt-8 max-w-2xl font-inter text-[16px] leading-relaxed text-[#1a1a1a]/65 md:text-[18px]">
-                    SONIQ Toys was born from a love of play. Every Holi and
+                    Up Your Play was born from a love of play. Every Holi and
                     every sunny weekend deserves a blaster that's a joy to
                     hold and a thrill to fire. So we brought serious
                     engineering to the fun: precision barrels, electric drives

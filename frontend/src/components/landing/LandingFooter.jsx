@@ -55,7 +55,7 @@ export default function LandingFooter() {
                     <div>
                         <img
                             src={asset("/assets/logo.png")}
-                            alt="SONIQ Toys"
+                            alt="Up Your Play"
                             draggable="false"
                             loading="lazy"
                             decoding="async"
@@ -165,7 +165,7 @@ export default function LandingFooter() {
 
                 {/* Bottom bar */}
                 <div className="mt-16 flex flex-col items-start justify-between gap-4 border-t border-zinc-800 pt-8 font-mono-tactical text-[10px] uppercase tracking-[0.3em] text-zinc-700 md:flex-row md:items-center">
-                    <span>© 2026 SONIQ Toys · All rights reserved</span>
+                    <span>© 2026 Up Your Play · All rights reserved</span>
                     <div className="flex items-center gap-5">
                         <Link to="/404" className="text-zinc-700 transition-colors hover:text-[#DA0213]">
                             404

@@ -8,66 +8,66 @@ import { useLocation } from "react-router-dom";
 const SITE = "https://www.soniqtoys.com";
 
 const DEFAULT = {
-    title: "SONIQ Toys · Premium Water Guns & Gel Blasters in India",
+    title: "Up Your Play · Premium Water Guns & Gel Blasters in India",
     description:
-        "SONIQ Toys makes premium, precision-engineered water guns and gel blasters in India, built for year-round play: Holi, pool parties, water parks and backyard battles.",
+        "Up Your Play makes premium, precision-engineered water guns and gel blasters in India, built for year-round play: Holi, pool parties, water parks and backyard battles.",
 };
 
 const META = {
     "/": DEFAULT,
     "/about": {
-        title: "About SONIQ Toys · Made in India",
+        title: "About Up Your Play · Made in India",
         description:
-            "The story behind SONIQ Toys: engineering premium water guns and gel blasters in India for players who love precision, power and play.",
+            "The story behind Up Your Play: engineering premium water guns and gel blasters in India for players who love precision, power and play.",
     },
     "/faq": {
-        title: "FAQ · SONIQ Toys",
+        title: "FAQ · Up Your Play",
         description:
-            "Answers about SONIQ water guns and gel blasters: safety, shipping across India, payments, returns, refills and order tracking.",
+            "Answers about Up Your Play water guns and gel blasters: safety, shipping across India, payments, returns, refills and order tracking.",
     },
     "/contact": {
-        title: "Contact SONIQ Toys",
+        title: "Contact Up Your Play",
         description:
-            "Get in touch with SONIQ Toys for product help, orders, returns, grievances or partnership enquiries.",
+            "Get in touch with Up Your Play for product help, orders, returns, grievances or partnership enquiries.",
     },
     "/careers": {
-        title: "Careers at SONIQ Toys · Come Make a Splash",
+        title: "Careers at Up Your Play · Come Make a Splash",
         description:
-            "Help build India's most-loved water blaster brand. Join the SONIQ Toys team across design, engineering, operations, growth and more.",
+            "Help build India's most-loved water blaster brand. Join the Up Your Play team across design, engineering, operations, growth and more.",
     },
     "/returns": {
-        title: "Returns & Shipping · SONIQ Toys",
+        title: "Returns & Shipping · Up Your Play",
         description:
-            "SONIQ Toys returns, refunds and shipping policy for orders across India.",
+            "Up Your Play returns, refunds and shipping policy for orders across India.",
     },
     "/privacy": {
-        title: "Privacy Policy · SONIQ Toys",
+        title: "Privacy Policy · Up Your Play",
         description:
-            "How SONIQ Toys collects, uses and protects your personal data, in line with India's DPDP Act and IT rules.",
+            "How Up Your Play collects, uses and protects your personal data, in line with India's DPDP Act and IT rules.",
     },
     "/terms": {
-        title: "Terms & Conditions · SONIQ Toys",
+        title: "Terms & Conditions · Up Your Play",
         description:
-            "The terms governing use of the SONIQ Toys website and purchase of our products under Indian law.",
+            "The terms governing use of the Up Your Play website and purchase of our products under Indian law.",
     },
     "/product/mp5k": {
-        title: "MP5K Water Gun · Electric, Drum-Fed, Full Auto · SONIQ Toys",
+        title: "MP5K Water Gun · Electric, Drum-Fed, Full Auto · Up Your Play",
         description:
-            "The SONIQ MP5K: an electric, drum-fed, full-auto water gun engineered for long range and relentless soaking.",
+            "The Up Your Play MP5K: an electric, drum-fed, full-auto water gun engineered for long range and relentless soaking.",
     },
     "/product/m416": {
-        title: "M416 Water X · Long-Range Water Gun · SONIQ Toys",
+        title: "M416 Water X · Long-Range Water Gun · Up Your Play",
         description:
-            "The SONIQ M416 Water X: long-range, drum-mag, precision water gun built for backyard dominance.",
+            "The Up Your Play M416 Water X: long-range, drum-mag, precision water gun built for backyard dominance.",
     },
     "/product/crimson": {
-        title: "Crimson Blaster · High-Velocity Gel Blaster · SONIQ Toys",
+        title: "Crimson Blaster · High-Velocity Gel Blaster · Up Your Play",
         description:
-            "The SONIQ Crimson Blaster: a high-velocity tactical gel blaster for fast-paced outdoor play.",
+            "The Up Your Play Crimson Blaster: a high-velocity tactical gel blaster for fast-paced outdoor play.",
     },
     "/coming-soon": {
-        title: "Coming Soon · SONIQ Toys",
-        description: "Something new from SONIQ Toys is charging up. Get early access.",
+        title: "Coming Soon · Up Your Play",
+        description: "Something new from Up Your Play is charging up. Get early access.",
     },
 };
 

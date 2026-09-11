@@ -15,7 +15,7 @@ export default function HeroOverlay() {
                 className="mb-6 flex flex-col items-center gap-3"
             >
                 <span className="font-mono-tactical text-xs font-bold uppercase tracking-[0.5em] text-[color:var(--accent)]">
-                    /// SONIQ Toys · 2026
+                    /// Up Your Play · 2026
                 </span>
                 <span className="brutal wobble inline-flex items-center gap-2 rounded-full bg-[color:var(--accent)] px-4 py-1.5 font-inter text-[12px] font-bold uppercase tracking-[0.28em] text-white sm:text-[13px]">
                     <span className="inline-block h-1.5 w-1.5 rounded-full bg-white/90" />
@@ -30,12 +30,12 @@ export default function HeroOverlay() {
                 style={{ lineHeight: 0.78 }}
             >
                 {/* Two-tone wordmark — the product name in the brand accent,
-                    SONIQ in ink (matches the homepage's coloured headline words). */}
+                    UYP in ink (matches the homepage's coloured headline words). */}
                 <span className="text-[color:var(--accent)]">MP5K</span>
                 <span className="inline-block translate-y-[0.08em] text-[color:var(--accent)]">
                     ·
                 </span>
-                SONIQ
+                UYP
             </h1>
 
             <div

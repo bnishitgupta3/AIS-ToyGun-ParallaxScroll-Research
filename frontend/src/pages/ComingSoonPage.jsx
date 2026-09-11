@@ -33,10 +33,10 @@ export default function ComingSoonPage() {
 
             {/* Top bar — logo (left) + launch badge (right) */}
             <header className="absolute inset-x-0 top-0 z-30 flex items-center justify-between px-6 py-6 sm:px-10">
-                <Link to="/" className="select-none" aria-label="SONIQ — home">
+                <Link to="/" className="select-none" aria-label="Up Your Play — home">
                     <img
                         src={asset("/assets/logo.png")}
-                        alt="SONIQ"
+                        alt="Up Your Play"
                         draggable="false"
                         className="h-8 w-auto sm:h-9"
                     />
@@ -56,7 +56,7 @@ export default function ComingSoonPage() {
                     className="flex w-full flex-col items-center text-center md:w-[52%] md:items-start md:text-left"
                 >
                     <span className="font-inter text-[11px] font-semibold uppercase tracking-[0.4em] text-[#DA0213]">
-                        /// SONIQ Toys · Made in India
+                        /// Up Your Play · Made in India
                     </span>
 
                     <h1 className="font-instrument mt-4 text-[clamp(46px,8.5vw,94px)] leading-[0.9] tracking-tight text-[#1a1a1a]">

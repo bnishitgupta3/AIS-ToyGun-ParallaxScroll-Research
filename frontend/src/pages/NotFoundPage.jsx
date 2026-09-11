@@ -75,7 +75,7 @@ export default function NotFoundPage() {
                         to="/about"
                         className="inline-flex items-center gap-2 rounded-full border border-[#1a1a1a]/25 px-7 py-3 font-inter text-[13px] font-semibold text-[#1a1a1a] transition-all hover:border-[#1a1a1a] hover:bg-[#1a1a1a] hover:text-white"
                     >
-                        About SONIQ
+                        About Up Your Play
                     </Link>
                 </motion.div>
             </main>

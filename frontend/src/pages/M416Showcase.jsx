@@ -7,7 +7,7 @@ const M416_PRODUCT = {
     code:        "M416·WX",
     category:    "Water Gun",
     tagline:     "Fully Electric · Automatic · Trigger-Only",
-    eyebrow:     "/// SONIQ Toys · 2026",
+    eyebrow:     "/// Up Your Play · 2026",
     accentColor: "#3b82f6",   // electric blue
     accentDeep:  "#1d4ed8",
     mrp:         1099,

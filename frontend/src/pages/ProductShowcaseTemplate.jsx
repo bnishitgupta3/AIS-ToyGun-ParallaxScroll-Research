@@ -40,11 +40,11 @@ gsap.registerPlugin(ScrollTrigger);
 
 const DEFAULTS = {
     modelUrl:          asset("/assets/watergun.glb"),
-    name:              "SONIQ Toys",
-    code:              "SONIQ·001",
+    name:              "Up Your Play",
+    code:              "UYP·001",
     category:          "Water Gun",
     tagline:           "Electric Water Gun",
-    eyebrow:           "/// SONIQ Toys · 2026",
+    eyebrow:           "/// Up Your Play · 2026",
     accentColor:       "#ff5a1f",
     accentDeep:        "#d63f0a",
     specs: [
@@ -57,7 +57,7 @@ const DEFAULTS = {
     ],
     specsTitle:        ["Built for", "The Backyard", "Battle."],
     specsDescription:  "Drum-fed, electric drive, full-auto rated.",
-    version:           "v1.0.0 · SONIQ-001",
+    version:           "v1.0.0 · UYP-001",
     unitLabel:         "7B-001 · In stock",
     homeLink:          "/",
 };
@@ -587,7 +587,7 @@ export default function ProductShowcaseTemplate({ product: rawProduct }) {
                         </div>
 
                         <div className="mt-20 flex items-center justify-between telemetry-label text-zinc-500">
-                            <span>© 2026 SONIQ Toys</span>
+                            <span>© 2026 Up Your Play</span>
                             <span>{product.version}</span>
                         </div>
                     </div>

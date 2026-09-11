@@ -37,7 +37,7 @@ export default function HeroSection({ heroRef }) {
                     aria-hidden="true"
                     className="invisible mb-4 font-inter text-[10px] font-semibold uppercase tracking-[0.4em] text-[#DA0213] sm:mb-5 sm:text-[12px]"
                 >
-                    /// SONIQ Toys · Made for Sunlit Days, All Year
+                    /// Up Your Play · Made for Sunlit Days, All Year
                 </span>
 
                 <h1
