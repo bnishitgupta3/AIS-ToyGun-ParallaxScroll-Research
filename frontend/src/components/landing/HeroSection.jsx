@@ -35,7 +35,7 @@ export default function HeroSection({ heroRef }) {
                     stays put — the line is intentionally not shown. */}
                 <span
                     aria-hidden="true"
-                    className="invisible mb-4 font-inter text-[10px] font-semibold uppercase tracking-[0.4em] text-[#DA0213] sm:mb-5 sm:text-[12px]"
+                    className="invisible mb-4 font-inter text-[10px] font-semibold uppercase tracking-[0.4em] text-[#F8290A] sm:mb-5 sm:text-[12px]"
                 >
                     /// Up Your Play · Made for Sunlit Days, All Year
                 </span>
@@ -68,7 +68,7 @@ export default function HeroSection({ heroRef }) {
                 >
                     <a
                         href="#arsenal"
-                        className="group relative inline-flex items-center gap-2 overflow-hidden rounded-full bg-[#DA0213] px-7 py-3 font-inter text-[13px] font-semibold text-white shadow-[inset_0_-4px_4px_rgba(255,255,255,0.39)] transition-all hover:brightness-110"
+                        className="group relative inline-flex items-center gap-2 overflow-hidden rounded-full bg-[#F8290A] px-7 py-3 font-inter text-[13px] font-semibold text-white shadow-[inset_0_-4px_4px_rgba(255,255,255,0.39)] transition-all hover:brightness-110"
                     >
                         <span
                             aria-hidden="true"

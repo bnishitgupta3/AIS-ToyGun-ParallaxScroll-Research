@@ -76,7 +76,7 @@ export default function ContactPage() {
             <main className="mx-auto max-w-6xl px-6 pb-24 pt-36 sm:px-8 md:pt-44">
                 {/* ── Hero ── */}
                 <div className="reveal-up max-w-2xl">
-                    <span className="font-inter text-[11px] font-semibold uppercase tracking-[0.4em] text-[#DA0213]">
+                    <span className="font-inter text-[11px] font-semibold uppercase tracking-[0.4em] text-[#F8290A]">
                         /// We're listening
                     </span>
                     <h1 className="font-instrument mt-4 text-[clamp(40px,7vw,76px)] leading-[0.95] tracking-tight text-[#1a1a1a]">
@@ -97,9 +97,9 @@ export default function ContactPage() {
                             <a
                                 key={title}
                                 href={href}
-                                className="group flex flex-col rounded-2xl border border-black/10 bg-white/55 p-5 backdrop-blur-sm transition-all duration-300 hover:-translate-y-0.5 hover:border-[#DA0213]/50 hover:bg-white/80 hover:shadow-[0_12px_30px_-12px_rgba(249,115,22,0.35)]"
+                                className="group flex flex-col rounded-2xl border border-black/10 bg-white/55 p-5 backdrop-blur-sm transition-all duration-300 hover:-translate-y-0.5 hover:border-[#F8290A]/50 hover:bg-white/80 hover:shadow-[0_12px_30px_-12px_rgba(249,115,22,0.35)]"
                             >
-                                <span className="grid h-11 w-11 place-items-center rounded-xl bg-[#DA0213]/10 text-[#DA0213] transition-colors group-hover:bg-[#DA0213] group-hover:text-white">
+                                <span className="grid h-11 w-11 place-items-center rounded-xl bg-[#F8290A]/10 text-[#F8290A] transition-colors group-hover:bg-[#F8290A] group-hover:text-white">
                                     <Icon size={20} strokeWidth={2} />
                                 </span>
                                 <h2 className="font-instrument mt-4 text-[20px] leading-tight text-[#1a1a1a]">
@@ -108,7 +108,7 @@ export default function ContactPage() {
                                 <p className="mt-1 font-inter text-[13px] leading-relaxed text-[#1a1a1a]/55">
                                     {blurb}
                                 </p>
-                                <span className="mt-3 font-inter text-[14px] font-semibold text-[#DA0213]">
+                                <span className="mt-3 font-inter text-[14px] font-semibold text-[#F8290A]">
                                     {value}
                                 </span>
                             </a>
@@ -126,8 +126,8 @@ export default function ContactPage() {
                         </p>
 
                         {status === "success" ? (
-                            <div className="mt-6 rounded-2xl border border-[#DA0213]/30 bg-[#DA0213]/[0.06] p-6">
-                                <div className="font-mono-tactical text-[11px] font-bold uppercase tracking-[0.3em] text-[#DA0213]">
+                            <div className="mt-6 rounded-2xl border border-[#F8290A]/30 bg-[#F8290A]/[0.06] p-6">
+                                <div className="font-mono-tactical text-[11px] font-bold uppercase tracking-[0.3em] text-[#F8290A]">
                                     Message sent
                                 </div>
                                 <p className="mt-2 font-inter text-[14px] leading-relaxed text-[#1a1a1a]/70">
@@ -145,7 +145,7 @@ export default function ContactPage() {
                                         onChange={set("name")}
                                         placeholder="Your name"
                                         disabled={status === "submitting"}
-                                        className="w-full flex-1 rounded-xl border border-black/15 bg-white/70 px-4 py-3 font-inter text-[14px] text-[#1a1a1a] placeholder-[#1a1a1a]/35 outline-none transition-colors focus:border-[#DA0213] disabled:opacity-60"
+                                        className="w-full flex-1 rounded-xl border border-black/15 bg-white/70 px-4 py-3 font-inter text-[14px] text-[#1a1a1a] placeholder-[#1a1a1a]/35 outline-none transition-colors focus:border-[#F8290A] disabled:opacity-60"
                                     />
                                     <input
                                         type="email"
@@ -154,7 +154,7 @@ export default function ContactPage() {
                                         onChange={set("email")}
                                         placeholder="you@email.com"
                                         disabled={status === "submitting"}
-                                        className="w-full flex-1 rounded-xl border border-black/15 bg-white/70 px-4 py-3 font-inter text-[14px] text-[#1a1a1a] placeholder-[#1a1a1a]/35 outline-none transition-colors focus:border-[#DA0213] disabled:opacity-60"
+                                        className="w-full flex-1 rounded-xl border border-black/15 bg-white/70 px-4 py-3 font-inter text-[14px] text-[#1a1a1a] placeholder-[#1a1a1a]/35 outline-none transition-colors focus:border-[#F8290A] disabled:opacity-60"
                                     />
                                 </div>
                                 <textarea
@@ -164,7 +164,7 @@ export default function ContactPage() {
                                     onChange={set("message")}
                                     placeholder="How can we help?"
                                     disabled={status === "submitting"}
-                                    className="w-full resize-none rounded-xl border border-black/15 bg-white/70 px-4 py-3 font-inter text-[14px] text-[#1a1a1a] placeholder-[#1a1a1a]/35 outline-none transition-colors focus:border-[#DA0213] disabled:opacity-60"
+                                    className="w-full resize-none rounded-xl border border-black/15 bg-white/70 px-4 py-3 font-inter text-[14px] text-[#1a1a1a] placeholder-[#1a1a1a]/35 outline-none transition-colors focus:border-[#F8290A] disabled:opacity-60"
                                 />
                                 {status === "error" && (
                                     <p className="font-inter text-[13px] text-red-500">{errorMsg}</p>
@@ -172,7 +172,7 @@ export default function ContactPage() {
                                 <button
                                     type="submit"
                                     disabled={status === "submitting"}
-                                    className="group relative inline-flex items-center justify-center gap-2 self-start overflow-hidden rounded-full bg-[#DA0213] px-7 py-3 font-inter text-[13px] font-semibold uppercase tracking-[0.15em] text-white shadow-[inset_0_-4px_4px_rgba(255,255,255,0.39)] transition-all hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-70"
+                                    className="group relative inline-flex items-center justify-center gap-2 self-start overflow-hidden rounded-full bg-[#F8290A] px-7 py-3 font-inter text-[13px] font-semibold uppercase tracking-[0.15em] text-white shadow-[inset_0_-4px_4px_rgba(255,255,255,0.39)] transition-all hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-70"
                                 >
                                     <span
                                         aria-hidden="true"
@@ -185,7 +185,7 @@ export default function ContactPage() {
                                 </button>
                                 <p className="font-inter text-[11px] leading-snug text-[#1a1a1a]/45">
                                     By sending, you agree to our{" "}
-                                    <Link to="/privacy" className="text-[#DA0213] underline underline-offset-2">
+                                    <Link to="/privacy" className="text-[#F8290A] underline underline-offset-2">
                                         Privacy Policy
                                     </Link>
                                     .
@@ -198,11 +198,11 @@ export default function ContactPage() {
                 {/* ── Footer note ── */}
                 <p className="mt-12 font-inter text-[13px] text-[#1a1a1a]/45">
                     Prefer self-serve? Most answers live on our{" "}
-                    <Link to="/faq" className="text-[#DA0213] underline-offset-2 hover:underline">
+                    <Link to="/faq" className="text-[#F8290A] underline-offset-2 hover:underline">
                         FAQ
                     </Link>{" "}
                     and{" "}
-                    <Link to="/returns" className="text-[#DA0213] underline-offset-2 hover:underline">
+                    <Link to="/returns" className="text-[#F8290A] underline-offset-2 hover:underline">
                         Returns &amp; Shipping
                     </Link>{" "}
                     pages. We typically reply within one business day.

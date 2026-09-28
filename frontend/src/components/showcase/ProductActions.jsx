@@ -19,7 +19,7 @@ import { trackEvent } from "@/lib/analytics";
        onClick with a window.location.href to cart.checkoutUrl. */
 export default function ProductActions({
     product,
-    accent = "#DA0213",
+    accent = "#F8290A",
     variant = "light",
 }) {
     const { openDrawer } = useCart();

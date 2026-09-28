@@ -41,7 +41,7 @@ export default function AboutPage() {
 
             <main className="mx-auto max-w-5xl px-6 pb-24 pt-36 sm:px-8 md:pt-44">
                 {/* ── Hero ── */}
-                <span className="reveal-up font-inter text-[11px] font-semibold uppercase tracking-[0.4em] text-[#DA0213]">
+                <span className="reveal-up font-inter text-[11px] font-semibold uppercase tracking-[0.4em] text-[#F8290A]">
                     /// About Up Your Play
                 </span>
 
@@ -86,7 +86,7 @@ export default function AboutPage() {
                                 key={v.title}
                                 className="reveal-up rounded-2xl border border-black/10 bg-white/50 p-7 backdrop-blur-sm"
                             >
-                                <span className="font-inter text-[11px] font-semibold uppercase tracking-[0.25em] text-[#DA0213]">
+                                <span className="font-inter text-[11px] font-semibold uppercase tracking-[0.25em] text-[#F8290A]">
                                     0{i + 1}
                                 </span>
                                 <h3 className="font-instrument mt-3 text-2xl text-[#1a1a1a]">
@@ -112,7 +112,7 @@ export default function AboutPage() {
                     </div>
                     <Link
                         to="/"
-                        className="group relative inline-flex items-center gap-2 overflow-hidden rounded-full bg-[#DA0213] px-7 py-3 font-inter text-[13px] font-semibold text-white shadow-[inset_0_-4px_4px_rgba(255,255,255,0.39)] transition-all hover:brightness-110"
+                        className="group relative inline-flex items-center gap-2 overflow-hidden rounded-full bg-[#F8290A] px-7 py-3 font-inter text-[13px] font-semibold text-white shadow-[inset_0_-4px_4px_rgba(255,255,255,0.39)] transition-all hover:brightness-110"
                     >
                         <span
                             aria-hidden="true"

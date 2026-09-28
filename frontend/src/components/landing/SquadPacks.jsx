@@ -65,7 +65,7 @@ function AddBundle({ bundleKey, name, price }) {
                 type="button"
                 onClick={add}
                 className="brutal-accent flex h-11 w-full items-center justify-center gap-2 rounded-full font-inter text-[12px] font-bold uppercase tracking-[0.16em] transition hover:brightness-110"
-                style={{ background: "#DA0213", color: "#F8F31A" }}
+                style={{ background: "#F8290A", color: "#F8F31A" }}
             >
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.8">
                     <path d="M12 5v14M5 12h14" />
@@ -77,7 +77,7 @@ function AddBundle({ bundleKey, name, price }) {
     return (
         <div
             className="brutal-accent flex h-11 w-full items-center justify-between rounded-full pl-1 pr-1"
-            style={{ background: "#DA0213", color: "#F8F31A" }}
+            style={{ background: "#F8290A", color: "#F8F31A" }}
         >
             <button type="button" aria-label="Remove one" onClick={dec} className="grid h-9 w-9 place-items-center rounded-full text-2xl leading-none transition hover:bg-white/15">−</button>
             <span className="flex-1 text-center font-inter text-[15px] font-bold tabular-nums">{qty}</span>
@@ -94,7 +94,7 @@ function BundleCard({ b }) {
     return (
         <div
             className="brutal-accent group flex flex-col overflow-hidden rounded-3xl bg-[#18181b] transition-transform duration-200 hover:-translate-y-1.5"
-            style={{ "--accent": "#DA0213" }}
+            style={{ "--accent": "#F8290A" }}
         >
             {/* Contents — the constituent blasters on a light tile, each with a
                 quantity badge, so the pack's value is obvious at a glance. */}
@@ -102,7 +102,7 @@ function BundleCard({ b }) {
                 {b.badge && (
                     <span
                         className="absolute left-3 top-3 z-10 rounded-full px-3 py-1 font-inter text-[10px] font-bold uppercase tracking-[0.18em] shadow-sm"
-                        style={{ background: "#F8F31A", color: "#DA0213" }}
+                        style={{ background: "#F8F31A", color: "#F8290A" }}
                     >
                         {b.badge}
                     </span>
@@ -122,7 +122,7 @@ function BundleCard({ b }) {
                                     <div className="flex items-center justify-center py-0.5">
                                         <span
                                             className="grid h-6 w-6 place-items-center rounded-full font-inter text-[15px] font-bold leading-none text-white shadow"
-                                            style={{ background: "#DA0213" }}
+                                            style={{ background: "#F8290A" }}
                                         >
                                             +
                                         </span>
@@ -139,7 +139,7 @@ function BundleCard({ b }) {
                                     />
                                     <span
                                         className="absolute bottom-1 left-1 rounded-full px-2.5 py-0.5 font-inter text-[11px] font-bold uppercase tracking-[0.08em] tabular-nums text-white shadow-sm"
-                                        style={{ background: "#DA0213" }}
+                                        style={{ background: "#F8290A" }}
                                     >
                                         {it.qty}× {p.name.split(" ")[0]}
                                     </span>
@@ -151,13 +151,13 @@ function BundleCard({ b }) {
             </div>
 
             {/* Accent seam. */}
-            <div className="h-[3px] w-full" style={{ background: "#DA0213" }} />
+            <div className="h-[3px] w-full" style={{ background: "#F8290A" }} />
 
             {/* Name + contents summary + price. */}
             <div className="flex flex-1 flex-col px-4 pt-3.5">
                 <span
                     className="font-inter self-start rounded-full px-2.5 py-0.5 text-[9px] font-bold uppercase tracking-[0.24em]"
-                    style={{ background: "#F8F31A", color: "#DA0213" }}
+                    style={{ background: "#F8F31A", color: "#F8290A" }}
                 >
                     {units} Blasters
                 </span>
@@ -192,7 +192,7 @@ export default function SquadPacks({ packsRef }) {
             className="relative z-10 w-full px-6 pb-24 pt-4 md:px-12 md:pb-28"
         >
             <div className="mx-auto max-w-7xl">
-                <span className="font-inter text-xs font-semibold uppercase tracking-[0.4em] text-[#DA0213]">
+                <span className="font-inter text-xs font-semibold uppercase tracking-[0.4em] text-[#F8290A]">
                     /// Squad Packs
                 </span>
                 <h2 className="font-instrument mt-4 text-[clamp(40px,7vw,84px)] leading-[0.9] text-[#1a1a1a]">

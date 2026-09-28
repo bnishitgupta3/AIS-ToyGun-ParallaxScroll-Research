@@ -135,7 +135,7 @@ export default function BuyNowSheet({ open, product, onClose }) {
                     sticky action bar below stays put (fixes the "can't tell it
                     scrolls / CTA buried at the bottom" feel on phones). */}
                 <div className="flex-1 min-h-0 overflow-y-auto overscroll-contain px-7 pb-6 pt-10 md:px-10 md:pt-16">
-                    <span className="font-inter text-[11px] font-semibold uppercase tracking-[0.35em] text-[#DA0213]">
+                    <span className="font-inter text-[11px] font-semibold uppercase tracking-[0.35em] text-[#F8290A]">
                         {hasItems ? "/// Your cart" : "/// Almost here"}
                     </span>
 
@@ -185,7 +185,7 @@ export default function BuyNowSheet({ open, product, onClose }) {
                                                             <Link
                                                                 to={c.link}
                                                                 onClick={onClose}
-                                                                className="text-[#DA0213] underline-offset-2 transition hover:underline"
+                                                                className="text-[#F8290A] underline-offset-2 transition hover:underline"
                                                             >
                                                                 {c.name}
                                                             </Link>
@@ -210,7 +210,7 @@ export default function BuyNowSheet({ open, product, onClose }) {
                                             </>
                                         )}
                                         {line.price != null && (
-                                            <div className="mt-1 font-inter text-[13px] font-bold tabular-nums text-[#DA0213]">
+                                            <div className="mt-1 font-inter text-[13px] font-bold tabular-nums text-[#F8290A]">
                                                 {inr(line.price * line.qty)}
                                             </div>
                                         )}
@@ -243,7 +243,7 @@ export default function BuyNowSheet({ open, product, onClose }) {
                                             type="button"
                                             aria-label={`Remove ${line.name} from cart`}
                                             onClick={() => setQty(line.key, 0)}
-                                            className="grid h-8 w-8 shrink-0 place-items-center rounded-full text-[#1a1a1a]/35 transition hover:bg-[#DA0213]/10 hover:text-[#DA0213]"
+                                            className="grid h-8 w-8 shrink-0 place-items-center rounded-full text-[#1a1a1a]/35 transition hover:bg-[#F8290A]/10 hover:text-[#F8290A]"
                                         >
                                             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round">
                                                 <path d="M3 6h18" />
@@ -269,9 +269,9 @@ export default function BuyNowSheet({ open, product, onClose }) {
                         <button
                             type="button"
                             onClick={goToSquadPacks}
-                            className="group mt-5 flex w-full items-center gap-3.5 rounded-2xl border border-[#DA0213]/25 bg-[#DA0213]/[0.05] p-4 text-left transition hover:bg-[#DA0213]/[0.09]"
+                            className="group mt-5 flex w-full items-center gap-3.5 rounded-2xl border border-[#F8290A]/25 bg-[#F8290A]/[0.05] p-4 text-left transition hover:bg-[#F8290A]/[0.09]"
                         >
-                            <span className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-[#DA0213]/[0.12] text-[#DA0213]">
+                            <span className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-[#F8290A]/[0.12] text-[#F8290A]">
                                 <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                                     <circle cx="9" cy="8" r="3.2" />
                                     <path d="M15.5 6.2a3 3 0 0 1 0 5.6" />
@@ -285,11 +285,11 @@ export default function BuyNowSheet({ open, product, onClose }) {
                                 </span>
                                 <span className="mt-0.5 block font-inter text-[12.5px] leading-snug text-[#1a1a1a]/60">
                                     Grab a Squad Pack and save up to{" "}
-                                    <b className="font-bold text-[#DA0213]">{inr(MAX_BUNDLE_SAVING)}</b>{" "}
+                                    <b className="font-bold text-[#F8290A]">{inr(MAX_BUNDLE_SAVING)}</b>{" "}
                                     vs buying singly.
                                 </span>
                             </span>
-                            <span className="shrink-0 whitespace-nowrap font-inter text-[11px] font-bold uppercase tracking-[0.14em] text-[#DA0213] transition group-hover:translate-x-0.5">
+                            <span className="shrink-0 whitespace-nowrap font-inter text-[11px] font-bold uppercase tracking-[0.14em] text-[#F8290A] transition group-hover:translate-x-0.5">
                                 Shop →
                             </span>
                         </button>
@@ -305,21 +305,21 @@ export default function BuyNowSheet({ open, product, onClose }) {
                                     <span>2026</span>
                                 </div>
                                 <div className="h-1.5 w-full overflow-hidden rounded-full bg-[#1a1a1a]/10">
-                                    <div className="buy-now-charge h-full rounded-full bg-[#DA0213]" />
+                                    <div className="buy-now-charge h-full rounded-full bg-[#F8290A]" />
                                 </div>
                             </div>
 
                             <ul className="mt-9 space-y-3 font-inter text-[14px] text-[#1a1a1a]/75">
                                 <li className="flex items-start gap-2.5">
-                                    <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-[#DA0213]" />
+                                    <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-[#F8290A]" />
                                     Early-access pricing for everyone on the list
                                 </li>
                                 <li className="flex items-start gap-2.5">
-                                    <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-[#DA0213]" />
+                                    <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-[#F8290A]" />
                                     Free shipping across India on launch week
                                 </li>
                                 <li className="flex items-start gap-2.5">
-                                    <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-[#DA0213]" />
+                                    <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-[#F8290A]" />
                                     First refills bundled, while stocks last
                                 </li>
                             </ul>
@@ -408,7 +408,7 @@ export default function BuyNowSheet({ open, product, onClose }) {
                                         · {blasters} blaster{blasters === 1 ? "" : "s"}
                                     </span>
                                 </div>
-                                <div className="font-inter text-[22px] font-extrabold tabular-nums text-[#DA0213]">
+                                <div className="font-inter text-[22px] font-extrabold tabular-nums text-[#F8290A]">
                                     {inr(subtotal)}
                                 </div>
                             </div>
@@ -424,7 +424,7 @@ export default function BuyNowSheet({ open, product, onClose }) {
                     <NotifyMe
                         productName={product?.name || (hasItems ? "checkout" : "launch")}
                         source={hasItems ? "checkout-launch" : "buy-now-launch"}
-                        accent="#DA0213"
+                        accent="#F8290A"
                     />
                 </div>
             </div>

@@ -70,7 +70,7 @@ export default function LandingFooter() {
                                 <a
                                     key={s}
                                     href="#"
-                                    className="flex h-9 w-9 items-center justify-center rounded-full border border-zinc-800 font-mono-tactical text-[10px] font-bold text-zinc-500 transition-all hover:border-[#DA0213] hover:text-[#DA0213]"
+                                    className="flex h-9 w-9 items-center justify-center rounded-full border border-zinc-800 font-mono-tactical text-[10px] font-bold text-zinc-500 transition-all hover:border-[#F8290A] hover:text-[#F8290A]"
                                 >
                                     {s}
                                 </a>
@@ -79,7 +79,7 @@ export default function LandingFooter() {
                     </div>
 
                     <div>
-                        <span className="font-mono-tactical text-[11px] font-bold uppercase tracking-[0.3em] text-[#DA0213]">
+                        <span className="font-mono-tactical text-[11px] font-bold uppercase tracking-[0.3em] text-[#F8290A]">
                             /// Drop Alerts
                         </span>
                         <p className="mt-2 text-sm text-zinc-500">
@@ -96,7 +96,7 @@ export default function LandingFooter() {
                             </div>
                         )}
                         {status === "success" ? (
-                            <p className="mt-5 font-mono-tactical text-sm text-[#DA0213]">
+                            <p className="mt-5 font-mono-tactical text-sm text-[#F8290A]">
                                 You're on the list. ✓
                             </p>
                         ) : (
@@ -107,13 +107,13 @@ export default function LandingFooter() {
                                     onChange={(e) => setEmail(e.target.value)}
                                     placeholder="your@email.com"
                                     disabled={status === "submitting"}
-                                    className="flex-1 rounded-full border border-zinc-700 bg-zinc-900 px-5 py-3 font-mono-tactical text-sm text-white placeholder-zinc-600 outline-none transition-colors focus:border-[#DA0213] disabled:opacity-60"
+                                    className="flex-1 rounded-full border border-zinc-700 bg-zinc-900 px-5 py-3 font-mono-tactical text-sm text-white placeholder-zinc-600 outline-none transition-colors focus:border-[#F8290A] disabled:opacity-60"
                                     required
                                 />
                                 <button
                                     type="submit"
                                     disabled={status === "submitting"}
-                                    className="rounded-full bg-[#DA0213] px-6 py-3 font-mono-tactical text-[11px] font-bold uppercase tracking-[0.2em] text-black transition-all hover:bg-[#DA0213] disabled:opacity-70"
+                                    className="rounded-full bg-[#F8290A] px-6 py-3 font-mono-tactical text-[11px] font-bold uppercase tracking-[0.2em] text-black transition-all hover:bg-[#F8290A] disabled:opacity-70"
                                 >
                                     {status === "submitting" ? "…" : "Join"}
                                 </button>
@@ -125,7 +125,7 @@ export default function LandingFooter() {
                         {status !== "success" && (
                             <p className="mt-2 font-inter text-[11px] leading-snug text-zinc-600">
                                 No spam. See our{" "}
-                                <Link to="/privacy" className="text-zinc-500 underline underline-offset-2 hover:text-[#DA0213]">
+                                <Link to="/privacy" className="text-zinc-500 underline underline-offset-2 hover:text-[#F8290A]">
                                     Privacy Policy
                                 </Link>
                                 .
@@ -151,7 +151,7 @@ export default function LandingFooter() {
                                         ) : (
                                             <Link
                                                 to={item.to}
-                                                className="text-sm text-zinc-400 transition-colors hover:text-[#DA0213]"
+                                                className="text-sm text-zinc-400 transition-colors hover:text-[#F8290A]"
                                             >
                                                 {item.label}
                                             </Link>
@@ -167,7 +167,7 @@ export default function LandingFooter() {
                 <div className="mt-16 flex flex-col items-start justify-between gap-4 border-t border-zinc-800 pt-8 font-mono-tactical text-[10px] uppercase tracking-[0.3em] text-zinc-700 md:flex-row md:items-center">
                     <span>© 2026 Up Your Play · All rights reserved</span>
                     <div className="flex items-center gap-5">
-                        <Link to="/404" className="text-zinc-700 transition-colors hover:text-[#DA0213]">
+                        <Link to="/404" className="text-zinc-700 transition-colors hover:text-[#F8290A]">
                             404
                         </Link>
                     </div>

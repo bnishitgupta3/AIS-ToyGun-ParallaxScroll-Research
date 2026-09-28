@@ -158,7 +158,7 @@ class AppErrorBoundary extends Component {
                             sessionStorage.removeItem("__chunkReloadAt");
                             window.location.reload();
                         }}
-                        className="rounded-full bg-[#DA0213] px-6 py-2.5 font-inter text-[14px] font-semibold text-white"
+                        className="rounded-full bg-[#F8290A] px-6 py-2.5 font-inter text-[14px] font-semibold text-white"
                     >
                         Reload
                     </button>

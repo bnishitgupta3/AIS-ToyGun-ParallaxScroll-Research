@@ -25,7 +25,7 @@ export default function LegalLayout({ eyebrow, title, updated, children }) {
             <LandingNav />
 
             <main className="mx-auto max-w-3xl px-6 pb-24 pt-36 sm:px-8 md:pt-44">
-                <span className="reveal-up font-inter text-[11px] font-semibold uppercase tracking-[0.4em] text-[#DA0213]">
+                <span className="reveal-up font-inter text-[11px] font-semibold uppercase tracking-[0.4em] text-[#F8290A]">
                     {eyebrow}
                 </span>
 

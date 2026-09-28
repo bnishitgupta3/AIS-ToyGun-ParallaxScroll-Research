@@ -173,11 +173,11 @@ export const PRODUCT_LOOKUP = {
     "/product/crimson": { name: "Crimson Blaster", sub: "Gel Blaster", accent: "#ef4444", comingSoon: true },
     /* Squad packs (bundles) — each is a single cart line. Flagged `bundle` so
        they're excluded from the cross-sell CATALOG below. */
-    "/bundle/duo":   { name: "Duo Pack",   sub: "Bundle", accent: "#DA0213", price: 1699, bundle: true, units: 2,
+    "/bundle/duo":   { name: "Duo Pack",   sub: "Bundle", accent: "#F8290A", price: 1699, bundle: true, units: 2,
         contents: [{ link: "/product/mp5k", qty: 1, name: "MP5K" }, { link: "/product/m416", qty: 1, name: "M416" }] },
-    "/bundle/squad": { name: "Squad Pack", sub: "Bundle", accent: "#DA0213", price: 3299, bundle: true, units: 4,
+    "/bundle/squad": { name: "Squad Pack", sub: "Bundle", accent: "#F8290A", price: 3299, bundle: true, units: 4,
         contents: [{ link: "/product/mp5k", qty: 2, name: "MP5K" }, { link: "/product/m416", qty: 2, name: "M416" }] },
-    "/bundle/party": { name: "Party Pack", sub: "Bundle", accent: "#DA0213", price: 4799, bundle: true, units: 6,
+    "/bundle/party": { name: "Party Pack", sub: "Bundle", accent: "#F8290A", price: 4799, bundle: true, units: 6,
         contents: [{ link: "/product/mp5k", qty: 3, name: "MP5K" }, { link: "/product/m416", qty: 3, name: "M416" }] },
 };
 
