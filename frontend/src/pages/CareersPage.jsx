@@ -121,14 +121,14 @@ export default function CareersPage() {
                             way to talk.
                         </p>
                         <a
-                            href="mailto:careers@soniqtoys.in?subject=I%20want%20to%20work%20at%20Up%20Your%20Play"
+                            href="mailto:careers@upyourplay.in?subject=I%20want%20to%20work%20at%20Up%20Your%20Play"
                             className="group relative mt-7 inline-flex items-center gap-2 overflow-hidden rounded-full bg-[#F8290A] px-7 py-3.5 font-inter text-[13px] font-semibold uppercase tracking-[0.15em] text-white shadow-[inset_0_-4px_4px_rgba(255,255,255,0.39)] transition-all hover:brightness-110"
                         >
                             <span
                                 aria-hidden="true"
                                 className="pointer-events-none absolute left-[10%] top-[1px] h-4 w-[80%] rounded-[12px] bg-gradient-to-b from-[#FFD9B8] to-transparent transition-transform duration-200 group-hover:scale-x-105"
                             />
-                            <span className="relative">careers@soniqtoys.in</span>
+                            <span className="relative">careers@upyourplay.in</span>
                             <ArrowRight
                                 size={15}
                                 strokeWidth={2.6}

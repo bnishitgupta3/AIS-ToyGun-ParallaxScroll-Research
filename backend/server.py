@@ -97,7 +97,7 @@ _cors_origins = [o.strip() for o in os.environ.get("CORS_ORIGINS", "").split(","
 if not _cors_origins:
     raise RuntimeError(
         "CORS_ORIGINS must be set to an explicit comma-separated allowlist "
-        "(e.g. 'https://www.soniqtoys.com'). Refusing to start with a wildcard."
+        "(e.g. 'https://upyourplay.in'). Refusing to start with a wildcard."
     )
 
 app.add_middleware(

@@ -77,7 +77,7 @@ export default function TermsPage() {
             <Section heading="8. Grievance redressal">
                 <p>
                     For any complaint, contact our Grievance Officer at
-                    grievance@soniqtoys.in. Consumers may also approach the
+                    grievance@upyourplay.in. Consumers may also approach the
                     National Consumer Helpline (1915) or the relevant Consumer
                     Disputes Redressal Commission.
                 </p>

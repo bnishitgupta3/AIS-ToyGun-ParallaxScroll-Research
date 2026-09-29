@@ -5,7 +5,7 @@ import { useLocation } from "react-router-dom";
    public/index.html cover the first paint (what non-JS crawlers see); this
    keeps them correct as the user/Googlebot navigates between routes. */
 
-const SITE = "https://www.soniqtoys.com";
+const SITE = "https://upyourplay.in";
 
 const DEFAULT = {
     title: "Up Your Play · Premium Water Guns & Gel Blasters in India",

@@ -1,8 +1,9 @@
-name: Deploy to AWS (soniqtoys.com)
+name: Deploy to AWS (upyourplay.in)
 
 # Ships THIS branch to the S3 bucket + CloudFront distribution that serve
-# www.soniqtoys.com. The apex soniqtoys.com already 301-redirects to www, so
-# both hostnames are covered by one deploy.
+# upyourplay.in (apex = primary). www.upyourplay.in 301-redirects to the apex,
+# so both hostnames are covered by one deploy. Same bucket + distribution that
+# served soniqtoys.com (which should now 301-redirect to upyourplay.in).
 #
 # Triggers:
 #   • push to redesign/arsenal-photo-grid → auto-deploys on every commit (the

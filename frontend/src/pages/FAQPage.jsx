@@ -67,8 +67,8 @@ export default function FAQPage() {
             <Section heading="My blaster arrived damaged or defective. What do I do?">
                 <p>
                     Please report it within 48 hours of delivery by emailing{" "}
-                    <a href="mailto:support@soniqtoys.in" className="text-[#F8290A] underline-offset-2 hover:underline">
-                        support@soniqtoys.in
+                    <a href="mailto:support@upyourplay.in" className="text-[#F8290A] underline-offset-2 hover:underline">
+                        support@upyourplay.in
                     </a>{" "}
                     with your order ID and photos or a short video of the issue.
                     We will arrange a replacement or refund at no extra cost.
@@ -87,8 +87,8 @@ export default function FAQPage() {
                 <p>
                     Once your order ships, you will receive a tracking link by email
                     and SMS. For any help, contact{" "}
-                    <a href="mailto:support@soniqtoys.in" className="text-[#F8290A] underline-offset-2 hover:underline">
-                        support@soniqtoys.in
+                    <a href="mailto:support@upyourplay.in" className="text-[#F8290A] underline-offset-2 hover:underline">
+                        support@upyourplay.in
                     </a>{" "}
                     with your order ID.
                 </p>
