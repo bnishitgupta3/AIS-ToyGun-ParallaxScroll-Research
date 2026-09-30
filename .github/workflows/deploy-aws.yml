@@ -6,14 +6,14 @@ name: Deploy to AWS (upyourplay.in)
 # served soniqtoys.com (which should now 301-redirect to upyourplay.in).
 #
 # Triggers:
-#   • push to redesign/arsenal-photo-grid → auto-deploys on every commit (the
-#     same pattern as the Cloudflare preview). Delete this block if you'd rather
-#     deploy manually only.
+#   • push to rebrand/up-your-play → auto-deploys on every commit (the live
+#     branch; redesign/arsenal-photo-grid stays frozen as a rollback). Delete
+#     this block if you'd rather deploy manually only.
 #   • workflow_dispatch → a manual "Run workflow" button. NOTE: GitHub only shows
 #     that button when this file also exists on the repo's DEFAULT branch (main).
 on:
   push:
-    branches: [redesign/arsenal-photo-grid]
+    branches: [rebrand/up-your-play]
   workflow_dispatch:
 
 # Never let two prod deploys race; cancel an in-flight one if a newer push lands.
