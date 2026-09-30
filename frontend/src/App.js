@@ -33,11 +33,11 @@ import TopMarquee            from "@/components/landing/TopMarquee";
 import { CartProvider, useCart } from "@/lib/cart";
 import { trackPageview } from "@/lib/analytics";
 
-/* Analytics: report a page_view on SPA route changes. GA4 itself is loaded
-   only after the visitor accepts cookies (see <CookieConsent>), and the
-   initial page_view is fired there on accept — so here we skip the first run
-   and only track SUBSEQUENT navigations, avoiding a double count. If consent
-   is denied, trackPageview is a no-op (gtag never loads). */
+/* Analytics: report a page_view on SPA route changes. GA4 loads by default for
+   every visitor (opt-out model; see <CookieConsent>), which also fires the
+   initial page_view — so here we skip the first run and only track SUBSEQUENT
+   navigations, avoiding a double count. If a visitor opted out, trackPageview
+   is a no-op (gtag is disabled / never loaded). */
 function Analytics() {
     const { pathname } = useLocation();
     const first = useRef(true);

@@ -38,3 +38,11 @@ export function trackEvent(name, params = {}) {
     if (!GA_ID || typeof window === "undefined" || !window.gtag) return;
     window.gtag("event", name, params);
 }
+
+/* Opt-out: GA4/gtag checks this global per Measurement ID and stops sending
+   hits once it's set, so a visitor who opts out isn't tracked (this session or
+   future ones, combined with the persisted "denied" consent). */
+export function disableAnalytics() {
+    if (!GA_ID || typeof window === "undefined") return;
+    window[`ga-disable-${GA_ID}`] = true;
+}

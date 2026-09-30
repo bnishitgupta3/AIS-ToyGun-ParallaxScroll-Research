@@ -1,8 +1,9 @@
 /* Cookie-consent state (analytics/GA4 gating).
 
-   Privacy-preserving default: analytics does NOT load until the visitor
-   explicitly accepts. Choice persists in localStorage so the banner only shows
-   once. Values: "granted" | "denied" | null (undecided). */
+   Opt-OUT model: analytics loads by default for every visitor; a visitor can
+   opt out via the notice (stores "denied"), which disables GA immediately and
+   on future visits. Choice persists in localStorage so the notice shows once.
+   Values: "granted" (dismissed) | "denied" (opted out) | null (new visitor). */
 
 const KEY = "uyp-cookie-consent";
 
