@@ -252,8 +252,8 @@ export default function BuildYourSquad({ packsRef }) {
                     whole bundle to your cart. Perfect for Holi mornings and squad water fights.
                 </p>
 
-                <div className="mt-10 grid grid-cols-1 gap-6 lg:grid-cols-3">
-                    <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:col-span-2">
+                <div className="mt-10 grid grid-cols-1 items-start gap-6 lg:grid-cols-3">
+                    <div className="grid grid-cols-2 content-start gap-4 self-start sm:grid-cols-3 lg:col-span-2">
                         {PRODUCTS.map((p) => (
                             <ProductCard
                                 key={p.link}
