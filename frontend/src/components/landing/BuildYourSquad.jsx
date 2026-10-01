@@ -137,12 +137,12 @@ function Panel({ units, mrpTotal, pct, finalTotal, youSave, contents, onCheckout
                 </div>
             </div>
 
-            <p className="mt-4 font-inter text-[12px] leading-relaxed text-[#1a1a1a]/70">
+            <p className="mt-4 text-center font-inter text-[14px] font-bold leading-snug text-[#1a1a1a]/80">
                 {units === 0
                     ? "Add blasters to unlock bundle savings."
                     : next
                         ? `Add ${next.units - units} more to unlock ${next.pct}% off${next.perk ? " + " + next.perk : ""}.`
-                        : "Top squad discount unlocked — free shipping included."}
+                        : "Top squad discount unlocked. Free shipping included."}
             </p>
 
             {/* Contents */}
