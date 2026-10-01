@@ -115,17 +115,11 @@ function HeroMarquee() {
    "cloud", two structure rings, and a spray of droplets (a few as brutal pops).
    Purely decorative; sits behind the gun image. */
 const SPLASH_DROPS = [
-    { x: 11, y: 22, s: 18, o: 0.85, pop: true },
-    { x: 90, y: 18, s: 14, o: 0.8 },
-    { x: 85, y: 70, s: 20, o: 0.75, pop: true },
-    { x: 15, y: 73, s: 13, o: 0.7 },
-    { x: 50, y: 5, s: 11, o: 0.55 },
-    { x: 5, y: 48, s: 10, o: 0.6 },
-    { x: 96, y: 46, s: 15, o: 0.65 },
-    { x: 32, y: 92, s: 10, o: 0.5 },
-    { x: 72, y: 93, s: 13, o: 0.55 },
-    { x: 78, y: 8, s: 8, o: 0.5 },
-    { x: 22, y: 10, s: 7, o: 0.45 },
+    { x: 17, y: 16, s: 16, o: 0.85, pop: true },
+    { x: 88, y: 34, s: 9, o: 0.65 },
+    { x: 80, y: 82, s: 13, o: 0.6, pop: true },
+    { x: 28, y: 86, s: 8, o: 0.5 },
+    { x: 95, y: 63, s: 7, o: 0.5 },
 ];
 
 function HeroSplash({ accent }) {
@@ -220,6 +214,9 @@ export default function HeroCarousel({ heroRef }) {
         pausedRef.current = true;
     };
     const onTouchEnd = (e) => {
+        // Always resume autoplay once the finger lifts — otherwise a single tap
+        // or scroll-start on the hero would pause the carousel forever.
+        pausedRef.current = false;
         if (touchX.current == null) {
             return;
         }
@@ -249,11 +246,17 @@ export default function HeroCarousel({ heroRef }) {
             ref={heroRef}
             id="hero"
             className="relative w-full overflow-hidden px-5 pt-28 sm:px-8 sm:pt-32"
-            onMouseEnter={() => {
-                pausedRef.current = true;
+            onPointerEnter={(e) => {
+                // Pause on hover for a real mouse only. A touch can emit a
+                // synthetic enter with no matching leave, which used to stick.
+                if (e.pointerType === "mouse") {
+                    pausedRef.current = true;
+                }
             }}
-            onMouseLeave={() => {
-                pausedRef.current = false;
+            onPointerLeave={(e) => {
+                if (e.pointerType === "mouse") {
+                    pausedRef.current = false;
+                }
             }}
             onTouchStart={onTouchStart}
             onTouchEnd={onTouchEnd}
