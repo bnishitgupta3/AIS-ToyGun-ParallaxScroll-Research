@@ -29,56 +29,70 @@ const activeTier = (u) => TIERS.reduce((acc, t) => (u >= t.units ? t : acc), nul
 const nextTier = (u) => TIERS.find((t) => u < t.units) || null;
 
 function ProductCard({ p, qty, onAdd, onInc, onDec }) {
+    const accent = p.accent;
     const comingSoon = p.comingSoon;
+    const img = p.image ? asset("/assets/products/" + p.image) : null;
     return (
-        <div className={`relative flex flex-col overflow-hidden rounded-2xl border border-black/10 bg-[#f4f3f8] ${comingSoon ? "opacity-70" : ""}`}>
-            {qty > 0 && (
-                <span className="absolute left-2 top-2 z-10 grid h-6 min-w-[1.5rem] place-items-center rounded-full px-1.5 font-inter text-[12px] font-bold tabular-nums text-white" style={{ background: RED }}>
-                    {qty}
-                </span>
-            )}
-            <img
-                src={asset("/assets/products/" + p.image)}
-                alt={p.name}
-                draggable="false"
-                loading="lazy"
-                decoding="async"
-                className="aspect-[5/3] w-full object-contain p-3"
-            />
-            <div className="flex flex-1 flex-col px-3 pb-3">
-                <h3 className="font-inter text-[14px] font-bold leading-tight text-[#1a1a1a]">{p.name}</h3>
+        <div
+            className="brutal-accent group flex flex-col overflow-hidden rounded-3xl bg-[#18181b]"
+            style={{ "--accent": accent }}
+        >
+            {/* Photo — edge-to-edge on its light studio bg, matching the Arsenal cards. */}
+            <div className="relative aspect-[5/3] overflow-hidden bg-[#f1f0ed]">
                 {comingSoon ? (
-                    <span className="mt-1.5 inline-block self-start rounded-full bg-black/5 px-2.5 py-1 font-inter text-[10px] font-bold uppercase tracking-[0.14em] text-[#1a1a1a]/50">
-                        Coming soon
+                    <span className="absolute right-2 top-2 z-10 rounded-full px-2.5 py-1 font-inter text-[9px] font-bold uppercase tracking-[0.18em] text-white" style={{ background: accent }}>
+                        Coming Soon
                     </span>
+                ) : qty > 0 ? (
+                    <span className="absolute left-2 top-2 z-10 grid h-6 min-w-[1.5rem] place-items-center rounded-full px-1.5 font-inter text-[12px] font-bold tabular-nums text-white" style={{ background: accent }}>
+                        {qty}
+                    </span>
+                ) : null}
+                {img && (
+                    <img src={img} alt={p.name} draggable="false" loading="lazy" decoding="async" className="absolute inset-0 h-full w-full object-cover object-center" />
+                )}
+            </div>
+
+            {/* Accent seam. */}
+            <div className="h-[3px] w-full" style={{ background: accent }} />
+
+            {/* Name + price — accent name on charcoal, like the Arsenal. */}
+            <div className="flex flex-1 flex-col px-3 pt-3">
+                <h3 className="font-instrument text-[clamp(20px,2.4vw,26px)] leading-[0.95]" style={{ color: accent }}>
+                    {p.name}
+                </h3>
+                {comingSoon ? (
+                    <span className="mt-1.5 font-inter text-[10px] font-semibold uppercase tracking-[0.18em] text-white/45">Launching soon</span>
                 ) : (
-                    <>
-                        <div className="mt-0.5 flex items-baseline gap-1.5">
-                            <span className="font-inter text-[15px] font-bold text-[#1a1a1a]">{inr(p.price)}</span>
-                            {p.mrp > p.price && (
-                                <span className="font-inter text-[12px] text-[#1a1a1a]/40 line-through">{inr(p.mrp)}</span>
-                            )}
-                        </div>
-                        <div className="mt-2.5">
-                            {qty === 0 ? (
-                                <button
-                                    type="button"
-                                    onClick={onAdd}
-                                    className="flex h-10 w-full items-center justify-center gap-1.5 rounded-full font-inter text-[12px] font-bold uppercase tracking-[0.14em] text-white transition hover:brightness-110"
-                                    style={{ background: RED }}
-                                >
-                                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.8"><path d="M12 5v14M5 12h14" /></svg>
-                                    Add
-                                </button>
-                            ) : (
-                                <div className="flex h-10 w-full items-center justify-between rounded-full px-1 text-white" style={{ background: RED }}>
-                                    <button type="button" aria-label="Remove one" onClick={onDec} className="grid h-8 w-8 place-items-center rounded-full text-xl leading-none transition hover:bg-white/15">−</button>
-                                    <span className="flex-1 text-center font-inter text-[15px] font-bold tabular-nums">{qty}</span>
-                                    <button type="button" aria-label="Add one" onClick={onInc} className="grid h-8 w-8 place-items-center rounded-full text-xl leading-none transition hover:bg-white/15">+</button>
-                                </div>
-                            )}
-                        </div>
-                    </>
+                    <div className="mt-1 flex items-baseline gap-1.5">
+                        <span className="font-inter text-[15px] font-bold text-white">{inr(p.price)}</span>
+                        {p.mrp > p.price && <span className="font-inter text-[12px] text-white/40 line-through">{inr(p.mrp)}</span>}
+                    </div>
+                )}
+            </div>
+
+            {/* Action. */}
+            <div className="mt-3 border-t border-white/10 px-3 pb-3 pt-3">
+                {comingSoon ? (
+                    <div className="flex h-10 w-full items-center justify-center rounded-full border-2 border-white/15 font-inter text-[11px] font-bold uppercase tracking-[0.14em] text-white/40">
+                        Coming soon
+                    </div>
+                ) : qty === 0 ? (
+                    <button
+                        type="button"
+                        onClick={onAdd}
+                        className="brutal flex h-10 w-full items-center justify-center gap-1.5 rounded-full font-inter text-[12px] font-bold uppercase tracking-[0.14em] text-white transition hover:brightness-105"
+                        style={{ background: accent }}
+                    >
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.8"><path d="M12 5v14M5 12h14" /></svg>
+                        Add
+                    </button>
+                ) : (
+                    <div className="brutal flex h-10 w-full items-center justify-between rounded-full px-1 text-white" style={{ background: accent }}>
+                        <button type="button" aria-label="Remove one" onClick={onDec} className="grid h-8 w-8 place-items-center rounded-full text-xl leading-none transition hover:bg-white/20">−</button>
+                        <span className="flex-1 text-center font-inter text-[15px] font-bold tabular-nums">{qty}</span>
+                        <button type="button" aria-label="Add one" onClick={onInc} className="grid h-8 w-8 place-items-center rounded-full text-xl leading-none transition hover:bg-white/20">+</button>
+                    </div>
                 )}
             </div>
         </div>
