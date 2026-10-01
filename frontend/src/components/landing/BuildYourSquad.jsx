@@ -16,6 +16,7 @@ import { trackEvent } from "@/lib/analytics";
    subtotal pick it up exactly like a preset pack. */
 
 const RED = "#F8290A";
+const YELLOW = "#F8F31A"; // brand yellow — highlights a tier once its count is reached
 const inr = (n) => "₹" + Number(Math.round(n)).toLocaleString("en-IN");
 
 const TIERS = [
@@ -108,8 +109,8 @@ function Panel({ units, mrpTotal, pct, finalTotal, youSave, contents, onCheckout
                         return (
                             <div key={t.units} className="absolute top-1/2 -translate-x-1/2 -translate-y-1/2" style={{ left: `${(t.units / MAX_UNITS) * 100}%` }}>
                                 <div
-                                    className={`grid h-6 w-6 place-items-center rounded-full border-2 font-inter text-[10px] font-bold tabular-nums ${on ? "text-white" : "border-black/15 bg-white text-[#1a1a1a]/50"}`}
-                                    style={on ? { background: RED, borderColor: RED } : undefined}
+                                    className={`grid h-6 w-6 place-items-center rounded-full border-2 font-inter text-[10px] font-bold tabular-nums ${on ? "text-[#1a1a1a]" : "border-black/15 bg-white text-[#1a1a1a]/50"}`}
+                                    style={on ? { background: YELLOW, borderColor: YELLOW } : undefined}
                                 >
                                     {t.units}
                                 </div>
