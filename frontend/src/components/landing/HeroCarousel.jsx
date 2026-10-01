@@ -1,0 +1,340 @@
+import { useEffect, useRef, useState } from "react";
+import { Link } from "react-router-dom";
+import { useCart, useCartItem } from "@/lib/cart";
+import { asset } from "@/lib/asset";
+import { trackEvent } from "@/lib/analytics";
+import { PRODUCTS } from "@/components/landing/ArsenalSection";
+
+/**
+ * Hero — a shoppable PRODUCT CAROUSEL (Up&Run style) that replaces the old
+ * video-background + 3-D-gun hero. Each slide is a split layout: a rotated
+ * neo-brutalist sticker badge + heavy headline + price + CTA on the left, and
+ * the gun floating at a dynamic angle over a coloured burst on the right.
+ *
+ * Why this over the video:
+ *   • Weight — three transparent WebP cutouts total ~0.18 MB vs the video's
+ *     multi-MB payload (and no autoplay/decode fragility on mobile).
+ *   • It's product-led and prerender-friendly (plain <img> + text), so react-snap
+ *     captures real headlines for SEO and the LCP image paints immediately.
+ *
+ * Slides CROSSFADE (opacity), not a translateX track — a fade has no "rewind"
+ * glitch when it loops from the last slide back to the first. Autoplay pauses on
+ * hover/touch, when the tab is hidden, and under prefers-reduced-motion. Mobile
+ * is swipeable; desktop gets edge arrows. The initial (active) slide renders in
+ * its shown state so nothing can get "stuck" invisible.
+ */
+
+const inr = (n) => "₹" + Number(n).toLocaleString("en-IN");
+
+/* Transparent cutout for a product image: mp5k.jpg -> /cutout/mp5k.webp */
+const cutout = (img) =>
+    asset("/assets/products/cutout/" + img.replace(/\.(jpg|jpeg|png)$/i, ".webp"));
+
+/* Hero marketing copy per product id. Kept here (not in the shared PRODUCTS
+   data) so the headline voice lives in one place. No long dashes in copy. */
+const COPY = {
+    p0: {
+        badge: "Bestseller",
+        lead: "Full-auto water power,",
+        emph: "zero pumping.",
+        desc: "Trigger-only electric blaster with a 300ml drum-fed tank that soaks up to 10 metres.",
+    },
+    p1: {
+        badge: "Crowd favourite",
+        lead: "Rapid-fire splashes,",
+        emph: "all summer long.",
+        desc: "Electric auto-fire and a 300ml drum, built for backyard battles and Holi mornings.",
+    },
+    p2: {
+        badge: "Coming soon",
+        lead: "The Crimson",
+        emph: "hits different.",
+        desc: "High-velocity gel blaster. 18m range, 11 shots a second. Be first in line.",
+    },
+};
+
+const SLIDES = PRODUCTS.map((p) => ({ ...p, ...(COPY[p.id] || {}) }));
+const COUNT = SLIDES.length;
+
+export default function HeroCarousel({ heroRef }) {
+    const { openDrawer } = useCart();
+    /* One counter per buyable gun (fixed order -> hooks are stable). The
+       coming-soon Crimson has no cart path, so it isn't wired. */
+    const mp5k = useCartItem("/product/mp5k");
+    const m416 = useCartItem("/product/m416");
+    const CART = { "/product/mp5k": mp5k, "/product/m416": m416 };
+
+    const [active, setActive] = useState(0);
+    const pausedRef = useRef(false);
+    const touchX = useRef(null);
+
+    /* Resolve reduced-motion once (SSR/prerender-safe). */
+    const [reduce] = useState(
+        () =>
+            typeof window !== "undefined" &&
+            typeof window.matchMedia === "function" &&
+            window.matchMedia("(prefers-reduced-motion: reduce)").matches,
+    );
+
+    const go = (i) => setActive(((i % COUNT) + COUNT) % COUNT);
+    const next = () => go(active + 1);
+    const prev = () => go(active - 1);
+
+    /* Autoplay. Re-armed whenever `active` changes, so a manual jump still gets
+       a full dwell before the next auto-advance. Paused on hover/touch and while
+       the tab is hidden; disabled entirely under reduced-motion. */
+    useEffect(() => {
+        if (reduce) {
+            return undefined;
+        }
+        const id = setInterval(() => {
+            if (pausedRef.current || (typeof document !== "undefined" && document.hidden)) {
+                return;
+            }
+            setActive((a) => (a + 1) % COUNT);
+        }, 6000);
+        return () => clearInterval(id);
+    }, [active, reduce]);
+
+    /* Swipe (mobile). A decisive horizontal drag flips to the next/prev slide. */
+    const onTouchStart = (e) => {
+        touchX.current = e.touches[0].clientX;
+        pausedRef.current = true;
+    };
+    const onTouchEnd = (e) => {
+        if (touchX.current == null) {
+            return;
+        }
+        const dx = e.changedTouches[0].clientX - touchX.current;
+        touchX.current = null;
+        if (Math.abs(dx) > 44) {
+            if (dx < 0) {
+                next();
+            } else {
+                prev();
+            }
+        }
+    };
+
+    const addToCart = (slide) => {
+        const item = CART[slide.link];
+        if (!item) {
+            return;
+        }
+        item.inc();
+        trackEvent("hero_add_to_cart", { product: slide.name, price: slide.price });
+        openDrawer();
+    };
+
+    return (
+        <section
+            ref={heroRef}
+            id="hero"
+            className="relative w-full overflow-hidden px-5 pb-14 pt-28 sm:px-8 sm:pt-32"
+            onMouseEnter={() => {
+                pausedRef.current = true;
+            }}
+            onMouseLeave={() => {
+                pausedRef.current = false;
+            }}
+            onTouchStart={onTouchStart}
+            onTouchEnd={onTouchEnd}
+            aria-roledescription="carousel"
+            aria-label="Featured blasters"
+        >
+            <div className="relative mx-auto w-full max-w-6xl">
+                {/* ── Slide viewport ── absolute, crossfading slides. min-h is sized
+                       to comfortably hold the tallest slide at each breakpoint. */}
+                <div className="relative min-h-[560px] sm:min-h-[66svh] lg:min-h-[72svh]">
+                    {SLIDES.map((s, i) => {
+                        const show = i === active;
+                        const accent = s.accent;
+                        const buyable = !s.comingSoon;
+                        const pct =
+                            s.mrp && s.price ? Math.round(((s.mrp - s.price) / s.mrp) * 100) : 0;
+                        return (
+                            <div
+                                key={s.id}
+                                className={`absolute inset-0 flex items-center ${show ? "z-10" : "z-0 pointer-events-none"}`}
+                                aria-hidden={show ? undefined : "true"}
+                            >
+                                <div
+                                    className={`grid w-full items-center gap-5 transition-all duration-[650ms] ease-[cubic-bezier(0.16,1,0.3,1)] sm:gap-8 lg:grid-cols-2 lg:gap-10 ${
+                                        show ? "opacity-100 translate-y-0" : "opacity-0 translate-y-5"
+                                    }`}
+                                >
+                                    {/* ── RIGHT (image first on mobile) ── */}
+                                    <div className="relative order-1 flex items-center justify-center lg:order-2">
+                                        {/* accent burst behind the gun */}
+                                        <span
+                                            aria-hidden="true"
+                                            className="pointer-events-none absolute left-1/2 top-1/2 h-[82%] w-[88%] -translate-x-1/2 -translate-y-1/2 rounded-full blur-2xl"
+                                            style={{ background: accent, opacity: 0.18 }}
+                                        />
+                                        <span
+                                            aria-hidden="true"
+                                            className="pointer-events-none absolute left-1/2 top-1/2 h-[58%] w-[58%] -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-dashed"
+                                            style={{ borderColor: accent, opacity: 0.25 }}
+                                        />
+                                        {/* floating droplets */}
+                                        <span
+                                            aria-hidden="true"
+                                            className="brutal pointer-events-none absolute right-[8%] top-[10%] h-4 w-4 rounded-full"
+                                            style={{ background: accent }}
+                                        />
+                                        <span
+                                            aria-hidden="true"
+                                            className="pointer-events-none absolute bottom-[12%] left-[10%] h-2.5 w-2.5 rounded-full"
+                                            style={{ background: accent, opacity: 0.6 }}
+                                        />
+
+                                        <img
+                                            src={cutout(s.image)}
+                                            alt={`${s.name} ${s.sub}`}
+                                            draggable="false"
+                                            loading={i === 0 ? "eager" : "lazy"}
+                                            decoding="async"
+                                            className="relative w-[min(78vw,400px)] -rotate-6 drop-shadow-[0_26px_34px_rgba(0,0,0,0.25)] lg:w-[520px] xl:w-[560px]"
+                                        />
+                                    </div>
+
+                                    {/* ── LEFT (text) ── */}
+                                    <div className="order-2 text-center lg:order-1 lg:text-left">
+                                        <span
+                                            className="brutal inline-block -rotate-2 rounded-full px-4 py-1.5 font-inter text-[10px] font-bold uppercase tracking-[0.18em] text-white sm:text-[11px]"
+                                            style={{ background: accent }}
+                                        >
+                                            {s.badge} · {s.sub}
+                                        </span>
+
+                                        <h1 className="mt-4 font-instrument text-[clamp(34px,7vw,68px)] font-bold leading-[0.95] tracking-tight text-[#1a1a1a] sm:mt-5">
+                                            {s.lead}
+                                            <br />
+                                            <span style={{ color: accent }}>{s.emph}</span>
+                                        </h1>
+
+                                        <p className="mx-auto mt-3.5 max-w-md font-inter text-[13.5px] leading-relaxed text-[#1a1a1a]/70 sm:text-[15px] lg:mx-0">
+                                            {s.desc}
+                                        </p>
+
+                                        {/* price (buyable only) */}
+                                        {buyable && (
+                                            <div className="mt-4 flex items-center justify-center gap-2.5 lg:justify-start">
+                                                <span className="font-instrument text-[26px] leading-none text-[#1a1a1a]">
+                                                    {inr(s.price)}
+                                                </span>
+                                                {s.mrp > s.price && (
+                                                    <span className="font-inter text-[14px] text-[#1a1a1a]/40 line-through">
+                                                        {inr(s.mrp)}
+                                                    </span>
+                                                )}
+                                                {pct > 0 && (
+                                                    <span
+                                                        className="rounded-full px-2 py-0.5 font-inter text-[11px] font-bold"
+                                                        style={{ background: `${accent}1f`, color: accent }}
+                                                    >
+                                                        Save {pct}%
+                                                    </span>
+                                                )}
+                                            </div>
+                                        )}
+
+                                        {/* CTAs */}
+                                        <div className="mt-6 flex items-center justify-center gap-3 lg:justify-start">
+                                            {buyable ? (
+                                                <>
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => addToCart(s)}
+                                                        className="brutal brutal-press inline-flex items-center gap-2 rounded-full px-6 py-3 font-inter text-[13px] font-bold uppercase tracking-[0.12em] text-white"
+                                                        style={{ background: accent }}
+                                                    >
+                                                        Add to cart
+                                                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.6">
+                                                            <path d="M5 12h14M13 5l7 7-7 7" />
+                                                        </svg>
+                                                    </button>
+                                                    <Link
+                                                        to={s.link}
+                                                        className="group inline-flex items-center gap-1.5 font-inter text-[12px] font-semibold uppercase tracking-[0.14em] text-[#1a1a1a]/75 transition hover:gap-2.5 hover:text-[#1a1a1a]"
+                                                    >
+                                                        View details
+                                                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4">
+                                                            <path d="M5 12h14M13 5l7 7-7 7" />
+                                                        </svg>
+                                                    </Link>
+                                                </>
+                                            ) : (
+                                                <>
+                                                    <Link
+                                                        to={s.link}
+                                                        className="brutal brutal-press inline-flex items-center gap-2 rounded-full px-6 py-3 font-inter text-[13px] font-bold uppercase tracking-[0.12em] text-white"
+                                                        style={{ background: accent }}
+                                                    >
+                                                        Notify me
+                                                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4">
+                                                            <path d="M4 4h16v12H5.2L4 18.5V4z" />
+                                                        </svg>
+                                                    </Link>
+                                                    <Link
+                                                        to={s.link}
+                                                        className="group inline-flex items-center gap-1.5 font-inter text-[12px] font-semibold uppercase tracking-[0.14em] text-[#1a1a1a]/75 transition hover:gap-2.5 hover:text-[#1a1a1a]"
+                                                    >
+                                                        Sneak peek
+                                                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4">
+                                                            <path d="M5 12h14M13 5l7 7-7 7" />
+                                                        </svg>
+                                                    </Link>
+                                                </>
+                                            )}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        );
+                    })}
+                </div>
+
+                {/* ── Dots ── */}
+                <div className="mt-5 flex items-center justify-center gap-2.5">
+                    {SLIDES.map((s, i) => (
+                        <button
+                            key={s.id}
+                            type="button"
+                            aria-label={`Show ${s.name}`}
+                            aria-current={i === active ? "true" : undefined}
+                            onClick={() => go(i)}
+                            className={`h-2.5 rounded-full border-2 border-[#1a1a1a] transition-all ${
+                                i === active ? "w-8" : "w-2.5 bg-white"
+                            }`}
+                            style={i === active ? { background: SLIDES[active].accent } : undefined}
+                        />
+                    ))}
+                </div>
+            </div>
+
+            {/* ── Edge arrows ── pinned to the SECTION edges (desktop) so they sit
+                   in the outer gutter, clear of the headline and the gun. */}
+            <button
+                type="button"
+                aria-label="Previous blaster"
+                onClick={prev}
+                className="brutal absolute left-2 top-1/2 z-20 hidden h-11 w-11 -translate-y-1/2 place-items-center rounded-full bg-white text-[#1a1a1a] transition hover:bg-[#1a1a1a] hover:text-white sm:left-4 sm:grid"
+            >
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.6">
+                    <path d="M15 5l-7 7 7 7" />
+                </svg>
+            </button>
+            <button
+                type="button"
+                aria-label="Next blaster"
+                onClick={next}
+                className="brutal absolute right-2 top-1/2 z-20 hidden h-11 w-11 -translate-y-1/2 place-items-center rounded-full bg-white text-[#1a1a1a] transition hover:bg-[#1a1a1a] hover:text-white sm:right-4 sm:grid"
+            >
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.6">
+                    <path d="M9 5l7 7-7 7" />
+                </svg>
+            </button>
+        </section>
+    );
+}
