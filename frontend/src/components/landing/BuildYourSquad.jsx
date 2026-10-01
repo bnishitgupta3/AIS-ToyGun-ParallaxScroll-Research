@@ -100,28 +100,40 @@ function Panel({ units, mrpTotal, pct, finalTotal, youSave, contents, onCheckout
             </div>
             <p className="mt-1 font-inter text-[12px] text-[#1a1a1a]/55">The bigger your squad, the more you save.</p>
 
-            {/* Tier progress */}
-            <div className="mt-6 px-1">
+            {/* Tier progress — nodes on the bar, each discount % aligned beneath its node */}
+            <div className="mt-6 px-3">
                 <div className="relative h-1.5 rounded-full bg-black/10">
                     <div className="absolute inset-y-0 left-0 rounded-full transition-all duration-300" style={{ width: `${pf * 100}%`, background: RED }} />
                     {TIERS.map((t) => {
                         const on = units >= t.units;
                         return (
-                            <div key={t.units} className="absolute top-1/2 -translate-x-1/2 -translate-y-1/2" style={{ left: `${(t.units / MAX_UNITS) * 100}%` }}>
-                                <div
-                                    className={`grid h-6 w-6 place-items-center rounded-full border-2 font-inter text-[10px] font-bold tabular-nums ${on ? "text-[#1a1a1a]" : "border-black/15 bg-white text-[#1a1a1a]/50"}`}
-                                    style={on ? { background: YELLOW, borderColor: YELLOW } : undefined}
-                                >
-                                    {t.units}
-                                </div>
+                            <div
+                                key={t.units}
+                                className={`absolute top-1/2 grid h-6 w-6 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full border-2 font-inter text-[10px] font-bold tabular-nums ${on ? "text-[#1a1a1a]" : "border-black/15 bg-white text-[#1a1a1a]/50"}`}
+                                style={{ left: `${(t.units / MAX_UNITS) * 100}%`, ...(on ? { background: YELLOW, borderColor: YELLOW } : {}) }}
+                            >
+                                {t.units}
                             </div>
                         );
                     })}
                 </div>
-                <div className="mt-3 flex justify-between font-inter text-[10px] font-bold uppercase tracking-[0.08em]">
-                    {TIERS.map((t) => (
-                        <span key={t.units} className={units >= t.units ? "text-[#F8290A]" : "text-[#1a1a1a]/45"}>{t.pct}% off</span>
-                    ))}
+                <div className="relative mt-3 h-5">
+                    {TIERS.map((t) => {
+                        const on = units >= t.units;
+                        return (
+                            <span
+                                key={t.units}
+                                className="absolute top-0 -translate-x-1/2 whitespace-nowrap font-inter text-[10px] font-bold uppercase tracking-[0.06em]"
+                                style={{ left: `${(t.units / MAX_UNITS) * 100}%` }}
+                            >
+                                {on ? (
+                                    <span className="rounded-full px-1.5 py-0.5" style={{ background: YELLOW, color: RED }}>{t.pct}% off</span>
+                                ) : (
+                                    <span className="text-[#1a1a1a]/45">{t.pct}% off</span>
+                                )}
+                            </span>
+                        );
+                    })}
                 </div>
             </div>
 
