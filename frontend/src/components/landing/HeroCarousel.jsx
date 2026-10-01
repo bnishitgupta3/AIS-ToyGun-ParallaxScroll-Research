@@ -56,6 +56,60 @@ const COPY = {
 const SLIDES = PRODUCTS.map((p) => ({ ...p, ...(COPY[p.id] || {}) }));
 const COUNT = SLIDES.length;
 
+/* ── Bottom marquee ── a second scrolling bar under the carousel leaning on
+   "Made in India" plus the key specs. Reuses the global .marquee / .marquee-track
+   mechanics (two identical reels, a seamless 0 -> -50% loop) but runs SLOWER than
+   the top announcement bar (60s vs 38s) and sits in a dark bar, so the two read
+   as distinct. It pauses on hover and respects reduced-motion (the track's
+   animation is gated on it in index.css; the inline duration only overrides the
+   speed). "India" lines are highlighted in brand yellow. */
+const MARQUEE_ITEMS = [
+    { t: "Proudly Made in India", hot: true },
+    { t: "Full-auto, zero pumping" },
+    { t: "300ml drum-fed tank" },
+    { t: "8-10m soak range" },
+    { t: "Up to 45 min play time" },
+    { t: "Free shipping across India", hot: true },
+    { t: "Built for Holi and every sunlit day" },
+];
+const MARQUEE_REEL = [...MARQUEE_ITEMS, ...MARQUEE_ITEMS];
+
+function MarqueeReel({ hidden }) {
+    return (
+        <div
+            className="flex shrink-0 items-center whitespace-nowrap"
+            aria-hidden={hidden ? "true" : undefined}
+        >
+            {MARQUEE_REEL.map((it, i) => (
+                <span key={i} className="flex items-center">
+                    <span
+                        className={`px-5 font-instrument text-[12.5px] font-bold uppercase tracking-[0.1em] sm:text-[14px] ${
+                            it.hot ? "text-[#F8F31A]" : "text-white"
+                        }`}
+                    >
+                        {it.t}
+                    </span>
+                    <span aria-hidden="true" className="text-[10px] text-[#F8290A]">
+                        ◆
+                    </span>
+                </span>
+            ))}
+        </div>
+    );
+}
+
+/* Full-bleed (negative-margin) dark bar pinned to the bottom of the hero. */
+function HeroMarquee() {
+    return (
+        <div className="marquee relative -mx-5 mt-8 flex items-center overflow-hidden bg-[#1a1a1a] py-2.5 sm:-mx-8 sm:mt-10">
+            <div className="marquee-track flex min-w-max" style={{ animationDuration: "60s" }}>
+                <MarqueeReel />
+                <MarqueeReel hidden />
+            </div>
+        </div>
+    );
+}
+
 export default function HeroCarousel({ heroRef }) {
     const { openDrawer } = useCart();
     /* One counter per buyable gun (fixed order -> hooks are stable). The
@@ -130,7 +184,7 @@ export default function HeroCarousel({ heroRef }) {
         <section
             ref={heroRef}
             id="hero"
-            className="relative w-full overflow-hidden px-5 pb-14 pt-28 sm:px-8 sm:pt-32"
+            className="relative w-full overflow-hidden px-5 pt-28 sm:px-8 sm:pt-32"
             onMouseEnter={() => {
                 pausedRef.current = true;
             }}
@@ -312,6 +366,9 @@ export default function HeroCarousel({ heroRef }) {
                     ))}
                 </div>
             </div>
+
+            {/* ── Bottom marquee — "Made in India" + specs, slower than the top bar ── */}
+            <HeroMarquee />
 
             {/* ── Edge arrows ── pinned to the SECTION edges (desktop) so they sit
                    in the outer gutter, clear of the headline and the gun. */}
