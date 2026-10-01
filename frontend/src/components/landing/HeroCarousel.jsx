@@ -83,13 +83,13 @@ function MarqueeReel({ hidden }) {
             {MARQUEE_REEL.map((it, i) => (
                 <span key={i} className="flex items-center">
                     <span
-                        className={`px-5 font-instrument text-[12.5px] font-bold uppercase tracking-[0.1em] sm:text-[14px] ${
+                        className={`px-6 font-instrument text-[15px] font-bold uppercase tracking-[0.1em] sm:text-[17px] ${
                             it.hot ? "text-[#F8F31A]" : "text-white"
                         }`}
                     >
                         {it.t}
                     </span>
-                    <span aria-hidden="true" className="text-[10px] text-[#F8290A]">
+                    <span aria-hidden="true" className="text-[12px] text-[#F8290A]">
                         ◆
                     </span>
                 </span>
@@ -101,11 +101,75 @@ function MarqueeReel({ hidden }) {
 /* Full-bleed (negative-margin) dark bar pinned to the bottom of the hero. */
 function HeroMarquee() {
     return (
-        <div className="marquee relative -mx-5 mt-8 flex items-center overflow-hidden bg-[#1a1a1a] py-2.5 sm:-mx-8 sm:mt-10">
+        <div className="marquee relative -mx-5 mt-8 flex items-center overflow-hidden bg-[#1a1a1a] py-3 sm:-mx-8 sm:mt-10">
             <div className="marquee-track flex min-w-max" style={{ animationDuration: "60s" }}>
                 <MarqueeReel />
                 <MarqueeReel hidden />
             </div>
+        </div>
+    );
+}
+
+/* ── Vibrant splash behind the gun ── an Up&Run-style colour burst in the slide
+   accent: a bright radial core, a couple of soft offset blobs for an organic
+   "cloud", two structure rings, and a spray of droplets (a few as brutal pops).
+   Purely decorative; sits behind the gun image. */
+const SPLASH_DROPS = [
+    { x: 11, y: 22, s: 18, o: 0.85, pop: true },
+    { x: 90, y: 18, s: 14, o: 0.8 },
+    { x: 85, y: 70, s: 20, o: 0.75, pop: true },
+    { x: 15, y: 73, s: 13, o: 0.7 },
+    { x: 50, y: 5, s: 11, o: 0.55 },
+    { x: 5, y: 48, s: 10, o: 0.6 },
+    { x: 96, y: 46, s: 15, o: 0.65 },
+    { x: 32, y: 92, s: 10, o: 0.5 },
+    { x: 72, y: 93, s: 13, o: 0.55 },
+    { x: 78, y: 8, s: 8, o: 0.5 },
+    { x: 22, y: 10, s: 7, o: 0.45 },
+];
+
+function HeroSplash({ accent }) {
+    return (
+        <div aria-hidden="true" className="pointer-events-none absolute inset-0">
+            {/* bright radial core */}
+            <span
+                className="absolute left-1/2 top-1/2 h-[94%] w-[98%] -translate-x-1/2 -translate-y-1/2 rounded-full blur-2xl"
+                style={{ background: `radial-gradient(circle at 50% 45%, ${accent}73 0%, ${accent}2e 44%, transparent 68%)` }}
+            />
+            {/* soft offset blobs -> organic splash cloud */}
+            <span
+                className="absolute left-[30%] top-[33%] h-[44%] w-[44%] -translate-x-1/2 -translate-y-1/2 rounded-full blur-2xl"
+                style={{ background: accent, opacity: 0.2 }}
+            />
+            <span
+                className="absolute left-[73%] top-[66%] h-[40%] w-[40%] -translate-x-1/2 -translate-y-1/2 rounded-full blur-2xl"
+                style={{ background: accent, opacity: 0.16 }}
+            />
+            {/* structure rings */}
+            <span
+                className="absolute left-1/2 top-1/2 h-[64%] w-[64%] -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-dashed"
+                style={{ borderColor: accent, opacity: 0.3 }}
+            />
+            <span
+                className="absolute left-1/2 top-1/2 h-[86%] w-[86%] -translate-x-1/2 -translate-y-1/2 rounded-full border"
+                style={{ borderColor: accent, opacity: 0.15 }}
+            />
+            {/* droplet spray */}
+            {SPLASH_DROPS.map((d, i) => (
+                <span
+                    key={i}
+                    className={`absolute rounded-full ${d.pop ? "brutal" : ""}`}
+                    style={{
+                        left: `${d.x}%`,
+                        top: `${d.y}%`,
+                        width: d.s,
+                        height: d.s,
+                        transform: "translate(-50%, -50%)",
+                        background: accent,
+                        opacity: d.o,
+                    }}
+                />
+            ))}
         </div>
     );
 }
@@ -219,28 +283,7 @@ export default function HeroCarousel({ heroRef }) {
                                 >
                                     {/* ── RIGHT (image first on mobile) ── */}
                                     <div className="relative order-1 flex items-center justify-center lg:order-2">
-                                        {/* accent burst behind the gun */}
-                                        <span
-                                            aria-hidden="true"
-                                            className="pointer-events-none absolute left-1/2 top-1/2 h-[82%] w-[88%] -translate-x-1/2 -translate-y-1/2 rounded-full blur-2xl"
-                                            style={{ background: accent, opacity: 0.18 }}
-                                        />
-                                        <span
-                                            aria-hidden="true"
-                                            className="pointer-events-none absolute left-1/2 top-1/2 h-[58%] w-[58%] -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-dashed"
-                                            style={{ borderColor: accent, opacity: 0.25 }}
-                                        />
-                                        {/* floating droplets */}
-                                        <span
-                                            aria-hidden="true"
-                                            className="brutal pointer-events-none absolute right-[8%] top-[10%] h-4 w-4 rounded-full"
-                                            style={{ background: accent }}
-                                        />
-                                        <span
-                                            aria-hidden="true"
-                                            className="pointer-events-none absolute bottom-[12%] left-[10%] h-2.5 w-2.5 rounded-full"
-                                            style={{ background: accent, opacity: 0.6 }}
-                                        />
+                                        <HeroSplash accent={accent} />
 
                                         <img
                                             src={cutout(s.image)}

@@ -30,10 +30,10 @@ function Reel({ hidden }) {
         >
             {REEL.map((t, i) => (
                 <span key={i} className="flex items-center">
-                    <span className="font-instrument px-5 text-[13px] font-bold uppercase tracking-[0.06em] sm:text-[14px]">
+                    <span className="font-instrument px-5 text-[15px] font-bold uppercase tracking-[0.06em] sm:text-[16.5px]">
                         {t}
                     </span>
-                    <span className="text-[12px]" role="img" aria-label="water">💦</span>
+                    <span className="text-[13px]" role="img" aria-label="water">💦</span>
                 </span>
             ))}
         </div>
@@ -42,7 +42,7 @@ function Reel({ hidden }) {
 
 export default function TopMarquee() {
     return (
-        <div className="marquee fixed inset-x-0 top-0 z-[60] flex h-9 items-center overflow-hidden border-b-2 border-[#1a1a1a] bg-[#F8290A] text-white">
+        <div className="marquee fixed inset-x-0 top-0 z-[60] flex h-10 items-center overflow-hidden border-b-2 border-[#1a1a1a] bg-[#F8290A] text-white">
             {/* two identical reels; translateX(-50%) == exactly one reel */}
             <div className="marquee-track flex min-w-max">
                 <Reel />
