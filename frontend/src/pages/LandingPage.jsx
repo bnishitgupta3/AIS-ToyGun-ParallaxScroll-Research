@@ -7,7 +7,7 @@ import LandingNav     from "@/components/landing/LandingNav";
 import HeroVideo      from "@/components/landing/HeroVideo";
 import HeroSection    from "@/components/landing/HeroSection";
 import ArsenalGrid    from "@/components/landing/ArsenalGrid";
-import SquadPacks     from "@/components/landing/SquadPacks";
+import BuildYourSquad from "@/components/landing/BuildYourSquad";
 import MissionSection from "@/components/landing/MissionSection";
 // Hidden until real UGC videos are ready.
 // import FieldTestSection from "@/components/landing/FieldTestSection";
@@ -117,8 +117,8 @@ export default function LandingPage() {
                 {/* 2 — ARSENAL (shoppable photo grid) */}
                 <ArsenalGrid arsenalRef={arsenalRef} />
 
-                {/* 2b — SQUAD PACKS (bundle combos, add-to-cart) */}
-                <SquadPacks />
+                {/* 2b — BUILD YOUR SQUAD (interactive volume-bundle builder) */}
+                <BuildYourSquad />
 
                 {/* 3 — MISSION (dark contrast section) */}
                 <MissionSection missionRef={missionRef} />
