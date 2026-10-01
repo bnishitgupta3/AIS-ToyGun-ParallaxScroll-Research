@@ -1,4 +1,4 @@
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useCart, PRODUCT_LOOKUP } from "@/lib/cart";
 import { PRODUCTS } from "@/components/landing/ArsenalSection";
 import { asset } from "@/lib/asset";
@@ -214,6 +214,22 @@ export default function BuildYourSquad({ packsRef }) {
     const [qtys, setQtys] = useState({});
     const lastKey = useRef(null);
 
+    // Show the mobile sticky summary bar only while the builder is on screen.
+    const sectionRef = useRef(null);
+    const [inView, setInView] = useState(false);
+    useEffect(() => {
+        const el = sectionRef.current;
+        if (!el || typeof IntersectionObserver === "undefined") return;
+        const io = new IntersectionObserver(([e]) => setInView(e.isIntersecting));
+        io.observe(el);
+        return () => io.disconnect();
+    }, []);
+    const setRefs = (el) => {
+        sectionRef.current = el;
+        if (typeof packsRef === "function") packsRef(el);
+        else if (packsRef) packsRef.current = el;
+    };
+
     const BY_LINK = useMemo(() => Object.fromEntries(PRODUCTS.map((p) => [p.link, p])), []);
     const setOne = (link, q) =>
         setQtys((prev) => {
@@ -268,7 +284,7 @@ export default function BuildYourSquad({ packsRef }) {
     };
 
     return (
-        <section ref={packsRef} id="squad-packs" className="relative z-10 w-full px-6 pb-24 pt-4 md:px-12 md:pb-28">
+        <section ref={setRefs} id="squad-packs" className="relative z-10 w-full px-6 pb-24 pt-4 md:px-12 md:pb-28">
             <div className="mx-auto max-w-7xl">
                 <span className="font-inter text-xs font-semibold uppercase tracking-[0.4em] text-[#F8290A]">/// Build Your Squad</span>
                 <h2 className="font-instrument mt-4 text-[clamp(40px,7vw,84px)] leading-[0.9] text-[#1a1a1a]">
@@ -306,6 +322,31 @@ export default function BuildYourSquad({ packsRef }) {
                     </div>
                 </div>
             </div>
+
+            {/* Mobile-only sticky summary — live count / discount / total, tap to add.
+                Shown only while the builder is on screen (lg hides it; desktop uses
+                the sticky panel instead). */}
+            {units > 0 && inView && (
+                <div
+                    className="fixed inset-x-0 bottom-0 z-40 border-t border-black/10 bg-white/95 px-3 pt-3 backdrop-blur lg:hidden"
+                    style={{ paddingBottom: "calc(0.75rem + env(safe-area-inset-bottom))" }}
+                >
+                    <button
+                        type="button"
+                        onClick={checkout}
+                        className="flex w-full items-center justify-between rounded-full px-5 py-3 text-white shadow-[0_10px_30px_-8px_rgba(248,41,10,0.55)] transition active:scale-[0.99]"
+                        style={{ background: RED }}
+                    >
+                        <span className="font-inter text-[12px] font-bold uppercase tracking-[0.1em]">
+                            {units} blaster{units > 1 ? "s" : ""}{pct > 0 ? ` · ${pct}% off` : ""}
+                        </span>
+                        <span className="flex items-center gap-2">
+                            <span className="font-inter text-[15px] font-bold tabular-nums">{inr(finalTotal)}</span>
+                            <span className="font-inter text-[11px] font-bold uppercase tracking-[0.12em]">Add →</span>
+                        </span>
+                    </button>
+                </div>
+            )}
         </section>
     );
 }
