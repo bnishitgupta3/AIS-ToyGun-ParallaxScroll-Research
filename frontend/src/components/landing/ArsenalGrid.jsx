@@ -214,8 +214,8 @@ export default function ArsenalGrid({ arsenalRef }) {
                     and every sunlit day. Zero pumping, zero priming.
                 </p>
 
-                <div className="mt-12 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-                    {PRODUCTS.map((p) => (
+                <div className="mt-12 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:max-w-4xl">
+                    {PRODUCTS.filter((p) => p.link !== "/product/crimson").map((p) => (
                         <ProductCard key={p.id} p={p} />
                     ))}
                 </div>

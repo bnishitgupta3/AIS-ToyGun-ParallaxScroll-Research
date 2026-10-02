@@ -112,7 +112,9 @@ function Panel({ units, mrpTotal, pct, finalTotal, youSave, contents, onCheckout
                     </button>
                 )}
             </div>
-            <p className="mt-1 font-inter text-[12px] text-[#1a1a1a]/55">The bigger your squad, the more you save.</p>
+            <p className="mt-1 font-inter text-[12px] text-[#1a1a1a]/55">
+                An <span className="font-bold text-[#F8290A]">EXTRA</span> discount, stacked on top of our sale prices.
+            </p>
 
             {/* Tier progress — nodes on the bar, each discount % aligned beneath its node */}
             <div className="mt-6 px-3">
@@ -141,9 +143,9 @@ function Panel({ units, mrpTotal, pct, finalTotal, youSave, contents, onCheckout
                                 style={{ left: `${(t.units / MAX_UNITS) * 100}%` }}
                             >
                                 {on ? (
-                                    <span className="rounded-full px-1.5 py-0.5" style={{ background: YELLOW, color: RED }}>{t.pct}% off</span>
+                                    <span className="rounded-full px-1.5 py-0.5" style={{ background: YELLOW, color: RED }}>{t.pct}% extra</span>
                                 ) : (
-                                    <span className="text-[#1a1a1a]/45">{t.pct}% off</span>
+                                    <span className="text-[#1a1a1a]/45">{t.pct}% extra</span>
                                 )}
                             </span>
                         );
@@ -153,10 +155,10 @@ function Panel({ units, mrpTotal, pct, finalTotal, youSave, contents, onCheckout
 
             <p className="mt-4 text-center font-inter text-[14px] font-bold leading-snug text-[#1a1a1a]/80">
                 {units === 0
-                    ? "Add blasters to unlock bundle savings."
+                    ? "Add blasters to unlock an EXTRA bundle discount."
                     : next
-                        ? `Add ${next.units - units} more to unlock ${next.pct}% off${next.perk ? " + " + next.perk : ""}.`
-                        : "Top squad discount unlocked. Free shipping included."}
+                        ? `Add ${next.units - units} more for an EXTRA ${next.pct}% off${next.perk ? " + " + next.perk : ""}.`
+                        : "Max EXTRA discount unlocked. Free shipping included."}
             </p>
 
             {/* Contents */}
@@ -291,13 +293,14 @@ export default function BuildYourSquad({ packsRef }) {
                     Build your bundle, <span className="text-shimmer">save more</span>.
                 </h2>
                 <p className="mt-4 max-w-xl font-inter text-[15px] leading-relaxed text-[#1a1a1a]/60">
-                    Pick your blasters and the discount grows as the squad does. One tap adds the
-                    whole bundle to your cart. Perfect for Holi mornings and squad water fights.
+                    Pick your blasters and the discount grows as the squad does. It is an{" "}
+                    <span className="font-bold text-[#F8290A]">EXTRA discount on top of our launch prices</span>
+                    , and one tap adds the whole bundle to your cart.
                 </p>
 
                 <div className="mt-10 grid grid-cols-1 items-start gap-6 lg:grid-cols-3">
-                    <div className="grid grid-cols-2 content-start gap-4 self-start sm:grid-cols-3 lg:col-span-2">
-                        {PRODUCTS.map((p) => (
+                    <div className="grid grid-cols-2 content-start gap-4 self-start sm:grid-cols-2 lg:col-span-2">
+                        {PRODUCTS.filter((p) => p.link !== "/product/crimson").map((p) => (
                             <ProductCard
                                 key={p.link}
                                 p={p}
@@ -338,7 +341,7 @@ export default function BuildYourSquad({ packsRef }) {
                         style={{ background: RED }}
                     >
                         <span className="font-inter text-[12px] font-bold uppercase tracking-[0.1em]">
-                            {units} blaster{units > 1 ? "s" : ""}{pct > 0 ? ` · ${pct}% off` : ""}
+                            {units} blaster{units > 1 ? "s" : ""}{pct > 0 ? ` · ${pct}% extra` : ""}
                         </span>
                         <span className="flex items-center gap-2">
                             <span className="font-inter text-[15px] font-bold tabular-nums">{inr(finalTotal)}</span>

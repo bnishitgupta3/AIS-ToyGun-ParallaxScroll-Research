@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import { useCart, useCartItem } from "@/lib/cart";
 import { asset } from "@/lib/asset";
 import { trackEvent } from "@/lib/analytics";
+import { scrollToSection } from "@/lib/scrollToSection";
 import { PRODUCTS } from "@/components/landing/ArsenalSection";
 
 /**
@@ -53,7 +54,26 @@ const COPY = {
     },
 };
 
-const SLIDES = PRODUCTS.map((p) => ({ ...p, ...(COPY[p.id] || {}) }));
+/* High-CTA upsell slide for the Build Your Squad bundle builder. Not a product
+   (no single SKU or price) — it shows the two blasters together and routes down
+   to the #squad-packs builder. Appended after the real products. */
+const SQUAD_SLIDE = {
+    id: "squad",
+    type: "squad",
+    name: "Squad",
+    accent: "#F8290A",
+    badge: "Extra 16% off",
+    sub: "Bundle",
+    lead: "Bigger squad,",
+    emph: "bigger savings.",
+    desc: "Your bundle discount stacks on top of our launch prices, so you save EXTRA. The more blasters you add, the bigger it gets, up to 16% off plus free shipping on 6 or more.",
+    perks: ["Up to 16% EXTRA off", "On top of sale prices", "Free shipping on 6+"],
+};
+
+const SLIDES = [
+    ...PRODUCTS.map((p) => ({ ...p, ...(COPY[p.id] || {}) })),
+    SQUAD_SLIDE,
+];
 const COUNT = SLIDES.length;
 
 /* ── Bottom marquee ── a second scrolling bar under the carousel leaning on
@@ -65,8 +85,10 @@ const COUNT = SLIDES.length;
    speed). "India" lines are highlighted in brand yellow. */
 const MARQUEE_ITEMS = [
     { t: "Proudly Made in India", hot: true },
+    { t: "Buy more, save more", hot: true },
     { t: "Full-auto, zero pumping" },
     { t: "300ml drum-fed tank" },
+    { t: "Bundle up for an extra discount" },
     { t: "8-10m soak range" },
     { t: "Up to 45 min play time" },
     { t: "Free shipping across India", hot: true },
@@ -241,6 +263,12 @@ export default function HeroCarousel({ heroRef }) {
         openDrawer();
     };
 
+    const goSquad = (e) => {
+        if (e) e.preventDefault();
+        trackEvent("hero_build_squad", {});
+        scrollToSection("#squad-packs");
+    };
+
     return (
         <section
             ref={heroRef}
@@ -270,7 +298,8 @@ export default function HeroCarousel({ heroRef }) {
                     {SLIDES.map((s, i) => {
                         const show = i === active;
                         const accent = s.accent;
-                        const buyable = !s.comingSoon;
+                        const isSquad = s.type === "squad";
+                        const buyable = !s.comingSoon && !isSquad;
                         const pct =
                             s.mrp && s.price ? Math.round(((s.mrp - s.price) / s.mrp) * 100) : 0;
                         return (
@@ -288,14 +317,36 @@ export default function HeroCarousel({ heroRef }) {
                                     <div className="relative order-1 flex items-center justify-center lg:order-2">
                                         <HeroSplash accent={accent} />
 
-                                        <img
-                                            src={cutout(s.image)}
-                                            alt={`${s.name} ${s.sub}`}
-                                            draggable="false"
-                                            loading={i === 0 ? "eager" : "lazy"}
-                                            decoding="async"
-                                            className="relative w-[min(78vw,400px)] -rotate-6 drop-shadow-[0_26px_34px_rgba(0,0,0,0.25)] lg:w-[520px] xl:w-[560px]"
-                                        />
+                                        {isSquad ? (
+                                            // Two blasters as a clean, parallel lineup = "squad".
+                                            <div className="relative h-[300px] w-[min(86vw,400px)] lg:h-[450px] lg:w-[520px]">
+                                                <img
+                                                    src={cutout("mp5k.jpg")}
+                                                    alt="MP5K water blaster"
+                                                    draggable="false"
+                                                    loading="lazy"
+                                                    decoding="async"
+                                                    className="absolute left-1/2 top-0 w-[70%] -translate-x-1/2 -rotate-3 drop-shadow-[0_16px_24px_rgba(0,0,0,0.22)]"
+                                                />
+                                                <img
+                                                    src={cutout("m416.jpg")}
+                                                    alt="M416 water blaster"
+                                                    draggable="false"
+                                                    loading="lazy"
+                                                    decoding="async"
+                                                    className="absolute bottom-0 left-1/2 w-[70%] -translate-x-1/2 -rotate-3 drop-shadow-[0_16px_24px_rgba(0,0,0,0.22)]"
+                                                />
+                                            </div>
+                                        ) : (
+                                            <img
+                                                src={cutout(s.image)}
+                                                alt={`${s.name} ${s.sub}`}
+                                                draggable="false"
+                                                loading={i === 0 ? "eager" : "lazy"}
+                                                decoding="async"
+                                                className="relative w-[min(78vw,400px)] -rotate-6 drop-shadow-[0_26px_34px_rgba(0,0,0,0.25)] lg:w-[520px] xl:w-[560px]"
+                                            />
+                                        )}
                                     </div>
 
                                     {/* ── LEFT (text) ── */}
@@ -316,6 +367,26 @@ export default function HeroCarousel({ heroRef }) {
                                         <p className="mx-auto mt-3.5 max-w-md font-inter text-[13.5px] leading-relaxed text-[#1a1a1a]/70 sm:text-[15px] lg:mx-0">
                                             {s.desc}
                                         </p>
+
+                                        {/* perk chips (squad) — the EXTRA-discount chip is
+                                            highlighted in brand yellow so it reads as a
+                                            bonus on top of the launch price, not a replacement. */}
+                                        {isSquad && (
+                                            <div className="mt-4 flex flex-wrap items-center justify-center gap-2 lg:justify-start">
+                                                {s.perks.map((pk) => {
+                                                    const hot = /extra/i.test(pk);
+                                                    return (
+                                                        <span
+                                                            key={pk}
+                                                            className={`rounded-full px-3 py-1 font-inter text-[11.5px] font-bold ${hot ? "border-2 border-[#1a1a1a]" : ""}`}
+                                                            style={hot ? { background: "#F8F31A", color: "#1a1a1a" } : { background: `${accent}1f`, color: accent }}
+                                                        >
+                                                            {pk}
+                                                        </span>
+                                                    );
+                                                })}
+                                            </div>
+                                        )}
 
                                         {/* price (buyable only) */}
                                         {buyable && (
@@ -341,7 +412,31 @@ export default function HeroCarousel({ heroRef }) {
 
                                         {/* CTAs */}
                                         <div className="mt-6 flex items-center justify-center gap-3 lg:justify-start">
-                                            {buyable ? (
+                                            {isSquad ? (
+                                                <>
+                                                    <button
+                                                        type="button"
+                                                        onClick={goSquad}
+                                                        className="brutal brutal-press inline-flex items-center gap-2 rounded-full px-6 py-3 font-inter text-[13px] font-bold uppercase tracking-[0.12em] text-white"
+                                                        style={{ background: accent }}
+                                                    >
+                                                        Build your squad
+                                                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.6">
+                                                            <path d="M5 12h14M13 5l7 7-7 7" />
+                                                        </svg>
+                                                    </button>
+                                                    <a
+                                                        href="#squad-packs"
+                                                        onClick={goSquad}
+                                                        className="group inline-flex items-center gap-1.5 font-inter text-[12px] font-semibold uppercase tracking-[0.14em] text-[#1a1a1a]/75 transition hover:gap-2.5 hover:text-[#1a1a1a]"
+                                                    >
+                                                        See the savings
+                                                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4">
+                                                            <path d="M5 12h14M13 5l7 7-7 7" />
+                                                        </svg>
+                                                    </a>
+                                                </>
+                                            ) : buyable ? (
                                                 <>
                                                     <button
                                                         type="button"
@@ -411,6 +506,22 @@ export default function HeroCarousel({ heroRef }) {
                         />
                     ))}
                 </div>
+
+                {/* ── Scroll-down cue ── nudges past the hero into the Arsenal. */}
+                <a
+                    href="#arsenal"
+                    onClick={(e) => {
+                        e.preventDefault();
+                        scrollToSection("#arsenal");
+                    }}
+                    aria-label="Scroll to the Arsenal"
+                    className="mx-auto mt-4 flex w-max flex-col items-center gap-1 text-[#1a1a1a]/45 transition hover:text-[#1a1a1a]/75"
+                >
+                    <span className="font-inter text-[9px] font-semibold uppercase tracking-[0.3em]">Scroll</span>
+                    <svg className="animate-bounce" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M6 9l6 6 6-6" />
+                    </svg>
+                </a>
             </div>
 
             {/* ── Bottom marquee — "Made in India" + specs, slower than the top bar ── */}
