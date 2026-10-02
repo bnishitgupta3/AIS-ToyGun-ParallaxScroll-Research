@@ -66,8 +66,8 @@ const SQUAD_SLIDE = {
     sub: "Bundle",
     lead: "Bigger squad,",
     emph: "bigger savings.",
-    desc: "An EXTRA discount on top of our launch prices. The bigger your squad, the more you save.",
-    perks: ["Up to 16% EXTRA off", "On top of sale prices", "Free shipping on 6+"],
+    desc: "An EXTRA discount, stacked on top of our launch prices.",
+    perks: ["Up to 16% EXTRA off", "Free shipping on 6+"],
 };
 
 const PRODUCT_SLIDES = PRODUCTS.map((p) => ({ ...p, ...(COPY[p.id] || {}) }));
@@ -305,7 +305,7 @@ export default function HeroCarousel({ heroRef }) {
                        fill the column (flex-1) so the marquee below stays pinned
                        to the bottom of the first screen; the min-h is a floor that
                        keeps the tall mobile (stacked) slides from clipping. */}
-                <div className="relative flex-1 min-h-[580px] sm:min-h-[420px]">
+                <div className="relative flex-1 min-h-[468px] sm:min-h-[400px]">
                     {SLIDES.map((s, i) => {
                         const show = i === active;
                         const accent = s.accent;
@@ -330,14 +330,14 @@ export default function HeroCarousel({ heroRef }) {
 
                                         {isSquad ? (
                                             // Two blasters as a clean, parallel lineup = "squad".
-                                            <div className="relative h-[250px] w-[min(82vw,380px)] lg:h-[450px] lg:w-[520px]">
+                                            <div className="relative h-[186px] w-[min(74vw,320px)] lg:h-[450px] lg:w-[520px]">
                                                 <img
                                                     src={cutout("mp5k.jpg")}
                                                     alt="MP5K water blaster"
                                                     draggable="false"
                                                     loading="lazy"
                                                     decoding="async"
-                                                    className="absolute left-1/2 top-0 w-[62%] -translate-x-1/2 -rotate-3 drop-shadow-[0_16px_24px_rgba(0,0,0,0.22)] lg:w-[70%]"
+                                                    className="absolute left-1/2 top-0 w-[50%] -translate-x-1/2 -rotate-3 drop-shadow-[0_14px_20px_rgba(0,0,0,0.22)] lg:w-[70%]"
                                                 />
                                                 <img
                                                     src={cutout("m416.jpg")}
@@ -345,7 +345,7 @@ export default function HeroCarousel({ heroRef }) {
                                                     draggable="false"
                                                     loading="lazy"
                                                     decoding="async"
-                                                    className="absolute bottom-0 left-1/2 w-[62%] -translate-x-1/2 -rotate-3 drop-shadow-[0_16px_24px_rgba(0,0,0,0.22)] lg:w-[70%]"
+                                                    className="absolute bottom-0 left-1/2 w-[50%] -translate-x-1/2 -rotate-3 drop-shadow-[0_14px_20px_rgba(0,0,0,0.22)] lg:w-[70%]"
                                                 />
                                             </div>
                                         ) : (
@@ -526,7 +526,7 @@ export default function HeroCarousel({ heroRef }) {
                         scrollToSection("#arsenal");
                     }}
                     aria-label="Scroll to the Arsenal"
-                    className="mx-auto mt-4 flex w-max flex-col items-center gap-1 text-[#1a1a1a]/45 transition hover:text-[#1a1a1a]/75"
+                    className="mx-auto mt-4 hidden w-max flex-col items-center gap-1 text-[#1a1a1a]/45 transition hover:text-[#1a1a1a]/75 sm:flex"
                 >
                     <span className="font-inter text-[9px] font-semibold uppercase tracking-[0.3em]">Scroll</span>
                     <svg className="animate-bounce" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
