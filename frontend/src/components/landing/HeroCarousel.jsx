@@ -70,10 +70,18 @@ const SQUAD_SLIDE = {
     perks: ["Up to 16% EXTRA off", "On top of sale prices", "Free shipping on 6+"],
 };
 
-const SLIDES = [
-    ...PRODUCTS.map((p) => ({ ...p, ...(COPY[p.id] || {}) })),
-    SQUAD_SLIDE,
-];
+const PRODUCT_SLIDES = PRODUCTS.map((p) => ({ ...p, ...(COPY[p.id] || {}) }));
+// Order: launched products, then the Squad upsell, then any coming-soon teaser
+// last — so the run reads MP5K, M416, Squad, Crimson.
+const COMING_SOON_IDX = PRODUCT_SLIDES.findIndex((p) => p.comingSoon);
+const SLIDES =
+    COMING_SOON_IDX === -1
+        ? [...PRODUCT_SLIDES, SQUAD_SLIDE]
+        : [
+              ...PRODUCT_SLIDES.slice(0, COMING_SOON_IDX),
+              SQUAD_SLIDE,
+              ...PRODUCT_SLIDES.slice(COMING_SOON_IDX),
+          ];
 const COUNT = SLIDES.length;
 
 /* ── Bottom marquee ── a second scrolling bar under the carousel leaning on
@@ -144,7 +152,7 @@ const SPLASH_DROPS = [
     { x: 95, y: 63, s: 7, o: 0.5 },
 ];
 
-function HeroSplash({ accent }) {
+function HeroSplash({ accent, drops = true }) {
     return (
         <div aria-hidden="true" className="pointer-events-none absolute inset-0">
             {/* bright radial core */}
@@ -170,8 +178,9 @@ function HeroSplash({ accent }) {
                 className="absolute left-1/2 top-1/2 h-[86%] w-[86%] -translate-x-1/2 -translate-y-1/2 rounded-full border"
                 style={{ borderColor: accent, opacity: 0.15 }}
             />
-            {/* droplet spray */}
-            {SPLASH_DROPS.map((d, i) => (
+            {/* droplet spray (hidden on the squad slide — the two guns fill the
+                space and the extra dots just read as clutter there) */}
+            {drops && SPLASH_DROPS.map((d, i) => (
                 <span
                     key={i}
                     className={`absolute rounded-full ${d.pop ? "brutal" : ""}`}
@@ -315,7 +324,7 @@ export default function HeroCarousel({ heroRef }) {
                                 >
                                     {/* ── RIGHT (image first on mobile) ── */}
                                     <div className="relative order-1 flex items-center justify-center lg:order-2">
-                                        <HeroSplash accent={accent} />
+                                        <HeroSplash accent={accent} drops={!isSquad} />
 
                                         {isSquad ? (
                                             // Two blasters as a clean, parallel lineup = "squad".
@@ -411,7 +420,7 @@ export default function HeroCarousel({ heroRef }) {
                                         )}
 
                                         {/* CTAs */}
-                                        <div className="mt-6 flex items-center justify-center gap-3 lg:justify-start">
+                                        <div className="mt-6 flex items-center justify-center gap-5 sm:gap-7 lg:justify-start">
                                             {isSquad ? (
                                                 <>
                                                     <button
