@@ -87,7 +87,7 @@ function ProductCard({ p }) {
                 light gun on its white studio background sits flush to the card
                 edges. Only the lower panel is charcoal, so the dark reads as a
                 grounded info block rather than a heavy frame around the photo. */}
-            <div className="relative aspect-[5/3] overflow-hidden bg-[#f1f0ed]">
+            <Link to={p.link} aria-label={`View ${p.name}`} className="relative block aspect-[5/3] overflow-hidden bg-[#f1f0ed]">
                 {p.comingSoon && (
                     <span
                         className="absolute right-3 top-3 z-20 rounded-full px-3 py-1 font-inter text-[10px] font-bold uppercase tracking-[0.2em] text-white shadow-sm"
@@ -125,7 +125,7 @@ function ProductCard({ p }) {
                         </span>
                     </div>
                 )}
-            </div>
+            </Link>
 
             {/* Thin accent line marks the photo → panel seam. */}
             <div className="h-[3px] w-full" style={{ background: p.accent }} />
@@ -139,12 +139,13 @@ function ProductCard({ p }) {
                 >
                     {p.sub}
                 </span>
-                <h3
-                    className="font-instrument mt-2 text-[clamp(26px,3vw,36px)] leading-[0.92]"
+                <Link
+                    to={p.link}
+                    className="font-instrument mt-2 inline-block text-[clamp(26px,3vw,36px)] leading-[0.92] transition hover:opacity-80"
                     style={{ color: p.accent }}
                 >
                     {p.name}
-                </h3>
+                </Link>
 
                 {/* Specs at a glance — white values on dark, always legible. */}
                 <div className="mt-3.5 flex flex-wrap gap-x-6 gap-y-2">
@@ -180,10 +181,10 @@ function ProductCard({ p }) {
                         </div>
                         <Link
                             to={p.link}
-                            aria-label={`Experience the ${p.name}`}
+                            aria-label={`View ${p.name} details`}
                             className="flex h-11 shrink-0 items-center gap-1.5 rounded-full border-2 border-white/25 px-4 font-inter text-[11px] font-bold uppercase tracking-[0.14em] text-white transition hover:bg-white hover:text-[#18181b]"
                         >
-                            Experience it
+                            View details
                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.6">
                                 <path d="M5 12h14M13 5l7 7-7 7" />
                             </svg>

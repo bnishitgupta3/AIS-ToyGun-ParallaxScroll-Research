@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { Link, Navigate, useParams } from "react-router-dom";
 import LandingNav from "@/components/landing/LandingNav";
 import LandingFooter from "@/components/landing/LandingFooter";
@@ -181,33 +182,125 @@ function BuyBox({ product, details }) {
     );
 }
 
-/* Image gallery with thumbnails. */
+/* Full-screen zoom lightbox (Amazon-style). Click/tap the image to toggle a 2.4x
+   zoom; moving the pointer (desktop) or dragging (mobile) pans by steering the
+   transform-origin. Thumbnails switch the image; Esc / backdrop / X closes. */
+function ZoomModal({ images, index, setIndex, onClose }) {
+    const [zoom, setZoom] = useState(false);
+    const [origin, setOrigin] = useState({ x: 50, y: 50 });
+    const frameRef = useRef(null);
+
+    useEffect(() => {
+        const onKey = (e) => {
+            if (e.key === "Escape") onClose();
+        };
+        document.addEventListener("keydown", onKey);
+        const prevOverflow = document.body.style.overflow;
+        document.body.style.overflow = "hidden";
+        return () => {
+            document.removeEventListener("keydown", onKey);
+            document.body.style.overflow = prevOverflow;
+        };
+    }, [onClose]);
+
+    const track = (clientX, clientY) => {
+        const el = frameRef.current;
+        if (!el) return;
+        const r = el.getBoundingClientRect();
+        setOrigin({
+            x: Math.min(100, Math.max(0, ((clientX - r.left) / r.width) * 100)),
+            y: Math.min(100, Math.max(0, ((clientY - r.top) / r.height) * 100)),
+        });
+    };
+
+    return createPortal(
+        <div className="fixed inset-0 z-[100] flex flex-col bg-black/90 backdrop-blur-sm" role="dialog" aria-modal="true">
+            <button type="button" onClick={onClose} aria-label="Close" className="absolute right-4 top-4 z-10 grid h-11 w-11 place-items-center rounded-full bg-white/10 text-white transition hover:bg-white/20">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2"><path d="M6 6l12 12M18 6L6 18" /></svg>
+            </button>
+
+            <div className="flex flex-1 items-center justify-center p-4" onClick={onClose}>
+                <div
+                    ref={frameRef}
+                    onClick={(e) => { e.stopPropagation(); setZoom((z) => !z); }}
+                    onMouseMove={(e) => { if (zoom) track(e.clientX, e.clientY); }}
+                    onTouchMove={(e) => { if (zoom && e.touches[0]) track(e.touches[0].clientX, e.touches[0].clientY); }}
+                    className={`relative max-h-[82vh] overflow-hidden rounded-2xl ${zoom ? "cursor-zoom-out" : "cursor-zoom-in"}`}
+                    style={{ touchAction: zoom ? "none" : "auto" }}
+                >
+                    <img
+                        src={images[index]}
+                        alt=""
+                        draggable="false"
+                        className="max-h-[82vh] w-auto select-none bg-[#f1f0ed] object-contain transition-transform duration-200"
+                        style={{ transform: zoom ? "scale(2.4)" : "scale(1)", transformOrigin: `${origin.x}% ${origin.y}%` }}
+                    />
+                    {!zoom && (
+                        <span className="pointer-events-none absolute bottom-3 right-3 rounded-full bg-black/55 px-3 py-1 font-inter text-[11px] font-semibold text-white">Tap to zoom</span>
+                    )}
+                </div>
+            </div>
+
+            {images.length > 1 && (
+                <div className="flex items-center justify-center gap-2.5 p-4" onClick={(e) => e.stopPropagation()}>
+                    {images.map((img, i) => (
+                        <button
+                            key={img}
+                            type="button"
+                            onClick={() => { setIndex(i); setZoom(false); }}
+                            aria-label={`Image ${i + 1}`}
+                            className="h-14 w-14 overflow-hidden rounded-lg border-2 bg-[#f1f0ed] transition"
+                            style={{ borderColor: i === index ? "#fff" : "rgba(255,255,255,0.25)" }}
+                        >
+                            <img src={img} alt="" className="h-full w-full object-contain p-1" />
+                        </button>
+                    ))}
+                </div>
+            )}
+        </div>,
+        document.body,
+    );
+}
+
+/* Image gallery with thumbnails; the main image opens the zoom lightbox. */
 function Gallery({ product, images }) {
     const [active, setActive] = useState(0);
+    const [zoomOpen, setZoomOpen] = useState(false);
+    const srcs = images.map(productImg);
     return (
         <div className="lg:sticky lg:top-28">
-            <div className="brutal-accent relative aspect-square overflow-hidden rounded-3xl bg-[#f1f0ed]" style={{ "--accent": product.accent }}>
-                <img src={productImg(images[active])} alt={`${product.name} view ${active + 1}`} className="h-full w-full object-contain p-6" />
+            <button
+                type="button"
+                onClick={() => setZoomOpen(true)}
+                aria-label="Zoom image"
+                className="brutal-accent group relative block aspect-square w-full cursor-zoom-in overflow-hidden rounded-3xl bg-[#f1f0ed]"
+                style={{ "--accent": product.accent }}
+            >
+                <img src={srcs[active]} alt={`${product.name} view ${active + 1}`} className="h-full w-full object-contain p-6" />
                 {product.comingSoon && (
                     <span className="absolute left-4 top-4 rounded-full px-3 py-1 font-inter text-[11px] font-bold uppercase tracking-[0.18em] text-white" style={{ background: product.accent }}>
                         Coming soon
                     </span>
                 )}
-            </div>
+                <span className="absolute bottom-3 right-3 grid h-9 w-9 place-items-center rounded-full bg-white/80 text-[#1a1a1a] shadow-sm transition group-hover:bg-white">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2"><circle cx="11" cy="11" r="7" /><path d="M21 21l-4.3-4.3M11 8v6M8 11h6" /></svg>
+                </span>
+            </button>
             <div className="mt-3 flex gap-3">
-                {images.map((img, i) => (
+                {srcs.map((img, i) => (
                     <button
-                        key={img}
+                        key={images[i]}
                         type="button"
                         onClick={() => setActive(i)}
                         aria-label={`View image ${i + 1}`}
                         className="aspect-square w-20 overflow-hidden rounded-xl border-2 bg-[#f1f0ed] transition"
                         style={{ borderColor: i === active ? product.accent : "rgba(0,0,0,0.1)" }}
                     >
-                        <img src={productImg(img)} alt="" className="h-full w-full object-contain p-1.5" />
+                        <img src={img} alt="" className="h-full w-full object-contain p-1.5" />
                     </button>
                 ))}
             </div>
+            {zoomOpen && <ZoomModal images={srcs} index={active} setIndex={setActive} onClose={() => setZoomOpen(false)} />}
         </div>
     );
 }
