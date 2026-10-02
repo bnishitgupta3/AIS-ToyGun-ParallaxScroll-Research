@@ -1,6 +1,6 @@
-import { useState } from "react";
-import { Link } from "react-router-dom";
-import { useCartItem } from "@/lib/cart";
+import { useRef, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { useCart, useCartItem } from "@/lib/cart";
 import NotifyMe from "@/components/showcase/NotifyMe";
 import PriceTag from "@/components/PriceTag";
 import { PRODUCTS } from "@/components/landing/ArsenalSection";
@@ -23,6 +23,7 @@ const launchSource = (name) =>
    the shared cart so the nav badge + drawer stay in sync. */
 function AddToCart({ accent, cartKey, name, price }) {
     const { qty, inc, dec, set } = useCartItem(cartKey);
+    const { notifyAdded } = useCart();
     const add = () => {
         set(1);
         trackEvent("add_to_cart", {
@@ -30,6 +31,7 @@ function AddToCart({ accent, cartKey, name, price }) {
             value: price || 0,
             items: [{ item_id: cartKey, item_name: name }],
         });
+        notifyAdded(name);
     };
     if (qty === 0) {
         return (
@@ -59,35 +61,52 @@ function AddToCart({ accent, cartKey, name, price }) {
 }
 
 function ProductCard({ p }) {
-    // Show the photo by default; fall back to the placeholder only if it errors
-    // (missing file). Gating on onLoad is unreliable — an eager/cached image can
-    // already be `complete` before React attaches the handler, so onLoad never
-    // fires and the card gets stuck on the placeholder.
+    const navigate = useNavigate();
     const [imgError, setImgError] = useState(false);
-    const img = p.image ? asset("/assets/products/" + p.image) : null;
-    const showImg = img && !imgError;
-
-    // Optional second "hover" photo: drop <name>-hover.jpg beside <name>.jpg
-    // (e.g. mp5k-hover.jpg) and the card cross-fades to it on hover. It's
-    // rendered lazily and hidden if it 404s (onError) — safe to ship before a
-    // product's hover photo exists, and it costs nothing at initial load (no
-    // eager probe, and the <img> itself is loading="lazy").
+    const [hoverFailed, setHoverFailed] = useState(false);
+    const main = p.image ? asset("/assets/products/" + p.image) : null;
     const hoverSrc = p.image
         ? asset("/assets/products/" + p.image.replace(/\.(jpe?g|png|webp)$/i, "-hover.$1"))
         : null;
-    const [hoverFailed, setHoverFailed] = useState(false);
-    const showHover = !!hoverSrc && !hoverFailed;
+
+    // Card photo SLIDER: the main photo + the hover photo. Arrows / swipe cycle
+    // through the shots WITHOUT leaving the card (#5); clicking the image, name
+    // or anywhere else on the card opens the product details page (#6).
+    const images = main && !imgError ? (hoverSrc && !hoverFailed ? [main, hoverSrc] : [main]) : [];
+    const n = images.length;
+    const [idx, setIdx] = useState(0);
+    const cur = n ? (((idx % n) + n) % n) : 0;
+    const touchX = useRef(null);
+    const swiped = useRef(false);
+    const arrow = (e, d) => { e.stopPropagation(); e.preventDefault(); setIdx(cur + d); };
+    const onTouchStart = (e) => { touchX.current = e.touches[0].clientX; swiped.current = false; };
+    const onTouchEnd = (e) => {
+        if (touchX.current == null) return;
+        const dx = e.changedTouches[0].clientX - touchX.current;
+        touchX.current = null;
+        if (Math.abs(dx) > 40 && n > 1) { swiped.current = true; setIdx(cur + (dx < 0 ? 1 : -1)); }
+    };
+
+    // Navigate to the PDP when the card is clicked anywhere that isn't an actual
+    // control (arrows, dots, Add to cart, links, the notify input).
+    const onCardClick = (e) => {
+        if (swiped.current) { swiped.current = false; return; }
+        if (e.target.closest("a, button, input, label")) return;
+        navigate(p.link);
+    };
 
     return (
         <div
-            className="brutal-accent group flex flex-col overflow-hidden rounded-3xl bg-[#18181b] transition-transform duration-200 hover:-translate-y-1.5"
+            onClick={onCardClick}
+            className="brutal-accent group flex cursor-pointer flex-col overflow-hidden rounded-3xl bg-[#18181b] transition-transform duration-200 hover:-translate-y-1.5"
             style={{ "--accent": p.accent }}
         >
-            {/* Product photo runs edge-to-edge across the top of the card — the
-                light gun on its white studio background sits flush to the card
-                edges. Only the lower panel is charcoal, so the dark reads as a
-                grounded info block rather than a heavy frame around the photo. */}
-            <Link to={p.link} aria-label={`View ${p.name}`} className="relative block aspect-[5/3] overflow-hidden bg-[#f1f0ed]">
+            {/* Photo slider — edge-to-edge across the top of the card. */}
+            <div
+                className="relative aspect-[5/3] overflow-hidden bg-[#f1f0ed]"
+                onTouchStart={onTouchStart}
+                onTouchEnd={onTouchEnd}
+            >
                 {p.comingSoon && (
                     <span
                         className="absolute right-3 top-3 z-20 rounded-full px-3 py-1 font-inter text-[10px] font-bold uppercase tracking-[0.2em] text-white shadow-sm"
@@ -96,28 +115,19 @@ function ProductCard({ p }) {
                         Coming Soon
                     </span>
                 )}
-                {showImg ? (
-                    <>
+                {n > 0 ? (
+                    images.map((src, i) => (
                         <img
-                            src={img}
-                            alt={p.name}
+                            key={src}
+                            src={src}
+                            alt={i === 0 ? p.name : ""}
+                            aria-hidden={i === cur ? undefined : "true"}
                             loading="lazy"
                             decoding="async"
-                            onError={() => setImgError(true)}
-                            className={`absolute inset-0 h-full w-full object-cover object-center transition duration-500 group-hover:scale-[1.06] ${showHover ? "group-hover:opacity-0" : ""}`}
+                            onError={() => (i === 0 ? setImgError(true) : setHoverFailed(true))}
+                            className={`absolute inset-0 h-full w-full object-cover object-center transition-opacity duration-500 ${i === cur ? "opacity-100" : "opacity-0"}`}
                         />
-                        {showHover && (
-                            <img
-                                src={hoverSrc}
-                                alt=""
-                                aria-hidden="true"
-                                loading="lazy"
-                                decoding="async"
-                                onError={() => setHoverFailed(true)}
-                                className="absolute inset-0 h-full w-full object-cover object-center opacity-0 transition duration-500 group-hover:scale-[1.06] group-hover:opacity-100"
-                            />
-                        )}
-                    </>
+                    ))
                 ) : (
                     <div className="absolute inset-0 flex items-center justify-center" style={{ color: p.accent }}>
                         <span className="font-inter text-[11px] font-semibold uppercase tracking-[0.25em] opacity-50">
@@ -125,7 +135,39 @@ function ProductCard({ p }) {
                         </span>
                     </div>
                 )}
-            </Link>
+
+                {n > 1 && (
+                    <>
+                        <button
+                            type="button"
+                            aria-label="Previous photo"
+                            onClick={(e) => arrow(e, -1)}
+                            className="absolute left-2 top-1/2 z-20 grid h-8 w-8 -translate-y-1/2 place-items-center rounded-full bg-white/85 text-[#1a1a1a] opacity-0 shadow-sm transition hover:bg-white group-hover:opacity-100 max-md:opacity-100"
+                        >
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.6"><path d="M15 5l-7 7 7 7" /></svg>
+                        </button>
+                        <button
+                            type="button"
+                            aria-label="Next photo"
+                            onClick={(e) => arrow(e, 1)}
+                            className="absolute right-2 top-1/2 z-20 grid h-8 w-8 -translate-y-1/2 place-items-center rounded-full bg-white/85 text-[#1a1a1a] opacity-0 shadow-sm transition hover:bg-white group-hover:opacity-100 max-md:opacity-100"
+                        >
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.6"><path d="M9 5l7 7-7 7" /></svg>
+                        </button>
+                        <div className="absolute inset-x-0 bottom-2 z-20 flex justify-center gap-1.5">
+                            {images.map((src, i) => (
+                                <button
+                                    key={src}
+                                    type="button"
+                                    aria-label={`Photo ${i + 1}`}
+                                    onClick={(e) => { e.stopPropagation(); setIdx(i); }}
+                                    className={`h-1.5 rounded-full transition-all ${i === cur ? "w-4 bg-white" : "w-1.5 bg-white/50"}`}
+                                />
+                            ))}
+                        </div>
+                    </>
+                )}
+            </div>
 
             {/* Thin accent line marks the photo → panel seam. */}
             <div className="h-[3px] w-full" style={{ background: p.accent }} />
@@ -139,13 +181,12 @@ function ProductCard({ p }) {
                 >
                     {p.sub}
                 </span>
-                <Link
-                    to={p.link}
-                    className="font-instrument mt-2 inline-block text-[clamp(26px,3vw,36px)] leading-[0.92] transition hover:opacity-80"
+                <h3
+                    className="font-instrument mt-2 text-[clamp(26px,3vw,36px)] leading-[0.92]"
                     style={{ color: p.accent }}
                 >
                     {p.name}
-                </Link>
+                </h3>
 
                 {/* Specs at a glance — white values on dark, always legible. */}
                 <div className="mt-3.5 flex flex-wrap gap-x-6 gap-y-2">

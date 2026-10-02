@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useCart, useCartItem } from "@/lib/cart";
 import { asset } from "@/lib/asset";
 import { trackEvent } from "@/lib/analytics";
@@ -200,7 +200,7 @@ function HeroSplash({ accent, drops = true }) {
 }
 
 export default function HeroCarousel({ heroRef }) {
-    const { openDrawer } = useCart();
+    const { notifyAdded } = useCart();
     /* One counter per buyable gun (fixed order -> hooks are stable). The
        coming-soon Crimson has no cart path, so it isn't wired. */
     const mp5k = useCartItem("/product/mp5k");
@@ -269,13 +269,25 @@ export default function HeroCarousel({ heroRef }) {
         }
         item.inc();
         trackEvent("hero_add_to_cart", { product: slide.name, price: slide.price });
-        openDrawer();
+        notifyAdded(slide.name);
     };
 
     const goSquad = (e) => {
         if (e) e.preventDefault();
         trackEvent("hero_build_squad", {});
         scrollToSection("#squad-packs");
+    };
+
+    // Clicking anywhere on a slide (except an actual button/link) opens that
+    // product's details page; the squad slide jumps to the bundle builder.
+    const navigate = useNavigate();
+    const onSlideClick = (e, slide) => {
+        if (e.target.closest("a, button")) return;
+        if (slide.type === "squad") {
+            scrollToSection("#squad-packs");
+        } else if (slide.link) {
+            navigate(slide.link);
+        }
     };
 
     return (
@@ -316,7 +328,8 @@ export default function HeroCarousel({ heroRef }) {
                         return (
                             <div
                                 key={s.id}
-                                className={`absolute inset-0 flex items-center ${show ? "z-10" : "z-0 pointer-events-none"}`}
+                                onClick={(e) => onSlideClick(e, s)}
+                                className={`absolute inset-0 flex cursor-pointer items-center ${show ? "z-10" : "z-0 pointer-events-none"}`}
                                 aria-hidden={show ? undefined : "true"}
                             >
                                 <div

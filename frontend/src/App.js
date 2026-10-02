@@ -30,6 +30,7 @@ import CrimsonBlasterShowcase from "@/pages/CrimsonBlasterShowcase";
 import RouteSeo              from "@/components/seo/RouteSeo";
 import BuyNowSheet           from "@/components/landing/BuyNowSheet";
 import CookieConsent         from "@/components/CookieConsent";
+import Toast                 from "@/components/Toast";
 import TopMarquee            from "@/components/landing/TopMarquee";
 import { CartProvider, useCart } from "@/lib/cart";
 import { trackPageview } from "@/lib/analytics";
@@ -187,6 +188,7 @@ function App() {
             <TopMarquee />
             <CookieConsent />
             <GlobalBuyNowSheet />
+            <Toast />
             <RoutedErrorBoundary>
             <Routes>
                 {/* Home — full D2C landing page */}

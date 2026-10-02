@@ -56,7 +56,7 @@ function Stars({ accent = "#1a1a1a", filled = 0 }) {
 /* Buy box: price, specs, qty + add-to-cart (or notify for a pre-launch gun). */
 function BuyBox({ product, details }) {
     const accent = product.accent;
-    const { openDrawer } = useCart();
+    const { notifyAdded } = useCart();
     const { qty, set } = useCartItem(product.link);
     const [count, setCount] = useState(1);
     const pct = product.mrp && product.price ? Math.round(((product.mrp - product.price) / product.mrp) * 100) : 0;
@@ -68,7 +68,7 @@ function BuyBox({ product, details }) {
             value: (product.price || 0) * count,
             items: [{ item_id: product.link, item_name: product.name, quantity: count }],
         });
-        openDrawer();
+        notifyAdded(product.name);
     };
 
     return (
@@ -357,7 +357,7 @@ export default function ProductPage() {
     // stable — useCartItem(link) is safe even when the slug is unknown.
     const [showBar, setShowBar] = useState(false);
     const buyRef = useRef(null);
-    const { openDrawer } = useCart();
+    const { notifyAdded } = useCart();
     const { qty, set } = useCartItem(link);
     useEffect(() => {
         const el = buyRef.current;
@@ -484,7 +484,7 @@ export default function ProductPage() {
                             onClick={() => {
                                 set((qty || 0) + 1);
                                 trackEvent("add_to_cart", { currency: "INR", value: product.price || 0, items: [{ item_id: product.link, item_name: product.name }] });
-                                openDrawer();
+                                notifyAdded(product.name);
                             }}
                             className="inline-flex items-center gap-2 rounded-full px-6 py-3 font-inter text-[13px] font-bold uppercase tracking-[0.12em] text-white shadow-[0_10px_30px_-8px_rgba(0,0,0,0.4)] active:scale-[0.99]"
                             style={{ background: accent }}

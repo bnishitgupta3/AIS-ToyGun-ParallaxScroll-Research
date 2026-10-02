@@ -1,14 +1,13 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useCart } from "@/lib/cart";
 import { scrollToSection } from "@/lib/scrollToSection";
 import { asset } from "@/lib/asset";
+import { PRODUCTS } from "@/components/landing/ArsenalSection";
 
-/* Homepage section anchors (smooth-scroll on home, route-then-scroll elsewhere) */
-const SECTION_LINKS = [
-    { label: "Mission",    target: "#mission" },
-    // { label: "Field Test", target: "#field-test" }, // hidden until UGC videos are ready
-];
+/* Homepage section anchors (smooth-scroll on home, route-then-scroll elsewhere).
+   Mission removed from the nav per request; the section still exists on the page. */
+const SECTION_LINKS = [];
 
 /* Real page routes */
 const PAGE_LINKS = [
@@ -16,43 +15,68 @@ const PAGE_LINKS = [
     { label: "Contact", to: "/contact" },
 ];
 
-/* Launched SKUs for the "Experience" dropdown → the immersive 3-D product pages. */
-const EXPERIENCE_SKUS = [
-    { name: "MP5K",        to: "/product/mp5k/3d" },
-    { name: "M416 Water X", to: "/product/m416/3d" },
+const inr = (n) => "₹" + Number(n).toLocaleString("en-IN");
+
+/* "Products" dropdown → the detail pages (PDPs), each with a thumbnail. */
+const PRODUCT_NAV = PRODUCTS.map((p) => ({
+    name: p.name,
+    to: p.link,
+    image: asset("/assets/products/" + p.image),
+    sub: p.comingSoon ? "Coming soon" : inr(p.price),
+}));
+
+/* "Experience" dropdown → the immersive 3-D product pages (launched SKUs). */
+const EXPERIENCE_NAV = [
+    { name: "MP5K",         to: "/product/mp5k/3d", image: asset("/assets/products/mp5k.jpg"), sub: "3-D showcase" },
+    { name: "M416 Water X", to: "/product/m416/3d", image: asset("/assets/products/m416.jpg"), sub: "3-D showcase" },
 ];
 
-/* Desktop "Experience" dropdown — opens on hover (and click), lists the 2 SKUs
-   and routes into their cinematic 3-D product pages. */
-function ExperienceMenu() {
+/* Desktop hover/click dropdown. A hover-close DELAY plus a no-gap bridge
+   (top-full + pt-2.5) lets the cursor travel from the trigger onto the menu
+   without it snapping shut — the earlier glitch. Items carry a product
+   thumbnail for stronger CTA. */
+function NavDropdown({ label, items }) {
     const [open, setOpen] = useState(false);
+    const closeTimer = useRef(null);
+    const enter = () => { clearTimeout(closeTimer.current); setOpen(true); };
+    const leave = () => { closeTimer.current = setTimeout(() => setOpen(false), 160); };
     return (
-        <div className="relative" onMouseEnter={() => setOpen(true)} onMouseLeave={() => setOpen(false)}>
+        <div className="relative" onMouseEnter={enter} onMouseLeave={leave}>
             <button
                 type="button"
                 aria-haspopup="true"
                 aria-expanded={open}
                 onClick={() => setOpen((o) => !o)}
-                className="flex items-center gap-1 font-inter text-[14px] font-medium text-[#1a1a1a]/80 transition-opacity duration-150 hover:opacity-50"
+                className="flex items-center gap-1 font-inter text-[14px] font-medium text-[#1a1a1a]/80 transition-opacity duration-150 hover:opacity-60"
             >
-                Experience
+                {label}
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className={`transition-transform ${open ? "rotate-180" : ""}`}>
                     <path d="M6 9l6 6 6-6" />
                 </svg>
             </button>
             {open && (
-                <div className="absolute left-1/2 top-full z-50 mt-3 w-52 -translate-x-1/2 rounded-2xl border border-black/10 bg-white p-1.5 shadow-[0_18px_50px_-18px_rgba(0,0,0,0.35)]">
-                    {EXPERIENCE_SKUS.map((s) => (
-                        <Link
-                            key={s.to}
-                            to={s.to}
-                            onClick={() => setOpen(false)}
-                            className="flex items-center justify-between rounded-xl px-3 py-2.5 font-inter text-[14px] font-medium text-[#1a1a1a]/85 transition hover:bg-black/5"
-                        >
-                            {s.name}
-                            <span className="font-inter text-[9px] font-bold uppercase tracking-[0.18em] text-[#F8290A]">3D</span>
-                        </Link>
-                    ))}
+                <div className="absolute left-1/2 top-full z-50 -translate-x-1/2 pt-2.5">
+                    <div className="w-64 overflow-hidden rounded-2xl border border-black/10 bg-white p-1.5 shadow-[0_18px_50px_-18px_rgba(0,0,0,0.35)]">
+                        {items.map((it) => (
+                            <Link
+                                key={it.to}
+                                to={it.to}
+                                onClick={() => setOpen(false)}
+                                className="flex items-center gap-3 rounded-xl p-2 transition hover:bg-black/5"
+                            >
+                                <span className="h-11 w-14 shrink-0 overflow-hidden rounded-lg bg-[#f1f0ed]">
+                                    <img src={it.image} alt="" loading="lazy" className="h-full w-full object-cover" />
+                                </span>
+                                <span className="min-w-0 flex-1">
+                                    <span className="block font-inter text-[14px] font-semibold text-[#1a1a1a]">{it.name}</span>
+                                    <span className="block font-inter text-[11px] text-[#1a1a1a]/45">{it.sub}</span>
+                                </span>
+                                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" className="shrink-0 text-[#1a1a1a]/30">
+                                    <path d="M9 6l6 6-6 6" />
+                                </svg>
+                            </Link>
+                        ))}
+                    </div>
                 </div>
             )}
         </div>
@@ -143,8 +167,9 @@ export default function LandingNav() {
                     </Link>
 
                     {/* Desktop links */}
-                    <div className="hidden items-center gap-8 md:flex lg:gap-10">
-                        <ExperienceMenu />
+                    <div className="hidden items-center gap-7 md:flex lg:gap-9">
+                        <NavDropdown label="Products" items={PRODUCT_NAV} />
+                        <NavDropdown label="Experience" items={EXPERIENCE_NAV} />
                         {SECTION_LINKS.map(({ label, target }) => (
                             <a
                                 key={label}
@@ -205,9 +230,28 @@ export default function LandingNav() {
                 {/* Mobile menu panel */}
                 {open && (
                     <div className="mt-3 flex flex-col gap-1 border-t border-black/10 pt-3 md:hidden">
+                        {/* Products → detail pages, with thumbnails */}
+                        <div className="px-2 pb-1 pt-1 font-inter text-[10px] font-bold uppercase tracking-[0.2em] text-[#1a1a1a]/40">Products</div>
+                        {PRODUCT_NAV.map((p) => (
+                            <Link
+                                key={p.to}
+                                to={p.to}
+                                onClick={() => setOpen(false)}
+                                className="flex items-center gap-3 rounded-xl p-2 transition-colors hover:bg-black/5"
+                            >
+                                <span className="h-10 w-12 shrink-0 overflow-hidden rounded-lg bg-[#f1f0ed]">
+                                    <img src={p.image} alt="" loading="lazy" className="h-full w-full object-cover" />
+                                </span>
+                                <span className="min-w-0 flex-1">
+                                    <span className="block font-inter text-[15px] font-semibold text-[#1a1a1a]">{p.name}</span>
+                                    <span className="block font-inter text-[11px] text-[#1a1a1a]/45">{p.sub}</span>
+                                </span>
+                            </Link>
+                        ))}
+                        <div className="my-1.5 border-t border-black/5" />
                         {/* Experience → 3-D product pages */}
                         <div className="px-2 pb-1 pt-1 font-inter text-[10px] font-bold uppercase tracking-[0.2em] text-[#1a1a1a]/40">Experience in 3D</div>
-                        {EXPERIENCE_SKUS.map((s) => (
+                        {EXPERIENCE_NAV.map((s) => (
                             <Link
                                 key={s.to}
                                 to={s.to}

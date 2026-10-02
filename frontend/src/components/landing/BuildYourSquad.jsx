@@ -212,7 +212,7 @@ function Panel({ units, mrpTotal, pct, finalTotal, youSave, contents, onCheckout
 }
 
 export default function BuildYourSquad({ packsRef }) {
-    const { setQty, openDrawer } = useCart();
+    const { setQty, notifyAdded } = useCart();
     const [qtys, setQtys] = useState({});
     const lastKey = useRef(null);
 
@@ -282,7 +282,7 @@ export default function BuildYourSquad({ packsRef }) {
             value: finalTotal,
             items: contents.map((c) => ({ item_id: c.link, item_name: c.name, quantity: c.qty, item_category: "custom-bundle" })),
         });
-        openDrawer();
+        notifyAdded("Your Squad");
     };
 
     return (

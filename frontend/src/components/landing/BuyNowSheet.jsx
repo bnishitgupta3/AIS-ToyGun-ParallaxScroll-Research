@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useCart, PRODUCT_LOOKUP, CATALOG, MAX_BUNDLE_SAVING } from "@/lib/cart";
@@ -53,8 +53,12 @@ export default function BuyNowSheet({ open, product, onClose }) {
     const crossSell = CATALOG.filter((p) => !(items[p.key] > 0));
     // Lock body scroll while open; close on ESC. Adding "sheet-open" to body
     // lets global chrome (nav, section dots) hide itself via CSS.
+    // Reset the scroll body to the top every time the drawer opens, so reopening
+    // never restores a previous scroll position.
+    const bodyRef = useRef(null);
     useEffect(() => {
         if (!open) return;
+        if (bodyRef.current) bodyRef.current.scrollTop = 0;
         const prevOverflow = document.body.style.overflow;
         document.body.style.overflow = "hidden";
         document.body.classList.add("sheet-open");
@@ -134,7 +138,7 @@ export default function BuyNowSheet({ open, product, onClose }) {
                 {/* Scroll body — the item list + cross-sell scroll here, so the
                     sticky action bar below stays put (fixes the "can't tell it
                     scrolls / CTA buried at the bottom" feel on phones). */}
-                <div className="flex-1 min-h-0 overflow-y-auto overscroll-contain px-7 pb-6 pt-10 md:px-10 md:pt-16">
+                <div ref={bodyRef} className="flex-1 min-h-0 overflow-y-auto overscroll-contain px-7 pb-6 pt-10 md:px-10 md:pt-16">
                     <span className="font-inter text-[11px] font-semibold uppercase tracking-[0.35em] text-[#F8290A]">
                         {hasItems ? "/// Your cart" : "/// Almost here"}
                     </span>

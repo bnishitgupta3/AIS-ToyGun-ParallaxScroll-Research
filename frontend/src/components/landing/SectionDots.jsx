@@ -129,8 +129,14 @@ export default function SectionDots({ variant = "home" }) {
                         aria-current={active ? "true" : undefined}
                         className="group relative flex items-center justify-center p-1 sm:p-1.5"
                     >
-                        {/* Hover label, sits to the left of the dot column */}
-                        <span className="pointer-events-none absolute right-full mr-3 whitespace-nowrap rounded-full bg-[#1a1a1a] px-2.5 py-1 font-inter text-[11px] font-medium text-white opacity-0 shadow-sm transition-opacity duration-200 group-hover:opacity-100">
+                        {/* Section label — shown automatically for the ACTIVE section
+                            (so the title appears as you scroll into it), and on hover
+                            for the others. */}
+                        <span
+                            className={`pointer-events-none absolute right-full mr-3 whitespace-nowrap rounded-full bg-[#1a1a1a] px-2.5 py-1 font-inter text-[11px] font-medium text-white shadow-sm transition-opacity duration-200 ${
+                                active ? "opacity-100" : "opacity-0 group-hover:opacity-100"
+                            }`}
+                        >
                             {s.label}
                         </span>
                         <span

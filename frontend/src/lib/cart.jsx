@@ -1,4 +1,4 @@
-import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
+import { createContext, useCallback, useContext, useMemo, useState } from "react";
 
 /* ═══════════════════════════════════════════════════════════════════════════
    Cart context — single source of truth for everything cart-related.
@@ -112,25 +112,18 @@ export function CartProvider({ children }) {
     const groupPlay = individualSkus >= 2 || individualUnits >= 3;
     const squadNudge = groupPlay && !hasBundle;
 
-    // Auto-open the cart when the order crosses into group play OR a Squad Pack
-    // (bundle) lands in it — a bundle is a 4-6 unit, checkout-worthy add, so it
-    // should always pop the cart even though the nudge stays hidden. Fires on the
-    // false→true transition ONLY (via a ref), so a shopper who closes it isn't
-    // fought on every later add; it re-arms if the cart drops back below.
-    const autoOpen = groupPlay || hasBundle;
-    const openArmed = useRef(false);
-    useEffect(() => {
-        if (autoOpen && !openArmed.current) {
-            openArmed.current = true;
-            setDrawer((d) => (d.open ? d : { open: true, product: null }));
-        } else if (!autoOpen) {
-            openArmed.current = false;
-        }
-    }, [autoOpen]);
+    // Auto-popping the whole drawer on every add felt heavy. Adds now fire a
+    // lightweight "Added to cart" TOAST (notifyAdded) that carries a View-cart
+    // CTA; the drawer opens only on explicit intent (cart icon / toast CTA).
+    const [toast, setToast] = useState(null);
+    const notifyAdded = useCallback((name = "Item") => {
+        setToast({ name, id: Date.now() });
+    }, []);
+    const clearToast = useCallback(() => setToast(null), []);
 
     const value = useMemo(
-        () => ({ items, setQty, total, blasters, subtotal, squadNudge, drawer, openDrawer, closeDrawer }),
-        [items, setQty, total, blasters, subtotal, squadNudge, drawer, openDrawer, closeDrawer],
+        () => ({ items, setQty, total, blasters, subtotal, squadNudge, drawer, openDrawer, closeDrawer, toast, notifyAdded, clearToast }),
+        [items, setQty, total, blasters, subtotal, squadNudge, drawer, openDrawer, closeDrawer, toast, notifyAdded, clearToast],
     );
 
     return <CartContext.Provider value={value}>{children}</CartContext.Provider>;
