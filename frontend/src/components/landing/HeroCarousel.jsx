@@ -66,7 +66,7 @@ const SQUAD_SLIDE = {
     sub: "Bundle",
     lead: "Bigger squad,",
     emph: "bigger savings.",
-    desc: "Your bundle discount stacks on top of our launch prices, so you save EXTRA. The more blasters you add, the bigger it gets, up to 16% off plus free shipping on 6 or more.",
+    desc: "An EXTRA discount on top of our launch prices. The bigger your squad, the more you save.",
     perks: ["Up to 16% EXTRA off", "On top of sale prices", "Free shipping on 6+"],
 };
 
@@ -131,7 +131,7 @@ function MarqueeReel({ hidden }) {
 /* Full-bleed (negative-margin) dark bar pinned to the bottom of the hero. */
 function HeroMarquee() {
     return (
-        <div className="marquee relative -mx-5 mt-8 flex items-center overflow-hidden bg-[#1a1a1a] py-3 sm:-mx-8 sm:mt-10">
+        <div className="marquee relative -mx-5 mt-6 flex items-center overflow-hidden bg-[#1a1a1a] py-4 sm:-mx-8">
             <div className="marquee-track flex min-w-max" style={{ animationDuration: "60s" }}>
                 <MarqueeReel />
                 <MarqueeReel hidden />
@@ -282,7 +282,7 @@ export default function HeroCarousel({ heroRef }) {
         <section
             ref={heroRef}
             id="hero"
-            className="relative w-full overflow-hidden px-5 pt-28 sm:px-8 sm:pt-32"
+            className="relative flex min-h-[100svh] w-full flex-col overflow-hidden px-5 pt-28 sm:px-8 sm:pt-32"
             onPointerEnter={(e) => {
                 // Pause on hover for a real mouse only. A touch can emit a
                 // synthetic enter with no matching leave, which used to stick.
@@ -300,10 +300,12 @@ export default function HeroCarousel({ heroRef }) {
             aria-roledescription="carousel"
             aria-label="Featured blasters"
         >
-            <div className="relative mx-auto w-full max-w-6xl">
-                {/* ── Slide viewport ── absolute, crossfading slides. min-h is sized
-                       to comfortably hold the tallest slide at each breakpoint. */}
-                <div className="relative min-h-[560px] sm:min-h-[66svh] lg:min-h-[72svh]">
+            <div className="relative mx-auto flex w-full max-w-6xl flex-1 flex-col">
+                {/* ── Slide viewport ── absolute, crossfading slides. It grows to
+                       fill the column (flex-1) so the marquee below stays pinned
+                       to the bottom of the first screen; the min-h is a floor that
+                       keeps the tall mobile (stacked) slides from clipping. */}
+                <div className="relative flex-1 min-h-[580px] sm:min-h-[420px]">
                     {SLIDES.map((s, i) => {
                         const show = i === active;
                         const accent = s.accent;
@@ -328,14 +330,14 @@ export default function HeroCarousel({ heroRef }) {
 
                                         {isSquad ? (
                                             // Two blasters as a clean, parallel lineup = "squad".
-                                            <div className="relative h-[300px] w-[min(86vw,400px)] lg:h-[450px] lg:w-[520px]">
+                                            <div className="relative h-[250px] w-[min(82vw,380px)] lg:h-[450px] lg:w-[520px]">
                                                 <img
                                                     src={cutout("mp5k.jpg")}
                                                     alt="MP5K water blaster"
                                                     draggable="false"
                                                     loading="lazy"
                                                     decoding="async"
-                                                    className="absolute left-1/2 top-0 w-[70%] -translate-x-1/2 -rotate-3 drop-shadow-[0_16px_24px_rgba(0,0,0,0.22)]"
+                                                    className="absolute left-1/2 top-0 w-[62%] -translate-x-1/2 -rotate-3 drop-shadow-[0_16px_24px_rgba(0,0,0,0.22)] lg:w-[70%]"
                                                 />
                                                 <img
                                                     src={cutout("m416.jpg")}
@@ -343,7 +345,7 @@ export default function HeroCarousel({ heroRef }) {
                                                     draggable="false"
                                                     loading="lazy"
                                                     decoding="async"
-                                                    className="absolute bottom-0 left-1/2 w-[70%] -translate-x-1/2 -rotate-3 drop-shadow-[0_16px_24px_rgba(0,0,0,0.22)]"
+                                                    className="absolute bottom-0 left-1/2 w-[62%] -translate-x-1/2 -rotate-3 drop-shadow-[0_16px_24px_rgba(0,0,0,0.22)] lg:w-[70%]"
                                                 />
                                             </div>
                                         ) : (
