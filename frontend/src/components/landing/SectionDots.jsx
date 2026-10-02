@@ -52,6 +52,15 @@ export default function SectionDots({ variant = "home" }) {
     const [activeKey, setActiveKey] = useState(sections[0].key);
     const [visible, setVisible] = useState(!!cfg.alwaysVisible);
 
+    // The active section's label flashes on entry, then fades out after a moment
+    // (re-shown on hover). Re-armed whenever the active section changes.
+    const [revealed, setRevealed] = useState(true);
+    useEffect(() => {
+        setRevealed(true);
+        const t = setTimeout(() => setRevealed(false), 2600);
+        return () => clearTimeout(t);
+    }, [activeKey]);
+
     useEffect(() => {
         // Absolute document scroll position that brings a section to the top.
         const targetY = (s) => {
@@ -133,8 +142,8 @@ export default function SectionDots({ variant = "home" }) {
                             (so the title appears as you scroll into it), and on hover
                             for the others. */}
                         <span
-                            className={`pointer-events-none absolute right-full mr-3 whitespace-nowrap rounded-full bg-[#1a1a1a] px-2.5 py-1 font-inter text-[11px] font-medium text-white shadow-sm transition-opacity duration-200 ${
-                                active ? "opacity-100" : "opacity-0 group-hover:opacity-100"
+                            className={`pointer-events-none absolute right-full mr-3 whitespace-nowrap rounded-full bg-[#1a1a1a] px-2.5 py-1 font-inter text-[11px] font-medium text-white shadow-sm transition-opacity duration-300 ${
+                                active && revealed ? "opacity-100" : "opacity-0 group-hover:opacity-100"
                             }`}
                         >
                             {s.label}

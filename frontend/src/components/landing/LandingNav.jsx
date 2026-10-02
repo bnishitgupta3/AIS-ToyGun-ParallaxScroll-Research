@@ -148,6 +148,16 @@ export default function LandingNav() {
 
     // top-12 (not top-6): sits just below the fixed h-9 marquee bar.
     return (
+        <>
+            {/* Tap-outside-to-close backdrop for the mobile menu (sits below the
+                nav pill at z-50, above the page). */}
+            {open && (
+                <div
+                    className="fixed inset-0 z-40 md:hidden"
+                    onClick={() => setOpen(false)}
+                    aria-hidden="true"
+                />
+            )}
         <div className="landing-nav pointer-events-none fixed left-1/2 top-12 z-50 w-[95%] max-w-5xl -translate-x-1/2">
             <nav className="pointer-events-auto rounded-[26px] border border-black/10 bg-white/75 px-5 py-3 backdrop-blur-md">
                 <div className="flex items-center justify-between">
@@ -294,5 +304,6 @@ export default function LandingNav() {
                 )}
             </nav>
         </div>
+        </>
     );
 }
