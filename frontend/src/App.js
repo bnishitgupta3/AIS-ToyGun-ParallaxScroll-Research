@@ -31,7 +31,7 @@ import RouteSeo              from "@/components/seo/RouteSeo";
 import BuyNowSheet           from "@/components/landing/BuyNowSheet";
 import CookieConsent         from "@/components/CookieConsent";
 import Toast                 from "@/components/Toast";
-import TopMarquee            from "@/components/landing/TopMarquee";
+import TopBundleBar          from "@/components/landing/TopBundleBar";
 import { CartProvider, useCart } from "@/lib/cart";
 import { trackPageview } from "@/lib/analytics";
 
@@ -185,7 +185,7 @@ function App() {
             <BodyReveal />
             <RouteSeo />
             <Analytics />
-            <TopMarquee />
+            <TopBundleBar />
             <CookieConsent />
             <GlobalBuyNowSheet />
             <Toast />

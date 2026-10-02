@@ -128,13 +128,47 @@ function MarqueeReel({ hidden }) {
     );
 }
 
-/* Full-bleed (negative-margin) dark bar pinned to the bottom of the hero. */
+/* Full-bleed dark bar at the very bottom of the hero (flush below the red one). */
 function HeroMarquee() {
     return (
-        <div className="marquee relative -mx-5 mt-6 flex items-center overflow-hidden bg-[#1a1a1a] py-4 sm:-mx-8">
+        <div className="marquee relative -mx-5 flex items-center overflow-hidden bg-[#1a1a1a] py-4 sm:-mx-8">
             <div className="marquee-track flex min-w-max" style={{ animationDuration: "60s" }}>
                 <MarqueeReel />
                 <MarqueeReel hidden />
+            </div>
+        </div>
+    );
+}
+
+/* Red scrolling marquee — the messages that used to live in the TOP bar, now
+   running just ABOVE the dark bar at the bottom of the hero. */
+const TOP_MARQUEE_ITEMS = [
+    "Fully electric, zero pumping or priming",
+    "Full-auto fire from a 300ml drum-fed tank",
+    "Engineered for Holi mornings and every sunlit day",
+    "Free shipping across India this launch season",
+];
+const TOP_REEL = [...TOP_MARQUEE_ITEMS, ...TOP_MARQUEE_ITEMS];
+
+function TopReel({ hidden }) {
+    return (
+        <div className="flex shrink-0 items-center whitespace-nowrap" aria-hidden={hidden ? "true" : undefined}>
+            {TOP_REEL.map((t, i) => (
+                <span key={i} className="flex items-center">
+                    <span className="px-5 font-instrument text-[13px] font-bold uppercase tracking-[0.06em] sm:text-[15px]">{t}</span>
+                    <span className="text-[12px]" role="img" aria-label="water">💦</span>
+                </span>
+            ))}
+        </div>
+    );
+}
+
+function HeroTopMarquee() {
+    return (
+        <div className="marquee relative -mx-5 mt-6 flex items-center overflow-hidden border-t-2 border-[#1a1a1a] bg-[#F8290A] py-2.5 text-white sm:-mx-8">
+            <div className="marquee-track flex min-w-max" style={{ animationDuration: "42s" }}>
+                <TopReel />
+                <TopReel hidden />
             </div>
         </div>
     );
@@ -548,7 +582,9 @@ export default function HeroCarousel({ heroRef }) {
                 </a>
             </div>
 
-            {/* ── Bottom marquee — "Made in India" + specs, slower than the top bar ── */}
+            {/* ── Bottom marquees — the red bar (moved down from the old top bar)
+                   sitting just above the slower dark "Made in India" bar. ── */}
+            <HeroTopMarquee />
             <HeroMarquee />
 
             {/* ── Edge arrows ── pinned to the SECTION edges (desktop) so they sit
