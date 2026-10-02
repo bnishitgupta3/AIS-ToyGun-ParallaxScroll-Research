@@ -55,7 +55,7 @@ function AddToCart({ accent, cartKey, name, price }) {
         >
             <button type="button" aria-label="Remove one" onClick={dec} className="grid h-9 w-9 place-items-center rounded-full text-2xl leading-none transition hover:bg-white/20">−</button>
             <span className="flex-1 text-center font-inter text-[15px] font-bold tabular-nums">{qty}</span>
-            <button type="button" aria-label="Add one" onClick={inc} className="grid h-9 w-9 place-items-center rounded-full text-2xl leading-none transition hover:bg-white/20">+</button>
+            <button type="button" aria-label="Add one" onClick={() => { inc(); notifyAdded(name); }} className="grid h-9 w-9 place-items-center rounded-full text-2xl leading-none transition hover:bg-white/20">+</button>
         </div>
     );
 }
