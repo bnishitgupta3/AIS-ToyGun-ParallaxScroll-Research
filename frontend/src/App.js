@@ -23,6 +23,7 @@ import ReturnsShippingPage    from "@/pages/ReturnsShippingPage";
 import FAQPage                from "@/pages/FAQPage";
 import ContactPage           from "@/pages/ContactPage";
 import CareersPage           from "@/pages/CareersPage";
+import ProductPage            from "@/pages/ProductPage";
 import ProductShowcase        from "@/pages/ProductShowcase";
 import M416Showcase           from "@/pages/M416Showcase";
 import CrimsonBlasterShowcase from "@/pages/CrimsonBlasterShowcase";
@@ -206,9 +207,12 @@ function App() {
                 <Route path="/careers"        element={<CareersPage />} />
 
                 {/* Product detail pages */}
-                <Route path="/product/mp5k"   element={<ProductShowcase />} />
-                <Route path="/product/m416"   element={<M416Showcase />} />
-                <Route path="/product/crimson" element={<CrimsonBlasterShowcase />} />
+                {/* Conventional PDP is the main product page; the cinematic
+                    3-D showcase moves to /product/<slug>/3d (linked from the PDP). */}
+                <Route path="/product/mp5k/3d"    element={<ProductShowcase />} />
+                <Route path="/product/m416/3d"    element={<M416Showcase />} />
+                <Route path="/product/crimson/3d" element={<CrimsonBlasterShowcase />} />
+                <Route path="/product/:slug"      element={<ProductPage />} />
 
                 {/* Branded 404 — also reachable at /404 for testing */}
                 <Route path="/404"            element={<NotFoundPage />} />
