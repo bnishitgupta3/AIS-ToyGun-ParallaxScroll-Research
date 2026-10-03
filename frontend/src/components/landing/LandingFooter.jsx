@@ -54,7 +54,7 @@ export default function LandingFooter() {
                 <div className="grid grid-cols-1 gap-14 md:grid-cols-2">
                     <div>
                         <img
-                            src={asset("/assets/logo.png")}
+                            src={asset("/assets/logo.png?v=2")}
                             alt="Up Your Play"
                             draggable="false"
                             loading="lazy"

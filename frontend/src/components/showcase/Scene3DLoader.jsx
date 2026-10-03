@@ -54,7 +54,7 @@ export default function Scene3DLoader({ name = "your blaster", accent = "#F8290A
                 style={{ background: accent, opacity: 0.16 }}
             />
 
-            <img src={asset("/assets/logo.png")} alt="Up Your Play" draggable="false" className="relative mb-10 h-8 w-auto opacity-90" />
+            <img src={asset("/assets/logo.png?v=2")} alt="Up Your Play" draggable="false" className="relative mb-10 h-8 w-auto opacity-90" />
 
             {/* tactical reticle + progress ring */}
             <div className="relative grid h-44 w-44 place-items-center">

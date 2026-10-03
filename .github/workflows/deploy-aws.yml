@@ -67,16 +67,26 @@ jobs:
 
       - name: Sync to S3
         run: |
-          # 1) Fingerprinted static assets (JS/CSS/media) — filenames change every
-          #    build, so cache them forever. NO --delete on purpose: keeping the
-          #    PREVIOUS build's chunks around means a visitor whose tab is still on
-          #    the old build won't 404 a code-split chunk mid-navigation (the
-          #    "blank page after deploy" bug). These immutable files are cheap;
-          #    prune old ones occasionally with an S3 lifecycle rule if desired.
+          # 1) Fingerprinted build assets under static/ (JS/CSS/media) — webpack
+          #    hashes these filenames every build, so cache them forever. NO
+          #    --delete on purpose: keeping the PREVIOUS build's chunks around means
+          #    a visitor whose tab is still on the old build won't 404 a code-split
+          #    chunk mid-navigation (the "blank page after deploy" bug). Prune old
+          #    ones occasionally with an S3 lifecycle rule if desired.
           aws s3 sync build "s3://${{ vars.S3_BUCKET }}" \
             --cache-control "public,max-age=31536000,immutable" \
-            --exclude "*.html" --exclude "*.json" --exclude "*.txt" --exclude "*.xml"
-          # 2) HTML + manifests + robots/sitemap — must never be stale, so no-cache.
+            --exclude "*" --include "static/*"
+          # 2) STABLE-named public assets (logo, favicons, og-image, product
+          #    images, 3-D models, fonts). Their filenames DON'T change when the
+          #    content does, so they must NOT be immutable — otherwise a returning
+          #    visitor keeps the old file (e.g. the pre-rebrand logo) for a year.
+          #    A short TTL + the CloudFront /* invalidation below means changes
+          #    propagate within the hour. Everything NOT static/ and NOT the
+          #    HTML/manifest group below falls here.
+          aws s3 sync build "s3://${{ vars.S3_BUCKET }}" \
+            --cache-control "public,max-age=3600,must-revalidate" \
+            --exclude "static/*" --exclude "*.html" --exclude "*.json" --exclude "*.txt" --exclude "*.xml"
+          # 3) HTML + manifests + robots/sitemap — must never be stale, so no-cache.
           aws s3 sync build "s3://${{ vars.S3_BUCKET }}" \
             --cache-control "public,max-age=0,must-revalidate" \
             --exclude "*" --include "*.html" --include "*.json" --include "*.txt" --include "*.xml"

@@ -169,7 +169,7 @@ export default function LandingNav() {
                         aria-label="Up Your Play — home"
                     >
                         <img
-                            src={asset("/assets/logo.png")}
+                            src={asset("/assets/logo.png?v=2")}
                             alt="Up Your Play"
                             draggable="false"
                             className="h-11 w-auto"
