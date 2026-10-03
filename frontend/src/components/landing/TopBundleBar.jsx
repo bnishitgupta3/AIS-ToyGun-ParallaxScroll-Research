@@ -21,7 +21,7 @@ export default function TopBundleBar() {
             <a
                 href="#squad-packs"
                 onClick={go}
-                className="group inline-flex items-center gap-1.5 font-instrument text-[13px] font-bold uppercase tracking-[0.12em] text-[#F8F31A] underline decoration-2 underline-offset-[5px] transition hover:brightness-110 sm:text-[15px]"
+                className="group inline-flex items-center gap-1.5 font-instrument text-[13px] font-bold uppercase tracking-[0.12em] text-white underline decoration-2 underline-offset-[5px] transition hover:text-white/80 sm:text-[15px]"
             >
                 Build your bundle
                 <span className="no-underline transition-transform group-hover:translate-x-0.5">→</span>

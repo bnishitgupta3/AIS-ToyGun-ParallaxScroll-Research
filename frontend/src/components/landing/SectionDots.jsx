@@ -44,6 +44,18 @@ const SECTION_SETS = {
             { key: "deploy", id: "deploy", label: "Deploy" },
         ],
     },
+    // Conventional product page (the PDP) — element-based sections, always shown.
+    // `offset` lifts the click-scroll so the target clears the fixed top bar/nav.
+    pdp: {
+        alwaysVisible: true,
+        sections: [
+            { key: "top",     id: "pdp-top",   label: "Overview", offset: 112 },
+            { key: "specs",   id: "pdp-specs", label: "Specs",    offset: 96 },
+            { key: "reviews", id: "reviews",   label: "Reviews",  offset: 96 },
+            { key: "faq",     id: "pdp-faq",   label: "FAQ",      offset: 96 },
+            { key: "connect", id: "footer",    label: "Connect" },
+        ],
+    },
 };
 
 export default function SectionDots({ variant = "home" }) {
@@ -57,7 +69,7 @@ export default function SectionDots({ variant = "home" }) {
     const [revealed, setRevealed] = useState(true);
     useEffect(() => {
         setRevealed(true);
-        const t = setTimeout(() => setRevealed(false), 2600);
+        const t = setTimeout(() => setRevealed(false), 2000);
         return () => clearTimeout(t);
     }, [activeKey]);
 

@@ -378,10 +378,10 @@ export default function ProductPage() {
     return (
         <main className="dot-grid relative w-full text-[#1a1a1a]">
             <LandingNav />
-            <SectionDots variant="product" />
+            <SectionDots variant="pdp" />
 
             {/* ── Gallery + buy box ── */}
-            <section className="mx-auto max-w-6xl px-6 pb-16 pt-28 sm:pt-32 md:px-12">
+            <section id="pdp-top" className="mx-auto max-w-6xl px-6 pb-16 pt-28 sm:pt-32 md:px-12">
                 <div ref={buyRef} className="grid gap-10 lg:grid-cols-2 lg:gap-14">
                     <Gallery product={product} images={details.gallery} />
                     <BuyBox product={product} details={details} />
@@ -402,7 +402,7 @@ export default function ProductPage() {
             </section>
 
             {/* ── Specs + what's in the box ── */}
-            <section className="mx-auto max-w-6xl px-6 py-16 md:px-12">
+            <section id="pdp-specs" className="mx-auto max-w-6xl px-6 py-16 md:px-12">
                 <div className="grid gap-12 lg:grid-cols-2">
                     <div>
                         <span className="font-inter text-[11px] font-semibold uppercase tracking-[0.3em]" style={{ color: accent }}>/// Full specs</span>
@@ -458,7 +458,7 @@ export default function ProductPage() {
             </section>
 
             {/* ── FAQ ── */}
-            <section className="mx-auto max-w-3xl px-6 py-16 md:px-12">
+            <section id="pdp-faq" className="mx-auto max-w-3xl px-6 py-16 md:px-12">
                 <span className="font-inter text-[11px] font-semibold uppercase tracking-[0.3em]" style={{ color: accent }}>/// FAQ</span>
                 <h2 className="font-instrument mt-3 text-[clamp(28px,4vw,44px)] leading-[0.95] text-[#1a1a1a]">Good to know.</h2>
                 <div className="mt-6 border-t border-black/10">
