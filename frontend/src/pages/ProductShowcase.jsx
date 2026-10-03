@@ -9,6 +9,7 @@ import ParallaxBackground from "@/components/showcase/ParallaxBackground";
 import FooterCTA from "@/components/showcase/FooterCTA";
 import AlsoInArsenal from "@/components/showcase/AlsoInArsenal";
 import SectionDots from "@/components/landing/SectionDots";
+import Scene3DLoader from "@/components/showcase/Scene3DLoader";
 import { isPrerendering } from "@/lib/isPrerendering";
 
 gsap.registerPlugin(ScrollTrigger);
@@ -154,6 +155,10 @@ export default function ProductShowcase() {
             className="relative w-full bg-[color:var(--bg)] text-[color:var(--ink)]"
         >
             <div>
+            {/* Branded loading overlay — tracks the gun GLB download and fades
+                out the moment the model is ready. */}
+            <Scene3DLoader name="MP5K" accent="#f97316" />
+
             {/* Global navbar */}
             <LandingNav />
 

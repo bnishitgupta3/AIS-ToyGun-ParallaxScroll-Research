@@ -172,7 +172,7 @@ export default function LandingNav() {
                             src={asset("/assets/logo.png")}
                             alt="Up Your Play"
                             draggable="false"
-                            className="h-9 w-auto"
+                            className="h-11 w-auto"
                         />
                     </Link>
 

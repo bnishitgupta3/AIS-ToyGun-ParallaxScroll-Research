@@ -14,6 +14,7 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 import LandingNav from "@/components/landing/LandingNav";
 import SectionDots from "@/components/landing/SectionDots";
+import Scene3DLoader from "@/components/showcase/Scene3DLoader";
 import GenericGunScene from "@/components/scene/GenericGunScene";
 import ParallaxBackground from "@/components/showcase/ParallaxBackground";
 import ProductActions from "@/components/showcase/ProductActions";
@@ -229,6 +230,10 @@ export default function ProductShowcaseTemplate({ product: rawProduct }) {
             style={cssVars}
         >
             <div>
+                {/* Branded loading overlay — tracks this product's GLB download
+                    and fades out the moment the model is ready. */}
+                <Scene3DLoader name={product.name} accent={product.accentColor} />
+
                 {/* ── Global navbar ── */}
                 <LandingNav />
 
