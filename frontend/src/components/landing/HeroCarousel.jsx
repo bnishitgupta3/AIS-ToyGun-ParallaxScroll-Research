@@ -86,9 +86,9 @@ const COUNT = SLIDES.length;
 
 /* ── Bottom marquee ── a second scrolling bar under the carousel leaning on
    "Made in India" plus the key specs. Reuses the global .marquee / .marquee-track
-   mechanics (two identical reels, a seamless 0 -> -50% loop) but runs SLOWER than
-   the top announcement bar (60s vs 38s) and sits in a dark bar, so the two read
-   as distinct. It pauses on hover and respects reduced-motion (the track's
+   mechanics (two identical reels, a seamless 0 -> -50% loop) and sits in a dark
+   bar at 60s, distinct from the slower red marquee just above it (70s), so the
+   two read as separate. It pauses on hover and respects reduced-motion (the track's
    animation is gated on it in index.css; the inline duration only overrides the
    speed). "India" lines are highlighted in brand yellow. */
 const MARQUEE_ITEMS = [
@@ -166,7 +166,7 @@ function TopReel({ hidden }) {
 function HeroTopMarquee() {
     return (
         <div className="marquee relative -mx-5 mt-6 flex items-center overflow-hidden border-t-2 border-[#1a1a1a] bg-[#F8290A] py-2.5 text-white sm:-mx-8">
-            <div className="marquee-track flex min-w-max" style={{ animationDuration: "42s" }}>
+            <div className="marquee-track flex min-w-max" style={{ animationDuration: "70s" }}>
                 <TopReel />
                 <TopReel hidden />
             </div>
