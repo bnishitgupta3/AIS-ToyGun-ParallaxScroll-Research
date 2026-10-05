@@ -2,11 +2,12 @@ import LegalLayout, { Section } from "@/components/legal/LegalLayout";
 
 export default function PrivacyPolicyPage() {
     return (
-        <LegalLayout eyebrow="/// Legal" title="Privacy Policy" updated="16 June 2026">
+        <LegalLayout eyebrow="/// Legal" title="Privacy Policy" updated="5 October 2026">
             <p>
-                This Privacy Policy describes how Up Your Play ("we", "us", "our")
-                collects, uses, stores, discloses and protects your personal data
-                when you visit or purchase from our website. We are committed to
+                This Privacy Policy describes how Up Your Play, a brand operated by
+                SR Stita Machinery Pvt Ltd ("we", "us", "our"), collects, uses,
+                stores, discloses and protects your personal data when you visit or
+                purchase from our website. We are committed to
                 handling your information in accordance with the Information
                 Technology Act, 2000, the IT (Reasonable Security Practices and
                 Procedures and Sensitive Personal Data or Information) Rules, 2011,

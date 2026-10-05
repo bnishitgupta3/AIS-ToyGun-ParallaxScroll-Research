@@ -207,6 +207,20 @@ export default function ContactPage() {
                     </Link>{" "}
                     pages. We typically reply within one business day.
                 </p>
+
+                <div className="reveal-up mt-8 rounded-2xl border border-black/10 bg-white/55 p-6 font-inter text-[13px] leading-relaxed text-[#1a1a1a]/60 backdrop-blur-sm">
+                    <div className="font-mono-tactical text-[11px] font-bold uppercase tracking-[0.3em] text-[#1a1a1a]/70">
+                        Registered business
+                    </div>
+                    <p className="mt-3">
+                        Up Your Play is a brand operated by{" "}
+                        <strong className="text-[#1a1a1a]/80">SR Stita Machinery Pvt Ltd</strong>.
+                        <br />
+                        Registered address: [REGISTERED ADDRESS]
+                        <br />
+                        GSTIN: [GSTIN] · CIN: [CIN]
+                    </p>
+                </div>
             </main>
 
             <LandingFooter />
