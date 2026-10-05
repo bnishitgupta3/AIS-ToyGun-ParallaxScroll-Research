@@ -214,7 +214,7 @@ export default function ContactPage() {
                     </div>
                     <p className="mt-3">
                         Up Your Play is a brand operated by{" "}
-                        <strong className="text-[#1a1a1a]/80">SR Stita Machinery Pvt Ltd</strong>.
+                        <strong className="text-[#1a1a1a]/80">Sri Stita Machinery Pvt Ltd</strong>.
                         <br />
                         Registered address: [REGISTERED ADDRESS]
                         <br />

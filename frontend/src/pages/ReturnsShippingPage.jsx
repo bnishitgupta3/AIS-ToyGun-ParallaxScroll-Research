@@ -6,7 +6,7 @@ export default function ReturnsShippingPage() {
             <p>
                 This policy explains how we ship orders and handle returns,
                 replacements and cancellations. The Up Your Play brand and website
-                are operated by SR Stita Machinery Pvt Ltd. We follow the Consumer
+                are operated by Sri Stita Machinery Pvt Ltd. We follow the Consumer
                 Protection (E-Commerce) Rules, 2020 and the Consumer Protection Act,
                 2019.
             </p>

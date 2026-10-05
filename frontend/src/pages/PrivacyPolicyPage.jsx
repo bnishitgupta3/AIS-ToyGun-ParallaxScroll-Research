@@ -5,7 +5,7 @@ export default function PrivacyPolicyPage() {
         <LegalLayout eyebrow="/// Legal" title="Privacy Policy" updated="5 October 2026">
             <p>
                 This Privacy Policy describes how Up Your Play, a brand operated by
-                SR Stita Machinery Pvt Ltd ("we", "us", "our"), collects, uses,
+                Sri Stita Machinery Pvt Ltd ("we", "us", "our"), collects, uses,
                 stores, discloses and protects your personal data when you visit or
                 purchase from our website. We are committed to
                 handling your information in accordance with the Information

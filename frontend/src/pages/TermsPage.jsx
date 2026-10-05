@@ -6,7 +6,7 @@ export default function TermsPage() {
             <p>
                 These Terms & Conditions govern your access to and use of the Up Your
                 Play website and the purchase of our products. The Up Your Play brand
-                and website are operated by SR Stita Machinery Pvt Ltd. These Terms are
+                and website are operated by Sri Stita Machinery Pvt Ltd. These Terms are
                 governed by the Indian Contract Act, 1872, the Consumer Protection Act,
                 2019, the Consumer Protection (E-Commerce) Rules, 2020, and the
                 Information Technology Act, 2000. By using this website or placing an
@@ -65,7 +65,7 @@ export default function TermsPage() {
             <Section heading="6. Intellectual property">
                 <p>
                     All content on this website, including the brand name, logos,
-                    designs, 3D models, text and imagery, is the property of SR Stita
+                    designs, 3D models, text and imagery, is the property of Sri Stita
                     Machinery Pvt Ltd (Up Your Play) and protected under applicable
                     Indian IP laws. You may not reproduce or use it without written
                     permission.
