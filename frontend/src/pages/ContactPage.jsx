@@ -216,9 +216,9 @@ export default function ContactPage() {
                         Up Your Play is a brand operated by{" "}
                         <strong className="text-[#1a1a1a]/80">Sri Stita Machinery Pvt Ltd</strong>.
                         <br />
-                        Registered address: [REGISTERED ADDRESS]
+                        Registered address: PLOT NO 4-132/12/A/1, SURVEY NO 128/A/3, Dommara Pochampally, Hyderabad, Medchal Malkajgiri, Telangana 500043
                         <br />
-                        GSTIN: [GSTIN] · CIN: [CIN]
+                        GSTIN: 36ABNCS2921D1ZE · CIN: U28292TS2024PTC184732
                     </p>
                 </div>
             </main>
