@@ -4,6 +4,7 @@ import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useCart, PRODUCT_LOOKUP, CATALOG, MAX_BUNDLE_SAVING } from "@/lib/cart";
 import { scrollToSection } from "@/lib/scrollToSection";
 import NotifyMe from "@/components/showcase/NotifyMe";
+import { createCheckout } from "@/lib/shopify";
 
 const inr = (n) => "₹" + Number(n).toLocaleString("en-IN");
 
@@ -39,6 +40,24 @@ export default function BuyNowSheet({ open, product, onClose }) {
             setTimeout(() => scrollToSection("#squad-packs"), 60);
         } else {
             navigate("/", { state: { scrollTo: "#squad-packs" } });
+        }
+    };
+
+    // Checkout — hand the cart to Shopify's Storefront API and redirect to the
+    // hosted checkout (Razorpay + COD live there). No backend: the public
+    // Storefront token plus Shopify enforce prices and the bundle discount gate.
+    const [checkingOut, setCheckingOut] = useState(false);
+    const [checkoutError, setCheckoutError] = useState("");
+    const handleCheckout = async () => {
+        if (checkingOut) return;
+        setCheckoutError("");
+        setCheckingOut(true);
+        try {
+            const url = await createCheckout(items);
+            window.location.href = url; // leaves the SPA for Shopify checkout
+        } catch (e) {
+            setCheckoutError(e.message || "Something went wrong. Please try again.");
+            setCheckingOut(false);
         }
     };
     // Build a render list of { key, name, qty } from the items map.
@@ -153,10 +172,10 @@ export default function BuyNowSheet({ open, product, onClose }) {
 
                     <p className="mt-4 font-inter text-[14px] leading-relaxed text-[#1a1a1a]/65 sm:text-[15px]">
                         {hasItems
-                            ? "We're plumbing in payments and dispatch right now. The moment checkout opens, you'll get a one-tap link to pay for everything in your cart."
-                            : `We're plumbing in payments and dispatch right now. The ${
+                            ? "Review your squad below, then head to secure checkout."
+                            : `Add a blaster and it is one tap from your door. The ${
                                   product?.name || "blaster"
-                              } will be one tap from your door very soon.`}
+                              } is ready when you are.`}
                     </p>
 
                     {/* ── Cart line items (when present). On Shopify swap, replace
@@ -421,15 +440,40 @@ export default function BuyNowSheet({ open, product, onClose }) {
                             </p>
                         </div>
                     )}
-                    {/* Inline email capture — collects the launch/checkout waitlist
-                        straight into Formspree. SHOPIFY SWAP: once checkout ships,
-                        swap this for a "Checkout" button that sends window.location
-                        to `cart.checkoutUrl` when hasItems. */}
-                    <NotifyMe
-                        productName={product?.name || (hasItems ? "checkout" : "launch")}
-                        source={hasItems ? "checkout-launch" : "buy-now-launch"}
-                        accent="#F8290A"
-                    />
+                    {/* Checkout — hands the cart to Shopify's Storefront API and
+                        redirects to the hosted checkout when there are items; the
+                        empty state keeps the launch waitlist capture. */}
+                    {hasItems ? (
+                        <>
+                            <button
+                                type="button"
+                                onClick={handleCheckout}
+                                disabled={checkingOut}
+                                className="group relative flex w-full items-center justify-center gap-2 overflow-hidden rounded-full bg-[#F8290A] py-4 font-inter text-[14px] font-bold uppercase tracking-[0.14em] text-white shadow-[inset_0_-4px_4px_rgba(255,255,255,0.35)] transition hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-70"
+                            >
+                                <span className="relative">
+                                    {checkingOut ? "Starting checkout…" : "Checkout"}
+                                </span>
+                                {!checkingOut && (
+                                    <span className="relative transition-transform group-hover:translate-x-0.5">→</span>
+                                )}
+                            </button>
+                            {checkoutError && (
+                                <p className="mt-2 text-center font-inter text-[12px] text-red-500">
+                                    {checkoutError}
+                                </p>
+                            )}
+                            <p className="mt-2 text-center font-inter text-[11px] text-[#1a1a1a]/40">
+                                Secure checkout. Shipping calculated at the next step.
+                            </p>
+                        </>
+                    ) : (
+                        <NotifyMe
+                            productName={product?.name || "launch"}
+                            source="buy-now-launch"
+                            accent="#F8290A"
+                        />
+                    )}
                 </div>
             </div>
         </div>,
