@@ -55,9 +55,9 @@ export default function ReturnsShippingPage() {
             <Section heading="5. If a replacement is unavailable">
                 <p>
                     If the same item is out of stock, we will offer a replacement with
-                    a product of equal value, or issue store credit of the same amount
-                    that you can use on a future order. Store credit is valid for 12
-                    months from the date of issue.
+                    a product of equal value, or issue store credit (a gift card or
+                    coupon code you redeem at checkout) of the same amount, valid for
+                    12 months from the date of issue.
                 </p>
             </Section>
 
@@ -65,7 +65,8 @@ export default function ReturnsShippingPage() {
                 <p>
                     You may cancel an order before it is dispatched. As we do not
                     process cash refunds, the value of a prepaid order will be issued
-                    as store credit. Once an order has shipped it cannot be cancelled,
+                    as store credit (a gift card or coupon code you redeem at
+                    checkout). Once an order has shipped it cannot be cancelled,
                     but the replacement process above still applies.
                 </p>
             </Section>
