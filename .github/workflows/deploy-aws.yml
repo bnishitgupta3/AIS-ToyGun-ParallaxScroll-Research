@@ -1,0 +1,99 @@
+name: Deploy to AWS (Up Your Play)
+
+# Ships THIS branch to the S3 bucket + CloudFront distribution that serve
+# upyourplay.in (apex = primary). www.upyourplay.in 301-redirects to the apex,
+# so both hostnames are covered by one deploy. Same bucket + distribution that
+# served soniqtoys.com (which should now 301-redirect to upyourplay.in).
+#
+# Triggers:
+#   • push to the `production` branch → deploys live to upyourplay.in. Day-to-day
+#     work lands on `rebrand/up-your-play`, which only rebuilds the Cloudflare
+#     PREVIEW (not prod). Promote to live by fast-forwarding production to
+#     rebrand/up-your-play and pushing it. redesign/arsenal-photo-grid = old rollback.
+#   • workflow_dispatch → a manual "Run workflow" button. NOTE: GitHub only shows
+#     that button when this file also exists on the repo's DEFAULT branch (main).
+on:
+  push:
+    branches: [production]
+  workflow_dispatch:
+
+# Never let two prod deploys race; cancel an in-flight one if a newer push lands.
+concurrency:
+  group: aws-prod-deploy
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    # Safety: only ever deploy when running on the production branch, so a manual
+    # dispatch from another branch (e.g. the main 3-D archive) is a no-op and
+    # cannot overwrite the live site. Normal pushes to production are unaffected.
+    if: github.ref == 'refs/heads/production'
+    runs-on: ubuntu-22.04
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install dependencies
+        run: npm ci --legacy-peer-deps || npm install --legacy-peer-deps
+
+      # react-snap prerenders each route with a headless Chromium — these are the
+      # shared libraries it needs on Ubuntu.
+      - name: Chromium libraries for react-snap
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libnss3 libatk-bridge2.0-0 libatk1.0-0 libcups2 \
+            libdrm2 libgbm1 libgtk-3-0 libasound2 libxcomposite1 libxdamage1 \
+            libxfixes3 libxrandr2 libxkbcommon0 libpango-1.0-0 libcairo2 libxshmfence1
+
+      - name: Build (prerendered, with GA)
+        env:
+          CI: "false"
+          GENERATE_SOURCEMAP: "false"
+          # Public Measurement ID — only baked into the AWS prod build, never the
+          # Cloudflare preview (which builds the branch without this env).
+          REACT_APP_GA_MEASUREMENT_ID: G-RZVSQDS03C
+        # `craco build` always produces build/; if the react-snap prerender step
+        # fails we still deploy the standard SPA build rather than block the release.
+        run: npm run build:prerendered || echo "::warning::react-snap prerender failed; deploying the standard build/ instead"
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ vars.AWS_REGION || 'us-east-1' }}
+
+      - name: Sync to S3
+        run: |
+          # 1) Fingerprinted build assets under static/ (JS/CSS/media) — webpack
+          #    hashes these filenames every build, so cache them forever. NO
+          #    --delete on purpose: keeping the PREVIOUS build's chunks around means
+          #    a visitor whose tab is still on the old build won't 404 a code-split
+          #    chunk mid-navigation (the "blank page after deploy" bug). Prune old
+          #    ones occasionally with an S3 lifecycle rule if desired.
+          aws s3 sync build "s3://${{ vars.S3_BUCKET }}" \
+            --cache-control "public,max-age=31536000,immutable" \
+            --exclude "*" --include "static/*"
+          # 2) STABLE-named public assets (logo, favicons, og-image, product
+          #    images, 3-D models, fonts). Their filenames DON'T change when the
+          #    content does, so they must NOT be immutable — otherwise a returning
+          #    visitor keeps the old file (e.g. the pre-rebrand logo) for a year.
+          #    A short TTL + the CloudFront /* invalidation below means changes
+          #    propagate within the hour. Everything NOT static/ and NOT the
+          #    HTML/manifest group below falls here.
+          aws s3 sync build "s3://${{ vars.S3_BUCKET }}" \
+            --cache-control "public,max-age=3600,must-revalidate" \
+            --exclude "static/*" --exclude "*.html" --exclude "*.json" --exclude "*.txt" --exclude "*.xml"
+          # 3) HTML + manifests + robots/sitemap — must never be stale, so no-cache.
+          aws s3 sync build "s3://${{ vars.S3_BUCKET }}" \
+            --cache-control "public,max-age=0,must-revalidate" \
+            --exclude "*" --include "*.html" --include "*.json" --include "*.txt" --include "*.xml"
+
+      - name: Invalidate CloudFront
+        run: aws cloudfront create-invalidation --distribution-id "${{ vars.CLOUDFRONT_DISTRIBUTION_ID }}" --paths "/*"
