@@ -189,6 +189,9 @@ function ZoomModal({ images, index, setIndex, onClose }) {
     const [zoom, setZoom] = useState(false);
     const [origin, setOrigin] = useState({ x: 50, y: 50 });
     const frameRef = useRef(null);
+    // Horizontal swipe (when not zoomed) flips to the prev/next image. `swiped`
+    // stops that same gesture from also toggling zoom via the click handler.
+    const swipe = useRef({ x: 0, y: 0, swiped: false });
 
     useEffect(() => {
         const onKey = (e) => {
@@ -222,11 +225,31 @@ function ZoomModal({ images, index, setIndex, onClose }) {
             <div className="flex flex-1 items-center justify-center p-4" onClick={onClose}>
                 <div
                     ref={frameRef}
-                    onClick={(e) => { e.stopPropagation(); setZoom((z) => !z); }}
+                    onClick={(e) => {
+                        e.stopPropagation();
+                        if (swipe.current.swiped) { swipe.current.swiped = false; return; }
+                        setZoom((z) => !z);
+                    }}
                     onMouseMove={(e) => { if (zoom) track(e.clientX, e.clientY); }}
-                    onTouchMove={(e) => { if (zoom && e.touches[0]) track(e.touches[0].clientX, e.touches[0].clientY); }}
+                    onTouchStart={(e) => {
+                        if (zoom || !e.touches[0]) return;
+                        swipe.current = { x: e.touches[0].clientX, y: e.touches[0].clientY, swiped: false };
+                    }}
+                    onTouchMove={(e) => {
+                        if (zoom && e.touches[0]) { track(e.touches[0].clientX, e.touches[0].clientY); return; }
+                        if (e.touches[0] && Math.abs(e.touches[0].clientX - swipe.current.x) > 10) swipe.current.swiped = true;
+                    }}
+                    onTouchEnd={(e) => {
+                        if (zoom || images.length < 2 || !e.changedTouches[0]) return;
+                        const dx = e.changedTouches[0].clientX - swipe.current.x;
+                        const dy = e.changedTouches[0].clientY - swipe.current.y;
+                        if (Math.abs(dx) > 45 && Math.abs(dx) > Math.abs(dy)) {
+                            setIndex((i) => (i + (dx < 0 ? 1 : -1) + images.length) % images.length);
+                            setZoom(false);
+                        }
+                    }}
                     className={`relative max-h-[82vh] overflow-hidden rounded-2xl ${zoom ? "cursor-zoom-out" : "cursor-zoom-in"}`}
-                    style={{ touchAction: zoom ? "none" : "auto" }}
+                    style={{ touchAction: zoom ? "none" : "pan-y" }}
                 >
                     <img
                         src={images[index]}
@@ -262,24 +285,57 @@ function ZoomModal({ images, index, setIndex, onClose }) {
     );
 }
 
-/* Image gallery with thumbnails; the main image opens the zoom lightbox. */
+/* Image gallery with thumbnails; the main image opens the zoom lightbox, and on
+   touch devices a horizontal swipe flips to the next/previous image. */
 function Gallery({ product, images }) {
     const [active, setActive] = useState(0);
     const [zoomOpen, setZoomOpen] = useState(false);
     const srcs = images.map(productImg);
+    const multi = srcs.length > 1;
+
+    // Swipe left → next, right → prev (wraps). `swiped` guards the tap-to-zoom
+    // click so a swipe doesn't also open the lightbox.
+    const touch = useRef({ x: 0, y: 0, swiped: false });
+    const go = (dir) => setActive((i) => (i + dir + srcs.length) % srcs.length);
+    const onTouchStart = (e) => {
+        if (!e.touches[0]) return;
+        touch.current = { x: e.touches[0].clientX, y: e.touches[0].clientY, swiped: false };
+    };
+    const onTouchMove = (e) => {
+        if (e.touches[0] && Math.abs(e.touches[0].clientX - touch.current.x) > 10) touch.current.swiped = true;
+    };
+    const onTouchEnd = (e) => {
+        if (!multi || !e.changedTouches[0]) return;
+        const dx = e.changedTouches[0].clientX - touch.current.x;
+        const dy = e.changedTouches[0].clientY - touch.current.y;
+        if (Math.abs(dx) > 45 && Math.abs(dx) > Math.abs(dy)) go(dx < 0 ? 1 : -1);
+    };
+
     return (
         <div className="lg:sticky lg:top-28">
             <button
                 type="button"
-                onClick={() => setZoomOpen(true)}
+                onClick={() => {
+                    if (touch.current.swiped) { touch.current.swiped = false; return; }
+                    setZoomOpen(true);
+                }}
+                onTouchStart={onTouchStart}
+                onTouchMove={onTouchMove}
+                onTouchEnd={onTouchEnd}
                 aria-label="Zoom image"
                 className="brutal-accent group relative block aspect-square w-full cursor-zoom-in overflow-hidden rounded-3xl bg-[#f1f0ed]"
-                style={{ "--accent": product.accent }}
+                style={{ "--accent": product.accent, touchAction: "pan-y" }}
             >
-                <img src={srcs[active]} alt={`${product.name} view ${active + 1}`} className="h-full w-full object-contain p-6" />
+                <img src={srcs[active]} alt={`${product.name} view ${active + 1}`} draggable="false" className="h-full w-full select-none object-contain p-6" />
                 {product.comingSoon && (
                     <span className="absolute left-4 top-4 rounded-full px-3 py-1 font-inter text-[11px] font-bold uppercase tracking-[0.18em] text-white" style={{ background: product.accent }}>
                         Coming soon
+                    </span>
+                )}
+                {/* Image counter — signals there's more than one shot to swipe through. */}
+                {multi && (
+                    <span className="absolute bottom-3 left-3 rounded-full bg-black/55 px-2.5 py-1 font-inter text-[11px] font-semibold tabular-nums text-white">
+                        {active + 1} / {srcs.length}
                     </span>
                 )}
                 <span className="absolute bottom-3 right-3 grid h-9 w-9 place-items-center rounded-full bg-white/80 text-[#1a1a1a] shadow-sm transition group-hover:bg-white">
