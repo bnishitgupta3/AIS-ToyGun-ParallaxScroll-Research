@@ -24,6 +24,10 @@ concurrency:
 
 jobs:
   deploy:
+    # Safety: only ever deploy when running on the production branch, so a manual
+    # dispatch from another branch (e.g. the main 3-D archive) is a no-op and
+    # cannot overwrite the live site. Normal pushes to production are unaffected.
+    if: github.ref == 'refs/heads/production'
     runs-on: ubuntu-22.04
     defaults:
       run:
