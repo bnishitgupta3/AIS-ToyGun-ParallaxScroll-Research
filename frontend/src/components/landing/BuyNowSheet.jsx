@@ -3,7 +3,6 @@ import { createPortal } from "react-dom";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useCart, PRODUCT_LOOKUP, CATALOG, MAX_BUNDLE_SAVING } from "@/lib/cart";
 import { scrollToSection } from "@/lib/scrollToSection";
-import NotifyMe from "@/components/showcase/NotifyMe";
 import { createCheckout } from "@/lib/shopify";
 
 const inr = (n) => "₹" + Number(n).toLocaleString("en-IN");
@@ -40,6 +39,17 @@ export default function BuyNowSheet({ open, product, onClose }) {
             setTimeout(() => scrollToSection("#squad-packs"), 60);
         } else {
             navigate("/", { state: { scrollTo: "#squad-packs" } });
+        }
+    };
+
+    // Empty-cart CTA → jump to the Arsenal (product grid). Same close-then-scroll
+    // pattern as the Squad Pack upsell above.
+    const goToArsenal = () => {
+        onClose();
+        if (location.pathname === "/") {
+            setTimeout(() => scrollToSection("#arsenal"), 60);
+        } else {
+            navigate("/", { state: { scrollTo: "#arsenal" } });
         }
     };
 
@@ -159,7 +169,7 @@ export default function BuyNowSheet({ open, product, onClose }) {
                     scrolls / CTA buried at the bottom" feel on phones). */}
                 <div ref={bodyRef} className="flex-1 min-h-0 overflow-y-auto overscroll-contain px-7 pb-6 pt-10 md:px-10 md:pt-16">
                     <span className="font-inter text-[11px] font-semibold uppercase tracking-[0.35em] text-[#F8290A]">
-                        {hasItems ? "/// Your cart" : "/// Almost here"}
+                        /// Your cart
                     </span>
 
                     <h2 className="font-instrument mt-3 text-[clamp(28px,5.5vw,46px)] leading-[0.95] tracking-tight text-[#1a1a1a]">
@@ -167,15 +177,13 @@ export default function BuyNowSheet({ open, product, onClose }) {
                             ? blasters === 1
                                 ? "1 blaster ready."
                                 : `${blasters} blasters ready.`
-                            : "Checkout is loading up."}
+                            : "Your cart is empty."}
                     </h2>
 
                     <p className="mt-4 font-inter text-[14px] leading-relaxed text-[#1a1a1a]/65 sm:text-[15px]">
                         {hasItems
                             ? "Review your squad below, then head to secure checkout."
-                            : `Add a blaster and it is one tap from your door. The ${
-                                  product?.name || "blaster"
-                              } is ready when you are.`}
+                            : "Nothing here yet. Add a blaster and it is one tap from your door."}
                     </p>
 
                     {/* ── Cart line items (when present). On Shopify swap, replace
@@ -440,9 +448,8 @@ export default function BuyNowSheet({ open, product, onClose }) {
                             </p>
                         </div>
                     )}
-                    {/* Checkout — hands the cart to Shopify's Storefront API and
-                        redirects to the hosted checkout when there are items; the
-                        empty state keeps the launch waitlist capture. */}
+                    {/* Checkout when there are items → Shopify Storefront API +
+                        hosted checkout. Empty cart → a Browse CTA into the Arsenal. */}
                     {hasItems ? (
                         <>
                             <button
@@ -468,11 +475,14 @@ export default function BuyNowSheet({ open, product, onClose }) {
                             </p>
                         </>
                     ) : (
-                        <NotifyMe
-                            productName={product?.name || "launch"}
-                            source="buy-now-launch"
-                            accent="#F8290A"
-                        />
+                        <button
+                            type="button"
+                            onClick={goToArsenal}
+                            className="group relative flex w-full items-center justify-center gap-2 overflow-hidden rounded-full bg-[#F8290A] py-4 font-inter text-[14px] font-bold uppercase tracking-[0.14em] text-white shadow-[inset_0_-4px_4px_rgba(255,255,255,0.35)] transition hover:brightness-110"
+                        >
+                            <span className="relative">Browse the arsenal</span>
+                            <span className="relative transition-transform group-hover:translate-x-0.5">→</span>
+                        </button>
                     )}
                 </div>
             </div>
