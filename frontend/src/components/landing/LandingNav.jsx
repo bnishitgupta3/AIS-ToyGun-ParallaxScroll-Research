@@ -95,6 +95,28 @@ function NavDropdown({ label, items }) {
     );
 }
 
+/* Collapsible section for the mobile menu — keeps the panel compact by hiding
+   secondary groups (Experience, Support) behind a tap. Collapsed by default. */
+function MobileSection({ label, children }) {
+    const [open, setOpen] = useState(false);
+    return (
+        <div>
+            <button
+                type="button"
+                aria-expanded={open}
+                onClick={() => setOpen((o) => !o)}
+                className="flex w-full items-center justify-between rounded-xl px-2 py-2.5 font-inter text-[15px] font-medium text-[#1a1a1a]/85 transition-colors hover:bg-black/5"
+            >
+                {label}
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className={`text-[#1a1a1a]/40 transition-transform ${open ? "rotate-180" : ""}`}>
+                    <path d="M6 9l6 6 6-6" />
+                </svg>
+            </button>
+            {open && <div className="mt-0.5 flex flex-col gap-0.5 pl-1">{children}</div>}
+        </div>
+    );
+}
+
 /* Cart icon + qty badge. Opens the shared BuyNowSheet (cart drawer). The
    button stays visible on every viewport — qty badge appears only when there
    is at least one item, so empty carts don't add visual noise. */
@@ -272,19 +294,20 @@ export default function LandingNav() {
                             </Link>
                         ))}
                         <div className="my-1.5 border-t border-black/5" />
-                        {/* Experience → 3-D product pages */}
-                        <div className="px-2 pb-1 pt-1 font-inter text-[10px] font-bold uppercase tracking-[0.2em] text-[#1a1a1a]/40">Experience in 3D</div>
-                        {EXPERIENCE_NAV.map((s) => (
-                            <Link
-                                key={s.to}
-                                to={s.to}
-                                onClick={() => setOpen(false)}
-                                className="flex items-center justify-between rounded-xl px-2 py-2.5 font-inter text-[15px] font-medium text-[#1a1a1a]/85 transition-colors hover:bg-black/5"
-                            >
-                                {s.name}
-                                <span className="font-inter text-[9px] font-bold uppercase tracking-[0.18em] text-[#F8290A]">3D</span>
-                            </Link>
-                        ))}
+                        {/* Experience → 3-D product pages (collapsible to save space) */}
+                        <MobileSection label="Experience in 3D">
+                            {EXPERIENCE_NAV.map((s) => (
+                                <Link
+                                    key={s.to}
+                                    to={s.to}
+                                    onClick={() => setOpen(false)}
+                                    className="flex items-center justify-between rounded-xl px-2 py-2.5 font-inter text-[15px] font-medium text-[#1a1a1a]/85 transition-colors hover:bg-black/5"
+                                >
+                                    {s.name}
+                                    <span className="font-inter text-[9px] font-bold uppercase tracking-[0.18em] text-[#F8290A]">3D</span>
+                                </Link>
+                            ))}
+                        </MobileSection>
                         <div className="my-1.5 border-t border-black/5" />
                         {SECTION_LINKS.map(({ label, target }) => (
                             <a
@@ -307,18 +330,19 @@ export default function LandingNav() {
                             </Link>
                         ))}
                         <div className="my-1.5 border-t border-black/5" />
-                        {/* Support → help pages */}
-                        <div className="px-2 pb-1 pt-1 font-inter text-[10px] font-bold uppercase tracking-[0.2em] text-[#1a1a1a]/40">Support</div>
-                        {SUPPORT_NAV.map((s) => (
-                            <Link
-                                key={s.to}
-                                to={s.to}
-                                onClick={() => setOpen(false)}
-                                className="rounded-xl px-2 py-2.5 font-inter text-[15px] font-medium text-[#1a1a1a]/85 transition-colors hover:bg-black/5"
-                            >
-                                {s.name}
-                            </Link>
-                        ))}
+                        {/* Support → help pages (collapsible to save space) */}
+                        <MobileSection label="Support">
+                            {SUPPORT_NAV.map((s) => (
+                                <Link
+                                    key={s.to}
+                                    to={s.to}
+                                    onClick={() => setOpen(false)}
+                                    className="rounded-xl px-2 py-2.5 font-inter text-[15px] font-medium text-[#1a1a1a]/85 transition-colors hover:bg-black/5"
+                                >
+                                    {s.name}
+                                </Link>
+                            ))}
+                        </MobileSection>
                         <a
                             href="#arsenal"
                             onClick={(e) => goSection(e, "#arsenal")}
