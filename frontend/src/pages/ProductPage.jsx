@@ -285,63 +285,90 @@ function ZoomModal({ images, index, setIndex, onClose }) {
     );
 }
 
-/* Image gallery with thumbnails; the main image opens the zoom lightbox, and on
-   touch devices a horizontal swipe flips to the next/previous image. */
+/* Image gallery with thumbnails. The main image opens the zoom lightbox on tap,
+   and flips to the prev/next image on a horizontal drag/swipe (mouse, touch or
+   pen — via pointer events), the on-image arrows, the arrow keys, or thumbnails. */
 function Gallery({ product, images }) {
     const [active, setActive] = useState(0);
     const [zoomOpen, setZoomOpen] = useState(false);
     const srcs = images.map(productImg);
     const multi = srcs.length > 1;
-
-    // Swipe left → next, right → prev (wraps). `swiped` guards the tap-to-zoom
-    // click so a swipe doesn't also open the lightbox.
-    const touch = useRef({ x: 0, y: 0, swiped: false });
     const go = (dir) => setActive((i) => (i + dir + srcs.length) % srcs.length);
-    const onTouchStart = (e) => {
-        if (!e.touches[0]) return;
-        touch.current = { x: e.touches[0].clientX, y: e.touches[0].clientY, swiped: false };
+
+    // Drag/swipe via pointer events so it works on desktop (mouse) AND mobile
+    // (touch). `swiped` stops a drag from also opening the zoom lightbox.
+    const drag = useRef({ x: 0, y: 0, active: false, swiped: false });
+    const onPointerDown = (e) => {
+        drag.current = { x: e.clientX, y: e.clientY, active: true, swiped: false };
     };
-    const onTouchMove = (e) => {
-        if (e.touches[0] && Math.abs(e.touches[0].clientX - touch.current.x) > 10) touch.current.swiped = true;
+    const onPointerMove = (e) => {
+        if (drag.current.active && Math.abs(e.clientX - drag.current.x) > 8) drag.current.swiped = true;
     };
-    const onTouchEnd = (e) => {
-        if (!multi || !e.changedTouches[0]) return;
-        const dx = e.changedTouches[0].clientX - touch.current.x;
-        const dy = e.changedTouches[0].clientY - touch.current.y;
-        if (Math.abs(dx) > 45 && Math.abs(dx) > Math.abs(dy)) go(dx < 0 ? 1 : -1);
+    const onPointerUp = (e) => {
+        if (!drag.current.active) return;
+        drag.current.active = false;
+        if (!multi) return;
+        const dx = e.clientX - drag.current.x;
+        const dy = e.clientY - drag.current.y;
+        if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy)) go(dx < 0 ? 1 : -1);
     };
 
     return (
         <div className="lg:sticky lg:top-28">
-            <button
-                type="button"
+            <div
+                role="button"
+                tabIndex={0}
+                aria-label="Product image. Swipe or use the arrows to change it, tap to zoom."
                 onClick={() => {
-                    if (touch.current.swiped) { touch.current.swiped = false; return; }
+                    if (drag.current.swiped) { drag.current.swiped = false; return; }
                     setZoomOpen(true);
                 }}
-                onTouchStart={onTouchStart}
-                onTouchMove={onTouchMove}
-                onTouchEnd={onTouchEnd}
-                aria-label="Zoom image"
-                className="brutal-accent group relative block aspect-square w-full cursor-zoom-in overflow-hidden rounded-3xl bg-[#f1f0ed]"
+                onPointerDown={onPointerDown}
+                onPointerMove={onPointerMove}
+                onPointerUp={onPointerUp}
+                onPointerCancel={() => { drag.current.active = false; }}
+                onKeyDown={(e) => {
+                    if (e.key === "Enter" || e.key === " ") { e.preventDefault(); setZoomOpen(true); }
+                    else if (multi && e.key === "ArrowRight") go(1);
+                    else if (multi && e.key === "ArrowLeft") go(-1);
+                }}
+                className="brutal-accent group relative block aspect-square w-full cursor-zoom-in select-none overflow-hidden rounded-3xl bg-[#f1f0ed]"
                 style={{ "--accent": product.accent, touchAction: "pan-y" }}
             >
-                <img src={srcs[active]} alt={`${product.name} view ${active + 1}`} draggable="false" className="h-full w-full select-none object-contain p-6" />
+                <img src={srcs[active]} alt={`${product.name} view ${active + 1}`} draggable="false" className="pointer-events-none h-full w-full select-none object-contain p-6" />
                 {product.comingSoon && (
                     <span className="absolute left-4 top-4 rounded-full px-3 py-1 font-inter text-[11px] font-bold uppercase tracking-[0.18em] text-white" style={{ background: product.accent }}>
                         Coming soon
                     </span>
                 )}
-                {/* Image counter — signals there's more than one shot to swipe through. */}
                 {multi && (
-                    <span className="absolute bottom-3 left-3 rounded-full bg-black/55 px-2.5 py-1 font-inter text-[11px] font-semibold tabular-nums text-white">
-                        {active + 1} / {srcs.length}
-                    </span>
+                    <>
+                        {/* Prev / next arrows — a click works on every device; drag/swipe too. */}
+                        <button
+                            type="button"
+                            aria-label="Previous image"
+                            onClick={(e) => { e.stopPropagation(); go(-1); }}
+                            className="absolute left-2 top-1/2 grid h-9 w-9 -translate-y-1/2 place-items-center rounded-full bg-white/80 text-[#1a1a1a] shadow-sm transition hover:bg-white"
+                        >
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4"><path d="M15 6l-6 6 6 6" /></svg>
+                        </button>
+                        <button
+                            type="button"
+                            aria-label="Next image"
+                            onClick={(e) => { e.stopPropagation(); go(1); }}
+                            className="absolute right-2 top-1/2 grid h-9 w-9 -translate-y-1/2 place-items-center rounded-full bg-white/80 text-[#1a1a1a] shadow-sm transition hover:bg-white"
+                        >
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4"><path d="M9 6l6 6-6 6" /></svg>
+                        </button>
+                        <span className="pointer-events-none absolute bottom-3 left-3 rounded-full bg-black/55 px-2.5 py-1 font-inter text-[11px] font-semibold tabular-nums text-white">
+                            {active + 1} / {srcs.length}
+                        </span>
+                    </>
                 )}
-                <span className="absolute bottom-3 right-3 grid h-9 w-9 place-items-center rounded-full bg-white/80 text-[#1a1a1a] shadow-sm transition group-hover:bg-white">
+                <span className="pointer-events-none absolute bottom-3 right-3 grid h-9 w-9 place-items-center rounded-full bg-white/80 text-[#1a1a1a] shadow-sm transition group-hover:bg-white">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2"><circle cx="11" cy="11" r="7" /><path d="M21 21l-4.3-4.3M11 8v6M8 11h6" /></svg>
                 </span>
-            </button>
+            </div>
             <div className="mt-3 flex gap-3">
                 {srcs.map((img, i) => (
                     <button
