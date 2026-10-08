@@ -1,4 +1,4 @@
-name: Deploy to AWS (upyourplay.in)
+name: Deploy to AWS (Up Your Play)
 
 # Ships THIS branch to the S3 bucket + CloudFront distribution that serve
 # upyourplay.in (apex = primary). www.upyourplay.in 301-redirects to the apex,
