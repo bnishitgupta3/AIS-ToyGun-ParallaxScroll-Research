@@ -4,6 +4,7 @@ import { useCart } from "@/lib/cart";
 import { scrollToSection } from "@/lib/scrollToSection";
 import { asset } from "@/lib/asset";
 import { PRODUCTS } from "@/components/landing/ArsenalSection";
+import { Mail, PackageSearch } from "lucide-react";
 
 /* Homepage section anchors (smooth-scroll on home, route-then-scroll elsewhere).
    Mission removed from the nav per request; the section still exists on the page. */
@@ -11,8 +12,7 @@ const SECTION_LINKS = [];
 
 /* Real page routes */
 const PAGE_LINKS = [
-    { label: "About",   to: "/about" },
-    { label: "Contact", to: "/contact" },
+    { label: "About", to: "/about" },
 ];
 
 const inr = (n) => "₹" + Number(n).toLocaleString("en-IN");
@@ -29,6 +29,12 @@ const PRODUCT_NAV = PRODUCTS.map((p) => ({
 const EXPERIENCE_NAV = [
     { name: "MP5K",         to: "/product/mp5k/3d", image: asset("/assets/products/mp5k.jpg"), sub: "3-D showcase" },
     { name: "M416 Water X", to: "/product/m416/3d", image: asset("/assets/products/m416.jpg"), sub: "3-D showcase" },
+];
+
+/* "Support" dropdown → help pages. Icon-based rows (no product thumbnail). */
+const SUPPORT_NAV = [
+    { name: "Track your order", to: "/track",   Icon: PackageSearch, sub: "Where is my order?" },
+    { name: "Contact",          to: "/contact", Icon: Mail,          sub: "Help, orders, grievances" },
 ];
 
 /* Desktop hover/click dropdown. A hover-close DELAY plus a no-gap bridge
@@ -64,9 +70,15 @@ function NavDropdown({ label, items }) {
                                 onClick={() => setOpen(false)}
                                 className="flex items-center gap-3 rounded-xl p-2 transition hover:bg-black/5"
                             >
-                                <span className="h-11 w-14 shrink-0 overflow-hidden rounded-lg bg-[#f1f0ed]">
-                                    <img src={it.image} alt="" loading="lazy" className="h-full w-full object-cover" />
-                                </span>
+                                {it.image ? (
+                                    <span className="h-11 w-14 shrink-0 overflow-hidden rounded-lg bg-[#f1f0ed]">
+                                        <img src={it.image} alt="" loading="lazy" className="h-full w-full object-cover" />
+                                    </span>
+                                ) : (
+                                    <span className="grid h-11 w-11 shrink-0 place-items-center rounded-lg bg-[#F8290A]/10 text-[#F8290A]">
+                                        {it.Icon ? <it.Icon size={18} strokeWidth={2} /> : null}
+                                    </span>
+                                )}
                                 <span className="min-w-0 flex-1">
                                     <span className="block font-inter text-[14px] font-semibold text-[#1a1a1a]">{it.name}</span>
                                     <span className="block font-inter text-[11px] text-[#1a1a1a]/45">{it.sub}</span>
@@ -199,6 +211,7 @@ export default function LandingNav() {
                                 {label}
                             </Link>
                         ))}
+                        <NavDropdown label="Support" items={SUPPORT_NAV} />
                     </div>
 
                     {/* Right cluster: cart icon (always visible) + Explore CTA
@@ -291,6 +304,19 @@ export default function LandingNav() {
                                 className="rounded-xl px-2 py-2.5 font-inter text-[15px] font-medium text-[#1a1a1a]/85 transition-colors hover:bg-black/5"
                             >
                                 {label}
+                            </Link>
+                        ))}
+                        <div className="my-1.5 border-t border-black/5" />
+                        {/* Support → help pages */}
+                        <div className="px-2 pb-1 pt-1 font-inter text-[10px] font-bold uppercase tracking-[0.2em] text-[#1a1a1a]/40">Support</div>
+                        {SUPPORT_NAV.map((s) => (
+                            <Link
+                                key={s.to}
+                                to={s.to}
+                                onClick={() => setOpen(false)}
+                                className="rounded-xl px-2 py-2.5 font-inter text-[15px] font-medium text-[#1a1a1a]/85 transition-colors hover:bg-black/5"
+                            >
+                                {s.name}
                             </Link>
                         ))}
                         <a
