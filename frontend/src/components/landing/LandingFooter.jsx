@@ -15,6 +15,7 @@ const NAV_LINKS = {
         { label: "Careers", to: "/careers" },
     ],
     Support: [
+        { label: "Track Order", to: "/track" },
         { label: "Returns & Shipping", to: "/returns" },
         { label: "FAQ", to: "/faq" },
         { label: "Contact", to: "/contact" },

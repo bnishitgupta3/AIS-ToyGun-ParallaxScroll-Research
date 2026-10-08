@@ -30,6 +30,11 @@ const META = {
         description:
             "Get in touch with Up Your Play for product help, orders, returns, grievances or partnership enquiries.",
     },
+    "/track": {
+        title: "Track Your Order · Up Your Play",
+        description:
+            "Track your Up Your Play order. Enter your tracking number, or use the live link we send by email, SMS and WhatsApp.",
+    },
     "/careers": {
         title: "Careers at Up Your Play · Come Make a Splash",
         description:

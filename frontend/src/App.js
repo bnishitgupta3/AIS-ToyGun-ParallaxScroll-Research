@@ -23,6 +23,7 @@ import ReturnsShippingPage    from "@/pages/ReturnsShippingPage";
 import FAQPage                from "@/pages/FAQPage";
 import ContactPage           from "@/pages/ContactPage";
 import CareersPage           from "@/pages/CareersPage";
+import TrackOrderPage        from "@/pages/TrackOrderPage";
 import ProductPage            from "@/pages/ProductPage";
 import ProductShowcase        from "@/pages/ProductShowcase";
 import M416Showcase           from "@/pages/M416Showcase";
@@ -207,6 +208,7 @@ function App() {
                 <Route path="/faq"            element={<FAQPage />} />
                 <Route path="/contact"        element={<ContactPage />} />
                 <Route path="/careers"        element={<CareersPage />} />
+                <Route path="/track"          element={<TrackOrderPage />} />
 
                 {/* Product detail pages */}
                 {/* Conventional PDP is the main product page; the cinematic
