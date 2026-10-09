@@ -36,13 +36,13 @@ export const PRODUCT_DETAILS = {
         highlights: [
             { icon: "bolt", title: "Electric auto-fire", text: "No pumping or priming. Pull and hold to keep firing." },
             { icon: "drum", title: "300ml drum tank", text: "A generous drum means fewer trips to refill." },
-            { icon: "target", title: "7 to 9m range", text: "Plenty of reach for lawns, terraces and pool decks." },
+            { icon: "target", title: "8 to 10m range", text: "Plenty of reach for lawns, terraces and pool decks." },
             { icon: "battery", title: "45 min of play", text: "Rechargeable over USB, ready for the next round fast." },
         ],
         whatsInBox: ["M416 Water X blaster", "300ml drum tank", "USB charging cable", "Quick-start guide"],
         faq: [
             { q: "Do I need to pump it?", a: "No. It is fully electric and trigger-only, with a rechargeable battery charged over USB." },
-            { q: "How far does it shoot?", a: "Around 7 to 9 metres depending on fill and angle." },
+            { q: "How far does it shoot?", a: "Around 8 to 10 metres depending on fill and angle." },
             { q: "What age is it for?", a: "Best for ages 8+ with adult supervision. Water only." },
             { q: "Can I use it in a pool?", a: "Yes, refill straight from the pool and keep firing. Dry the battery compartment after play." },
         ],

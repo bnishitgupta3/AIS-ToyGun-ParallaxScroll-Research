@@ -13,7 +13,7 @@ const specs = [
     { label: "MODE",          value: "Automatic",      id: "spec-mode" },
 ];
 
-const MP5K = { name: "MP5K", link: "/product/mp5k", mrp: 1199, price: 999 };
+const MP5K = { name: "MP5K", link: "/product/mp5k", mrp: 1499, price: 999 };
 
 export default function SpecsPanel() {
     return (
