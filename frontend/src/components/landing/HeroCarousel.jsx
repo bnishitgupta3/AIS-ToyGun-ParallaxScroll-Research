@@ -113,7 +113,8 @@ function MarqueeReel({ hidden }) {
             {MARQUEE_REEL.map((it, i) => (
                 <span key={i} className="flex items-center">
                     <span
-                        className={`px-6 font-instrument text-[15px] font-bold uppercase tracking-[0.1em] sm:text-[17px] ${
+                        style={{ letterSpacing: "0.1em" }}
+                        className={`px-6 font-instrument text-[15px] font-bold uppercase sm:text-[17px] ${
                             it.hot ? "text-[#F8F31A]" : "text-white"
                         }`}
                     >
@@ -157,7 +158,7 @@ function TopReel({ hidden }) {
         <div className="flex shrink-0 items-center whitespace-nowrap" aria-hidden={hidden ? "true" : undefined}>
             {TOP_REEL.map((t, i) => (
                 <span key={i} className="flex items-center">
-                    <span className="px-5 font-instrument text-[13px] font-bold uppercase tracking-[0.06em] sm:text-[15px]">{t}</span>
+                    <span style={{ letterSpacing: "0.12em" }} className="px-5 font-instrument text-[14px] font-bold uppercase sm:text-[16px]">{t}</span>
                     <span className="text-[12px]" role="img" aria-label="water">💦</span>
                 </span>
             ))}
