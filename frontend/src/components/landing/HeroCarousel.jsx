@@ -87,10 +87,12 @@ const COUNT = SLIDES.length;
 /* ── Bottom marquee ── a second scrolling bar under the carousel leaning on
    "Made in India" plus the key specs. Reuses the global .marquee / .marquee-track
    mechanics (two identical reels, a seamless 0 -> -50% loop) and sits in a dark
-   bar at 60s, distinct from the slower red marquee just above it (70s), so the
+   bar at 72s, distinct from the slower red marquee just above it (143s), so the
    two read as separate. It pauses on hover and respects reduced-motion (the track's
    animation is gated on it in index.css; the inline duration only overrides the
-   speed). "India" lines are highlighted in brand yellow. */
+   speed). Durations are tuned to the current content width so both bars keep a
+   constant scroll speed — re-tune them (speed = reel width / duration) if you
+   change the item list or the text size. "India" lines are highlighted in brand yellow. */
 const MARQUEE_ITEMS = [
     { t: "Proudly Made in India", hot: true },
     { t: "Buy more, save more", hot: true },
@@ -133,7 +135,7 @@ function MarqueeReel({ hidden }) {
 function HeroMarquee() {
     return (
         <div className="marquee relative -mx-5 flex items-center overflow-hidden bg-[#1a1a1a] py-4 sm:-mx-8">
-            <div className="marquee-track flex min-w-max" style={{ animationDuration: "60s" }}>
+            <div className="marquee-track flex min-w-max" style={{ animationDuration: "72s" }}>
                 <MarqueeReel />
                 <MarqueeReel hidden />
             </div>
@@ -169,7 +171,7 @@ function TopReel({ hidden }) {
 function HeroTopMarquee() {
     return (
         <div className="marquee relative -mx-5 mt-6 flex items-center overflow-hidden border-t-2 border-[#1a1a1a] bg-[#F8290A] py-2.5 text-white sm:-mx-8">
-            <div className="marquee-track flex min-w-max" style={{ animationDuration: "70s" }}>
+            <div className="marquee-track flex min-w-max" style={{ animationDuration: "143s" }}>
                 <TopReel />
                 <TopReel hidden />
             </div>
