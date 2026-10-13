@@ -144,7 +144,9 @@ function HeroMarquee() {
    running just ABOVE the dark bar at the bottom of the hero. */
 const TOP_MARQUEE_ITEMS = [
     "Fully electric, zero pumping or priming",
+    "Bundle up for an extra 10 to 16% off with SQUAD10, SQUAD13, SQUAD16",
     "Full-auto fire from a 300ml drum-fed tank",
+    "Grab 2 for SQUAD10, 4 for SQUAD13, 6 for SQUAD16",
     "Engineered for Holi mornings and every sunlit day",
     "Free shipping across India this launch season",
 ];
