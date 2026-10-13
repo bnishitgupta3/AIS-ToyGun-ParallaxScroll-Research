@@ -1,4 +1,4 @@
-import { createContext, useCallback, useContext, useMemo, useState } from "react";
+import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
 
 /* ═══════════════════════════════════════════════════════════════════════════
    Cart context — single source of truth for everything cart-related.
@@ -39,9 +39,58 @@ import { createContext, useCallback, useContext, useMemo, useState } from "react
 
 const CartContext = createContext(null);
 
+/* Cart persistence — a D2C cart must survive reloads and return visits, so we
+   mirror it to localStorage (guest cart). We also stash any custom Build-Your-
+   Squad bundle definitions (runtime-registered into PRODUCT_LOOKUP) so a
+   persisted custom squad still renders + checks out after a reload. Everything
+   is wrapped in try/catch — localStorage can throw or be empty (private mode,
+   prerender, blocked storage). */
+const CART_STORAGE_KEY = "uyp_cart_v1";
+const CART_TTL_MS = 30 * 24 * 60 * 60 * 1000; // drop carts older than 30 days
+
+function loadCart() {
+    try {
+        const raw = localStorage.getItem(CART_STORAGE_KEY);
+        if (!raw) return {};
+        const saved = JSON.parse(raw);
+        if (!saved || typeof saved !== "object") return {};
+        if (saved.savedAt && Date.now() - saved.savedAt > CART_TTL_MS) {
+            localStorage.removeItem(CART_STORAGE_KEY);
+            return {};
+        }
+        if (saved.customBundles) {
+            for (const [k, def] of Object.entries(saved.customBundles)) {
+                if (!PRODUCT_LOOKUP[k]) PRODUCT_LOOKUP[k] = def;
+            }
+        }
+        return saved.items && typeof saved.items === "object" ? saved.items : {};
+    } catch {
+        return {};
+    }
+}
+
 export function CartProvider({ children }) {
-    // key (product link, e.g. "/product/mp5k") -> integer qty
-    const [items, setItems] = useState({});
+    // key (product link, e.g. "/product/mp5k") -> integer qty. Seeded from
+    // localStorage so the cart survives reloads and return visits.
+    const [items, setItems] = useState(loadCart);
+
+    // Mirror every cart change back to localStorage (incl. custom bundle defs).
+    useEffect(() => {
+        try {
+            const customBundles = {};
+            for (const key of Object.keys(items)) {
+                if (key.startsWith("/bundle/custom-") && PRODUCT_LOOKUP[key]) {
+                    customBundles[key] = PRODUCT_LOOKUP[key];
+                }
+            }
+            localStorage.setItem(
+                CART_STORAGE_KEY,
+                JSON.stringify({ items, customBundles, savedAt: Date.now() }),
+            );
+        } catch {
+            /* storage unavailable (private mode / disabled) — cart stays in-memory */
+        }
+    }, [items]);
     // drawer state — { open: bool, product?: { name } | null }
     const [drawer, setDrawer] = useState({ open: false, product: null });
 

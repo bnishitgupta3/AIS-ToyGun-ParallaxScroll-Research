@@ -70,6 +70,26 @@ export default function BuyNowSheet({ open, product, onClose }) {
             setCheckingOut(false);
         }
     };
+
+    // A checkout redirect leaves the SPA; if the visitor comes BACK (browser
+    // back / bfcache restore) React state is frozen with checkingOut=true and the
+    // button stays stuck on "Starting checkout…". Reset it when the page is shown
+    // again, and whenever the drawer (re)opens, so Checkout is clickable again.
+    useEffect(() => {
+        const reset = () => {
+            setCheckingOut(false);
+            setCheckoutError("");
+        };
+        window.addEventListener("pageshow", reset);
+        return () => window.removeEventListener("pageshow", reset);
+    }, []);
+    useEffect(() => {
+        if (open) {
+            setCheckingOut(false);
+            setCheckoutError("");
+        }
+    }, [open]);
+
     // Build a render list of { key, name, qty } from the items map.
     const lines = Object.entries(items).map(([key, qty]) => ({
         key,
