@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { postSignup } from "@/lib/notify";
+import { postSignup, isEmail } from "@/lib/notify";
 
 /* Pre-launch "Notify me at launch" capture.
    Used anywhere a product is flagged `comingSoon` in place of the Buy Now /
@@ -26,7 +26,12 @@ export default function NotifyMe({
 
     async function handleSubmit(e) {
         e.preventDefault();
-        if (!email || status === "submitting") return;
+        if (status === "submitting") return;
+        if (!isEmail(email)) {
+            setErrorMsg("Please enter a valid email address.");
+            setStatus("error");
+            return;
+        }
         setStatus("submitting");
         setErrorMsg("");
         try {

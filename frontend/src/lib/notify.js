@@ -11,6 +11,10 @@
 
 export const FORMSPREE_ENDPOINT = "https://formspree.io/f/mwvjgyor";
 
+/* Basic email shape check — catches typos before we POST. Real deliverability
+   is still validated server-side by Formspree / the ESP. */
+export const isEmail = (v) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(v || "").trim());
+
 /* Post an arbitrary payload to Formspree. Used by every form on the site
    (email signups AND the contact message form). Throws on failure with a
    readable message. */

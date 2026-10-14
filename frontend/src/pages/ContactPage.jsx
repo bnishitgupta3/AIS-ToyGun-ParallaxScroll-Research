@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { Mail, ShieldCheck, Briefcase, PhoneCall, Send } from "lucide-react";
 import LandingNav from "@/components/landing/LandingNav";
 import LandingFooter from "@/components/landing/LandingFooter";
-import { postToFormspree } from "@/lib/notify";
+import { postToFormspree, isEmail } from "@/lib/notify";
 
 /* framer-motion removed (motion.* crashed on some real mobile browsers with
    "o is not a function"); entrance uses the CSS `.reveal-up` class instead. */
@@ -46,13 +46,27 @@ export default function ContactPage() {
     useEffect(() => { window.scrollTo(0, 0); }, []);
 
     const [form, setForm] = useState({ name: "", email: "", message: "" });
-    const set = (k) => (e) => setForm((f) => ({ ...f, [k]: e.target.value }));
+    const [fieldErrors, setFieldErrors] = useState({});
+    const set = (k) => (e) => {
+        setForm((f) => ({ ...f, [k]: e.target.value }));
+        // clear a field's error as soon as the user edits it
+        setFieldErrors((fe) => (fe[k] ? { ...fe, [k]: "" } : fe));
+    };
     const [status, setStatus] = useState("idle"); // idle | submitting | success | error
     const [errorMsg, setErrorMsg] = useState("");
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         if (status === "submitting") return;
+        const errs = {};
+        if (!form.name.trim()) errs.name = "Please enter your name.";
+        if (!isEmail(form.email)) errs.email = "Please enter a valid email address.";
+        if (!form.message.trim()) errs.message = "Please add a short message.";
+        if (Object.keys(errs).length) {
+            setFieldErrors(errs);
+            return;
+        }
+        setFieldErrors({});
         setStatus("submitting");
         setErrorMsg("");
         try {
@@ -138,34 +152,52 @@ export default function ContactPage() {
                         ) : (
                             <form onSubmit={handleSubmit} className="mt-6 flex flex-col gap-4" noValidate>
                                 <div className="flex flex-col gap-4 sm:flex-row">
-                                    <input
-                                        type="text"
-                                        required
-                                        value={form.name}
-                                        onChange={set("name")}
-                                        placeholder="Your name"
-                                        disabled={status === "submitting"}
-                                        className="w-full flex-1 rounded-xl border border-black/15 bg-white/70 px-4 py-3 font-inter text-[14px] text-[#1a1a1a] placeholder-[#1a1a1a]/35 outline-none transition-colors focus:border-[#F8290A] disabled:opacity-60"
-                                    />
-                                    <input
-                                        type="email"
-                                        required
-                                        value={form.email}
-                                        onChange={set("email")}
-                                        placeholder="you@email.com"
-                                        disabled={status === "submitting"}
-                                        className="w-full flex-1 rounded-xl border border-black/15 bg-white/70 px-4 py-3 font-inter text-[14px] text-[#1a1a1a] placeholder-[#1a1a1a]/35 outline-none transition-colors focus:border-[#F8290A] disabled:opacity-60"
-                                    />
+                                    <div className="w-full flex-1">
+                                        <input
+                                            type="text"
+                                            required
+                                            value={form.name}
+                                            onChange={set("name")}
+                                            placeholder="Your name"
+                                            disabled={status === "submitting"}
+                                            aria-invalid={fieldErrors.name ? "true" : undefined}
+                                            className={`w-full rounded-xl border bg-white/70 px-4 py-3 font-inter text-[14px] text-[#1a1a1a] placeholder-[#1a1a1a]/35 outline-none transition-colors focus:border-[#F8290A] disabled:opacity-60 ${fieldErrors.name ? "border-red-400" : "border-black/15"}`}
+                                        />
+                                        {fieldErrors.name && (
+                                            <p className="mt-1 font-inter text-[12px] text-red-500">{fieldErrors.name}</p>
+                                        )}
+                                    </div>
+                                    <div className="w-full flex-1">
+                                        <input
+                                            type="email"
+                                            required
+                                            value={form.email}
+                                            onChange={set("email")}
+                                            placeholder="you@email.com"
+                                            disabled={status === "submitting"}
+                                            aria-invalid={fieldErrors.email ? "true" : undefined}
+                                            className={`w-full rounded-xl border bg-white/70 px-4 py-3 font-inter text-[14px] text-[#1a1a1a] placeholder-[#1a1a1a]/35 outline-none transition-colors focus:border-[#F8290A] disabled:opacity-60 ${fieldErrors.email ? "border-red-400" : "border-black/15"}`}
+                                        />
+                                        {fieldErrors.email && (
+                                            <p className="mt-1 font-inter text-[12px] text-red-500">{fieldErrors.email}</p>
+                                        )}
+                                    </div>
                                 </div>
-                                <textarea
-                                    required
-                                    rows={5}
-                                    value={form.message}
-                                    onChange={set("message")}
-                                    placeholder="How can we help?"
-                                    disabled={status === "submitting"}
-                                    className="w-full resize-none rounded-xl border border-black/15 bg-white/70 px-4 py-3 font-inter text-[14px] text-[#1a1a1a] placeholder-[#1a1a1a]/35 outline-none transition-colors focus:border-[#F8290A] disabled:opacity-60"
-                                />
+                                <div>
+                                    <textarea
+                                        required
+                                        rows={5}
+                                        value={form.message}
+                                        onChange={set("message")}
+                                        placeholder="How can we help?"
+                                        disabled={status === "submitting"}
+                                        aria-invalid={fieldErrors.message ? "true" : undefined}
+                                        className={`w-full resize-none rounded-xl border bg-white/70 px-4 py-3 font-inter text-[14px] text-[#1a1a1a] placeholder-[#1a1a1a]/35 outline-none transition-colors focus:border-[#F8290A] disabled:opacity-60 ${fieldErrors.message ? "border-red-400" : "border-black/15"}`}
+                                    />
+                                    {fieldErrors.message && (
+                                        <p className="mt-1 font-inter text-[12px] text-red-500">{fieldErrors.message}</p>
+                                    )}
+                                </div>
                                 {status === "error" && (
                                     <p className="font-inter text-[13px] text-red-500">{errorMsg}</p>
                                 )}

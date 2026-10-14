@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { postSignup } from "@/lib/notify";
+import { postSignup, isEmail } from "@/lib/notify";
 import DottedArrow from "@/components/landing/DottedArrow";
 import { asset } from "@/lib/asset";
 
@@ -36,7 +36,12 @@ export default function LandingFooter() {
 
     async function handleDropAlerts(e) {
         e.preventDefault();
-        if (!email || status === "submitting") return;
+        if (status === "submitting") return;
+        if (!isEmail(email)) {
+            setErrorMsg("Please enter a valid email address.");
+            setStatus("error");
+            return;
+        }
         setStatus("submitting");
         setErrorMsg("");
         try {
