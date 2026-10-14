@@ -10,7 +10,7 @@ import { trackEvent } from "@/lib/analytics";
    our catalogue + group-play positioning).
 
    Tiers mirror the old packs — 2 / 4 / 6 blasters unlock 10 / 13 / 16% off (so
-   margins match the fixed packs), and 6+ also unlocks free shipping. On
+   margins match the fixed packs). Shipping is free on every order. On
    checkout the selection is added to the shared cart as ONE custom bundle line
    (registered into PRODUCT_LOOKUP at runtime), so the nav badge, drawer and
    subtotal pick it up exactly like a preset pack. */
@@ -22,7 +22,7 @@ const inr = (n) => "₹" + Number(Math.round(n)).toLocaleString("en-IN");
 const TIERS = [
     { units: 2, pct: 10 },
     { units: 4, pct: 13 },
-    { units: 6, pct: 16, perk: "free shipping" },
+    { units: 6, pct: 16 },
 ];
 const MAX_UNITS = TIERS[TIERS.length - 1].units;
 const activeTier = (u) => TIERS.reduce((acc, t) => (u >= t.units ? t : acc), null);
@@ -158,7 +158,7 @@ function Panel({ units, mrpTotal, pct, finalTotal, youSave, contents, onCheckout
                     ? "Add blasters to unlock an EXTRA bundle discount."
                     : next
                         ? `Add ${next.units - units} more for an EXTRA ${next.pct}% off${next.perk ? " + " + next.perk : ""}.`
-                        : "Max EXTRA discount unlocked. Free shipping included."}
+                        : "Max EXTRA discount unlocked."}
             </p>
 
             {/* Contents */}

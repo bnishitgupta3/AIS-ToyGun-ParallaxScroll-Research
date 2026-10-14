@@ -57,7 +57,7 @@ const activeTier = (u) => TIERS.reduce((acc, t) => (u >= t.units ? t : acc), nul
 export function buildCart(cart) {
     const byVariant = Object.create(null); // variantId -> line item (merged qty)
     let discountInr = 0;
-    let freeShipping = false;
+    let freeShipping = true; // free shipping is universal now (no minimum order)
 
     const addUnits = (productKey, qty) => {
         const p = PRODUCTS[productKey];

@@ -367,7 +367,7 @@ export default function BuyNowSheet({ open, product, onClose }) {
                                 </li>
                                 <li className="flex items-start gap-2.5">
                                     <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-[#F8290A]" />
-                                    Free shipping across India on launch week
+                                    Free shipping across India, no minimum
                                 </li>
                                 <li className="flex items-start gap-2.5">
                                     <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-[#F8290A]" />

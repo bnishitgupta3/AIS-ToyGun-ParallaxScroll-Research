@@ -67,7 +67,7 @@ const SQUAD_SLIDE = {
     lead: "Bigger squad,",
     emph: "bigger savings.",
     desc: "An EXTRA discount, stacked on top of our launch prices.",
-    perks: ["Up to 16% EXTRA off", "Free shipping on 6+"],
+    perks: ["Up to 16% EXTRA off", "Free shipping, no minimum"],
 };
 
 const PRODUCT_SLIDES = PRODUCTS.map((p) => ({ ...p, ...(COPY[p.id] || {}) }));
