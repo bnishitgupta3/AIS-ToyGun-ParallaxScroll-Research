@@ -9,8 +9,9 @@
    — the client only chooses which pre-created code to try; Shopify validates
    the minimum-quantity gate before honouring it.
 
-   Phase 2 (Shopflo) will replace `createCheckout` with a call to our serverless
-   endpoint instead; the cart UI and useCart surface don't change. */
+   Phase 2 (Shopflo) routes through `@/lib/checkout` (provider switch) + the
+   headless handoff in `@/lib/shopflo`; the cart UI and useCart surface don't
+   change. This file stays the Shopify-native path. */
 
 import { PRODUCT_LOOKUP } from "@/lib/cart";
 
@@ -102,18 +103,26 @@ function buildCartInput(items) {
     return { lines, discountCodes };
 }
 
-/* Create a Shopify cart from the site cart and resolve the hosted checkout URL.
-   Throws a human-readable Error on failure (shown in the cart sheet). */
-export async function createCheckout(items) {
+/* Create a Shopify cart from the site cart. Returns { id, checkoutUrl }:
+   `checkoutUrl` is Shopify's own hosted checkout; `id` is the cart GID that a
+   headless Shopflo handoff reads (Shopflo holds the unauthenticated checkout
+   scopes). Throws a human-readable Error on failure (shown in the cart sheet). */
+export async function createShopifyCart(items) {
     const input = buildCartInput(items);
     const data = await storefront(CART_CREATE, { input });
     const result = data && data.cartCreate;
     if (result && result.userErrors && result.userErrors.length) {
         throw new Error(result.userErrors[0].message || "Could not start checkout.");
     }
-    const url = result && result.cart && result.cart.checkoutUrl;
-    if (!url) {
+    const cart = result && result.cart;
+    if (!cart || !cart.checkoutUrl) {
         throw new Error("Could not start checkout. Please try again.");
     }
-    return url;
+    return { id: cart.id, checkoutUrl: cart.checkoutUrl };
+}
+
+/* Back-compat helper: resolve just the Shopify hosted checkout URL. */
+export async function createCheckout(items) {
+    const { checkoutUrl } = await createShopifyCart(items);
+    return checkoutUrl;
 }

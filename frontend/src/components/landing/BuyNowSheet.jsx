@@ -3,7 +3,7 @@ import { createPortal } from "react-dom";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useCart, PRODUCT_LOOKUP, CATALOG, MAX_BUNDLE_SAVING } from "@/lib/cart";
 import { scrollToSection } from "@/lib/scrollToSection";
-import { createCheckout } from "@/lib/shopify";
+import { startCheckout } from "@/lib/checkout";
 import NotifyMe from "@/components/showcase/NotifyMe";
 
 const inr = (n) => "₹" + Number(n).toLocaleString("en-IN");
@@ -70,8 +70,12 @@ export default function BuyNowSheet({ open, product, onClose }) {
         setCheckoutError("");
         setCheckingOut(true);
         try {
-            const url = await createCheckout(items);
-            window.location.href = url; // leaves the SPA for Shopify checkout
+            const res = await startCheckout(items);
+            if (res && res.redirectUrl) {
+                window.location.href = res.redirectUrl; // leaves the SPA for hosted checkout
+            } else {
+                setCheckingOut(false); // provider opened its own checkout (e.g. Shopflo overlay)
+            }
         } catch (e) {
             setCheckoutError(e.message || "Something went wrong. Please try again.");
             setCheckingOut(false);
