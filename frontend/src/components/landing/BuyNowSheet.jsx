@@ -4,8 +4,15 @@ import { Link, useNavigate, useLocation } from "react-router-dom";
 import { useCart, PRODUCT_LOOKUP, CATALOG, MAX_BUNDLE_SAVING } from "@/lib/cart";
 import { scrollToSection } from "@/lib/scrollToSection";
 import { createCheckout } from "@/lib/shopify";
+import NotifyMe from "@/components/showcase/NotifyMe";
 
 const inr = (n) => "₹" + Number(n).toLocaleString("en-IN");
+
+/* Checkout gate — lets prod ship the full site WITHOUT a live checkout until
+   Shopflo + live payments are ready. Default ON (dev + Cloudflare preview, so
+   checkout stays testable); the AWS prod build sets REACT_APP_CHECKOUT_LIVE
+   ="false" to hold it behind a waitlist. Flip/remove that env to open checkout. */
+const CHECKOUT_LIVE = process.env.REACT_APP_CHECKOUT_LIVE !== "false";
 
 /* "Coming soon" + cart-review panel — slides in from the RIGHT on desktop
    (md+) and from the BOTTOM as a partial sheet on mobile (~70% of viewport).
@@ -471,29 +478,38 @@ export default function BuyNowSheet({ open, product, onClose }) {
                     {/* Checkout when there are items → Shopify Storefront API +
                         hosted checkout. Empty cart → a Browse CTA into the Arsenal. */}
                     {hasItems ? (
-                        <>
-                            <button
-                                type="button"
-                                onClick={handleCheckout}
-                                disabled={checkingOut}
-                                className="group relative flex w-full items-center justify-center gap-2 overflow-hidden rounded-full bg-[#F8290A] py-4 font-inter text-[14px] font-bold uppercase tracking-[0.14em] text-white shadow-[inset_0_-4px_4px_rgba(255,255,255,0.35)] transition hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-70"
-                            >
-                                <span className="relative">
-                                    {checkingOut ? "Starting checkout…" : "Checkout"}
-                                </span>
-                                {!checkingOut && (
-                                    <span className="relative transition-transform group-hover:translate-x-0.5">→</span>
+                        CHECKOUT_LIVE ? (
+                            <>
+                                <button
+                                    type="button"
+                                    onClick={handleCheckout}
+                                    disabled={checkingOut}
+                                    className="group relative flex w-full items-center justify-center gap-2 overflow-hidden rounded-full bg-[#F8290A] py-4 font-inter text-[14px] font-bold uppercase tracking-[0.14em] text-white shadow-[inset_0_-4px_4px_rgba(255,255,255,0.35)] transition hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-70"
+                                >
+                                    <span className="relative">
+                                        {checkingOut ? "Starting checkout…" : "Checkout"}
+                                    </span>
+                                    {!checkingOut && (
+                                        <span className="relative transition-transform group-hover:translate-x-0.5">→</span>
+                                    )}
+                                </button>
+                                {checkoutError && (
+                                    <p className="mt-2 text-center font-inter text-[12px] text-red-500">
+                                        {checkoutError}
+                                    </p>
                                 )}
-                            </button>
-                            {checkoutError && (
-                                <p className="mt-2 text-center font-inter text-[12px] text-red-500">
-                                    {checkoutError}
+                                <p className="mt-2 text-center font-inter text-[11px] text-[#1a1a1a]/40">
+                                    Secure checkout. Shipping calculated at the next step.
                                 </p>
-                            )}
-                            <p className="mt-2 text-center font-inter text-[11px] text-[#1a1a1a]/40">
-                                Secure checkout. Shipping calculated at the next step.
-                            </p>
-                        </>
+                            </>
+                        ) : (
+                            <>
+                                <p className="mb-3 text-center font-inter text-[13px] font-semibold text-[#1a1a1a]">
+                                    Checkout opens soon.
+                                </p>
+                                <NotifyMe productName="checkout" source="cart-waitlist" accent="#F8290A" />
+                            </>
+                        )
                     ) : (
                         <button
                             type="button"

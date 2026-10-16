@@ -58,6 +58,9 @@ jobs:
           # Public Measurement ID — only baked into the AWS prod build, never the
           # Cloudflare preview (which builds the branch without this env).
           REACT_APP_GA_MEASUREMENT_ID: G-RZVSQDS03C
+          # Hold the live checkout on PROD until Shopflo + live payments are ready.
+          # Dev + Cloudflare preview keep checkout ON (no env); remove this to open it.
+          REACT_APP_CHECKOUT_LIVE: "false"
         # `craco build` always produces build/; if the react-snap prerender step
         # fails we still deploy the standard SPA build rather than block the release.
         run: npm run build:prerendered || echo "::warning::react-snap prerender failed; deploying the standard build/ instead"
