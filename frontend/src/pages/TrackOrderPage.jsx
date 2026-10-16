@@ -8,12 +8,13 @@ import LandingFooter from "@/components/landing/LandingFooter";
    Headless storefront with no customer accounts. Tracking works two ways:
      1. The live tracking link we send by email, SMS and WhatsApp the moment an
         order ships — the canonical, no-login path.
-     2. This page hands off to our Shiprocket branded tracking page, where the
-        customer looks their order up by Order ID or AWB number.
-   An inline order-ID + email lookup would need the Shopify Admin API (server
-   side); that arrives with the Phase-2 serverless layer. */
+     2. This page hands off to our Eshopbox branded tracking page (the customer
+        portal at track.upyourplay.in), where shoppers look up their order by
+        Order ID or tracking number.
+   An inline order-ID + email lookup would need a server-side API, so for now we
+   hand off to the hosted Eshopbox portal. */
 
-const TRACKING_URL = "https://upyourplay.shiprocket.co/tracking";
+const TRACKING_URL = "https://track.upyourplay.in";
 
 const CHANNELS = [
     { icon: Mail, title: "Email", text: "Order and shipping confirmations carry your tracking link." },
@@ -42,7 +43,7 @@ export default function TrackOrderPage() {
                     <p className="mt-5 max-w-xl font-inter text-[15px] leading-relaxed text-[#1a1a1a]/65 sm:text-[17px]">
                         No login needed. The fastest way is the live tracking link we
                         send you when your order ships. You can also look it up anytime
-                        with your Order ID or AWB number.
+                        with your Order ID or tracking number.
                     </p>
                 </div>
 
@@ -57,7 +58,7 @@ export default function TrackOrderPage() {
                                 Look up your order
                             </h2>
                             <p className="font-inter text-[13px] text-[#1a1a1a]/55">
-                                Search by your Order ID or AWB number on our live tracking page.
+                                Search by your Order ID or tracking number on our live tracking page.
                             </p>
                         </div>
                     </div>
