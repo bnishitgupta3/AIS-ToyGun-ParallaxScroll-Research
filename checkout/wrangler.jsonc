@@ -1,0 +1,20 @@
+{
+  // Standalone Shopflo checkout Worker. Deployed separately from the site so
+  // BOTH prod (AWS S3/CloudFront) and the Cloudflare preview call the same
+  // endpoint. Deploy from this dir:  npx wrangler deploy
+  "name": "upyourplay-checkout",
+  "main": "worker.mjs",
+  "compatibility_date": "2025-01-01",
+  "vars": {
+    // Confirm the API URL against Shopflo's Postman collection.
+    "SHOPFLO_API_URL": "https://api.shopflo.com/public/api/v2/tokens",
+    // Where Shopflo returns the buyer after a successful payment. TODO: build a
+    // proper /thank-you order-confirmation page and point this at it.
+    "SUCCESS_URL": "https://upyourplay.in/",
+    // Origins allowed to call this endpoint (CORS).
+    "ALLOW_ORIGINS": "https://upyourplay.in,https://www.upyourplay.in,http://localhost:3000"
+  }
+  // SECRETS (do NOT put here - set with wrangler):
+  //   npx wrangler secret put SHOPFLO_API_KEY       (secret key from Shopflo dashboard)
+  //   npx wrangler secret put SHOPFLO_MERCHANT_ID    (merchant id / shopflo_merchant_key)
+}
