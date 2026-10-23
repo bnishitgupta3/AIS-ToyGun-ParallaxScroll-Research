@@ -35,6 +35,11 @@ const META = {
         description:
             "Track your Up Your Play order. Enter your tracking number, or use the live link we send by email, SMS and WhatsApp.",
     },
+    "/thank-you": {
+        title: "Order Confirmed · Up Your Play",
+        description: "Your Up Your Play order is confirmed. Thank you for your order.",
+        noindex: true, // transactional page — keep it out of search
+    },
     "/careers": {
         title: "Careers at Up Your Play · Come Make a Splash",
         description:
@@ -110,6 +115,7 @@ export default function RouteSeo() {
         upsertMeta("property", "og:url", url);
         upsertMeta("name", "twitter:title", m.title);
         upsertMeta("name", "twitter:description", m.description);
+        upsertMeta("name", "robots", m.noindex ? "noindex, nofollow" : "index, follow");
         upsertCanonical(url);
     }, [pathname]);
 

@@ -104,6 +104,10 @@ export function CartProvider({ children }) {
         });
     }, []);
 
+    // Empty the whole cart — used by the post-payment thank-you page once an
+    // order is placed (the localStorage mirror effect clears the saved copy too).
+    const clearCart = useCallback(() => setItems({}), []);
+
     const openDrawer = useCallback((product = null) => {
         setDrawer({ open: true, product });
     }, []);
@@ -171,8 +175,8 @@ export function CartProvider({ children }) {
     const clearToast = useCallback(() => setToast(null), []);
 
     const value = useMemo(
-        () => ({ items, setQty, total, blasters, subtotal, squadNudge, drawer, openDrawer, closeDrawer, toast, notifyAdded, clearToast }),
-        [items, setQty, total, blasters, subtotal, squadNudge, drawer, openDrawer, closeDrawer, toast, notifyAdded, clearToast],
+        () => ({ items, setQty, clearCart, total, blasters, subtotal, squadNudge, drawer, openDrawer, closeDrawer, toast, notifyAdded, clearToast }),
+        [items, setQty, clearCart, total, blasters, subtotal, squadNudge, drawer, openDrawer, closeDrawer, toast, notifyAdded, clearToast],
     );
 
     return <CartContext.Provider value={value}>{children}</CartContext.Provider>;
