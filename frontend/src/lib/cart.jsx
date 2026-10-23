@@ -165,12 +165,13 @@ export function CartProvider({ children }) {
     const groupPlay = individualSkus >= 2 || individualUnits >= 3;
     const squadNudge = groupPlay && !hasBundle;
 
-    // Auto-popping the whole drawer on every add felt heavy. Adds now fire a
-    // lightweight "Added to cart" TOAST (notifyAdded) that carries a View-cart
-    // CTA; the drawer opens only on explicit intent (cart icon / toast CTA).
+    // Every add fires an "Added to cart" TOAST (item name + how many were added)
+    // AND auto-opens the cart drawer, so the shopper sees their cart immediately.
+    // (Earlier the drawer stayed closed on add; changed per request.)
     const [toast, setToast] = useState(null);
-    const notifyAdded = useCallback((name = "Item") => {
-        setToast({ name, id: Date.now() });
+    const notifyAdded = useCallback((name = "Item", qty = 1) => {
+        setToast({ name, qty, id: Date.now() });
+        setDrawer({ open: true, product: null }); // auto-open the cart on every add
     }, []);
     const clearToast = useCallback(() => setToast(null), []);
 

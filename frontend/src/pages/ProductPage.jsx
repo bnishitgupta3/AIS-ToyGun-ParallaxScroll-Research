@@ -68,7 +68,7 @@ function BuyBox({ product, details }) {
             value: (product.price || 0) * count,
             items: [{ item_id: product.link, item_name: product.name, quantity: count }],
         });
-        notifyAdded(product.name);
+        notifyAdded(product.name, count);
     };
 
     return (

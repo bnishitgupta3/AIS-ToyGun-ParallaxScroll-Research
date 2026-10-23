@@ -31,7 +31,12 @@ export default function Toast() {
         return null;
     }
 
-    const label = toast.name && toast.name !== "Item" ? `${toast.name} added to cart` : "Added to cart";
+    const qty = toast.qty || 1;
+    const unit = qty === 1 ? "item" : "items";
+    const label =
+        toast.name && toast.name !== "Item"
+            ? `${toast.name} added · ${qty} ${unit}`
+            : `${qty} ${unit} added to cart`;
 
     return createPortal(
         <div

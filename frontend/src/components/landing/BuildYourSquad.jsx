@@ -282,7 +282,7 @@ export default function BuildYourSquad({ packsRef }) {
             value: finalTotal,
             items: contents.map((c) => ({ item_id: c.link, item_name: c.name, quantity: c.qty, item_category: "custom-bundle" })),
         });
-        notifyAdded("Your Squad");
+        notifyAdded("Your Squad", units);
     };
 
     return (
