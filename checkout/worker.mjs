@@ -111,9 +111,12 @@ export default {
 
             const trusted = buildCart(body); // reads body.lines
 
-            const base = origin + (env.SUCCESS_PATH || "/thank-you");
-            const successUrl = base + "?order_id={platform_order_id}&checkout_id={checkout_id}";
-            const backUrl = origin + (env.BACK_PATH || "/");
+            // Shopflo's firewall REJECTS localhost/http redirect URLs (returns a
+            // Cloudflare block page), so use the calling origin only when it's
+            // https (preview or prod), else fall back to the prod site.
+            const site = origin.startsWith("https://") ? origin : (env.SITE_URL || "https://upyourplay.in");
+            const successUrl = site + (env.SUCCESS_PATH || "/thank-you") + "?order_id={platform_order_id}&checkout_id={checkout_id}";
+            const backUrl = site + (env.BACK_PATH || "/");
 
             const checkoutUrl = await createShopfloCheckout(
                 trusted,
