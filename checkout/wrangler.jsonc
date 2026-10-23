@@ -9,9 +9,10 @@
     "SHOPFLO_API_URL": "https://api.shopflo.co/kratos/api/v2/token",
     "SUCCESS_PATH": "/thank-you",
     "BACK_PATH": "/",
-    // Origins allowed to mint checkouts (CORS + server-side guard).
-    "ALLOW_ORIGINS": "https://upyourplay.in,https://www.upyourplay.in,http://localhost:3000"
+    // Origins allowed to mint checkouts (CORS + server-side guard): prod, the
+    // Cloudflare preview, and local dev. Add any other preview URLs here.
+    "ALLOW_ORIGINS": "https://upyourplay.in,https://www.upyourplay.in,https://ais-toygun-parallaxscroll-research.nishitguptaai.workers.dev,http://localhost:3000"
   }
   // SECRET (set via wrangler, never commit):
-  //   npx wrangler secret put SHOPFLO_API_KEY     (the sfat-... key from Shopflo)
+  //   npx wrangler secret put SHOPFLO_API_KEY     (the secret key from your Shopflo dashboard)
 }
