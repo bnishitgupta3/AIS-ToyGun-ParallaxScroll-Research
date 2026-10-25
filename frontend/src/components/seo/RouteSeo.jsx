@@ -40,6 +40,11 @@ const META = {
         description: "Your Up Your Play order is confirmed. Thank you for your order.",
         noindex: true, // transactional page — keep it out of search
     },
+    "/replace": {
+        title: "Request a Replacement · Up Your Play",
+        description:
+            "Start a replacement for your Up Your Play order. Replacements, not refunds, within 6 days of delivery for damaged, defective or incorrect items.",
+    },
     "/careers": {
         title: "Careers at Up Your Play · Come Make a Splash",
         description:

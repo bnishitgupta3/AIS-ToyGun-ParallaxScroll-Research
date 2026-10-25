@@ -4,7 +4,7 @@ import { useCart } from "@/lib/cart";
 import { scrollToSection } from "@/lib/scrollToSection";
 import { asset } from "@/lib/asset";
 import { PRODUCTS } from "@/components/landing/ArsenalSection";
-import { Mail, PackageSearch } from "lucide-react";
+import { Mail, PackageSearch, RefreshCw } from "lucide-react";
 
 /* Homepage section anchors (smooth-scroll on home, route-then-scroll elsewhere).
    Mission removed from the nav per request; the section still exists on the page. */
@@ -33,8 +33,9 @@ const EXPERIENCE_NAV = [
 
 /* "Support" dropdown → help pages. Icon-based rows (no product thumbnail). */
 const SUPPORT_NAV = [
-    { name: "Track your order", to: "/track",   Icon: PackageSearch, sub: "Where is my order?" },
-    { name: "Contact",          to: "/contact", Icon: Mail,          sub: "Help, orders, grievances" },
+    { name: "Track your order",    to: "/track",   Icon: PackageSearch, sub: "Where is my order?" },
+    { name: "Returns & exchanges", to: "/replace", Icon: RefreshCw,     sub: "Replace within 6 days" },
+    { name: "Contact",             to: "/contact", Icon: Mail,          sub: "Help, orders, grievances" },
 ];
 
 /* Desktop hover/click dropdown. A hover-close DELAY plus a no-gap bridge

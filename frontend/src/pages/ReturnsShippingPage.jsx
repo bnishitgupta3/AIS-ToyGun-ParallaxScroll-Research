@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import LegalLayout, { Section } from "@/components/legal/LegalLayout";
 
 export default function ReturnsShippingPage() {
@@ -38,17 +39,20 @@ export default function ReturnsShippingPage() {
 
             <Section heading="4. Replacement window & conditions">
                 <p>
-                    You may request a replacement within 7 days of delivery for items
+                    You may request a replacement within 6 days of delivery for items
                     that are damaged, defective, or not as described. The product must
                     be unused and returned in its original packaging with all
                     accessories. For hygiene and safety, used gel beads and refills are
                     not eligible unless they were defective on arrival.
                 </p>
                 <p>
-                    To start a replacement, email support@upyourplay.in with your order
-                    ID and clear photos or a video of the issue (an unboxing video
-                    helps us process it faster). We will arrange a pickup or guide you
-                    on the next steps at no extra cost.
+                    The fastest way to start is our self-serve{" "}
+                    <Link to="/replace">replacement page</Link>: look up your order,
+                    pick the item and reason, and we arrange a free pickup and ship
+                    your replacement with fresh tracking, at no extra cost. You can
+                    also email support@upyourplay.in with your order ID and clear
+                    photos or a video of the issue (an unboxing video helps us process
+                    it faster).
                 </p>
             </Section>
 
@@ -82,9 +86,10 @@ export default function ReturnsShippingPage() {
 
             <Section heading="8. Damaged or wrong items on arrival">
                 <p>
-                    If you receive a damaged or incorrect product, report it within 48
-                    hours of delivery with supporting photos so we can arrange a free
-                    replacement.
+                    If you receive a damaged or incorrect product, report it within 6
+                    days of delivery with supporting photos so we can arrange a free
+                    replacement. Reporting transit damage sooner helps us resolve it
+                    faster.
                 </p>
             </Section>
 
