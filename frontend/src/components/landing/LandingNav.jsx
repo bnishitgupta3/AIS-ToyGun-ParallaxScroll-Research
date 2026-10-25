@@ -4,7 +4,7 @@ import { useCart } from "@/lib/cart";
 import { scrollToSection } from "@/lib/scrollToSection";
 import { asset } from "@/lib/asset";
 import { PRODUCTS } from "@/components/landing/ArsenalSection";
-import { Mail, PackageSearch, RefreshCw } from "lucide-react";
+import { Mail, PackageSearch, RefreshCw, User } from "lucide-react";
 
 /* Homepage section anchors (smooth-scroll on home, route-then-scroll elsewhere).
    Mission removed from the nav per request; the section still exists on the page. */
@@ -150,6 +150,24 @@ function CartButton({ onAfterClick }) {
     );
 }
 
+/* Account icon — links to the Shopify customer accounts portal (passwordless
+   email login). ACCOUNT_URL is the single place to swap when we brand it to
+   account.upyourplay.in later. */
+const ACCOUNT_URL = "https://shopify.com/109663027486/account";
+
+function AccountButton() {
+    return (
+        <a
+            href={ACCOUNT_URL}
+            aria-label="Your account"
+            title="Your account"
+            className="flex h-9 w-9 items-center justify-center rounded-full text-[#1a1a1a] transition-colors hover:bg-black/5"
+        >
+            <User size={20} strokeWidth={2} />
+        </a>
+    );
+}
+
 /**
  * Global pill navbar — used on every page. Desktop shows inline links;
  * below md it collapses to a hamburger that opens a full menu panel.
@@ -240,6 +258,7 @@ export default function LandingNav() {
                     {/* Right cluster: cart icon (always visible) + Explore CTA
                         (desktop) / hamburger (mobile) */}
                     <div className="flex items-center gap-1 md:gap-3">
+                        <AccountButton />
                         <CartButton onAfterClick={() => setOpen(false)} />
 
                         {/* Desktop CTA */}
