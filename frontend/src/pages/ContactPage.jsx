@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { Mail, ShieldCheck, Briefcase, PhoneCall, Send } from "lucide-react";
+import { Mail, MessageCircle, Instagram, Send } from "lucide-react";
 import LandingNav from "@/components/landing/LandingNav";
 import LandingFooter from "@/components/landing/LandingFooter";
 import { postToFormspree, isEmail } from "@/lib/notify";
@@ -8,34 +8,29 @@ import { postToFormspree, isEmail } from "@/lib/notify";
 /* framer-motion removed (motion.* crashed on some real mobile browsers with
    "o is not a function"); entrance uses the CSS `.reveal-up` class instead. */
 
+/* Minimal, D2C-style channels. Email is live; WhatsApp + Instagram light up
+   (set `soon: false` + add `href`/`value`) once those accounts are set up. To
+   add a phone line, drop in { icon: PhoneCall, title: "Call us",
+   value: "+91 …", href: "tel:+91…" }. */
 const CHANNELS = [
     {
         icon: Mail,
-        title: "Customer support",
-        blurb: "Orders, shipping, returns and product help.",
-        value: "support@upyourplay.in",
-        href: "mailto:support@upyourplay.in",
-    },
-    {
-        icon: ShieldCheck,
-        title: "Grievance officer",
-        blurb: "Formal complaints, acknowledged within 24 hours.",
-        value: "grievance@upyourplay.in",
-        href: "mailto:grievance@upyourplay.in",
-    },
-    {
-        icon: Briefcase,
-        title: "Business & partnerships",
-        blurb: "Wholesale, dealerships, media and collaborations.",
+        title: "Email us",
+        blurb: "Quick responses, and we don't spam.",
         value: "hello@upyourplay.in",
         href: "mailto:hello@upyourplay.in",
     },
     {
-        icon: PhoneCall,
-        title: "Consumer helpline",
-        blurb: "Government of India National Consumer Helpline.",
-        value: "1915",
-        href: "tel:1915",
+        icon: MessageCircle,
+        title: "WhatsApp us",
+        blurb: "Got a question or need a part? Message us.",
+        soon: true,
+    },
+    {
+        icon: Instagram,
+        title: "DM us",
+        blurb: "Ask for updates, or show off your moves.",
+        soon: true,
     },
 ];
 
@@ -97,9 +92,8 @@ export default function ContactPage() {
                         Let's talk.
                     </h1>
                     <p className="mt-5 max-w-xl font-inter text-[15px] leading-relaxed text-[#1a1a1a]/65 sm:text-[17px]">
-                        Got a question about a blaster, an order on its way, or a
-                        partnership in mind? Pick a channel below or send us a note,
-                        we read every message.
+                        Got a question about a blaster or an order on its way? Pick a
+                        channel below or send us a note, we read every message.
                     </p>
                 </div>
 
@@ -107,26 +101,40 @@ export default function ContactPage() {
                 <div className="mt-14 grid grid-cols-1 gap-10 lg:grid-cols-[1.05fr_0.95fr] lg:gap-14">
                     {/* Channel cards */}
                     <div className="reveal-up grid grid-cols-1 gap-4 sm:grid-cols-2">
-                        {CHANNELS.map(({ icon: Icon, title, blurb, value, href }) => (
-                            <a
-                                key={title}
-                                href={href}
-                                className="group flex flex-col rounded-2xl border border-black/10 bg-white/55 p-5 backdrop-blur-sm transition-all duration-300 hover:-translate-y-0.5 hover:border-[#F8290A]/50 hover:bg-white/80 hover:shadow-[0_12px_30px_-12px_rgba(249,115,22,0.35)]"
-                            >
-                                <span className="grid h-11 w-11 place-items-center rounded-xl bg-[#F8290A]/10 text-[#F8290A] transition-colors group-hover:bg-[#F8290A] group-hover:text-white">
-                                    <Icon size={20} strokeWidth={2} />
-                                </span>
-                                <h2 className="font-instrument mt-4 text-[20px] leading-tight text-[#1a1a1a]">
-                                    {title}
-                                </h2>
-                                <p className="mt-1 font-inter text-[13px] leading-relaxed text-[#1a1a1a]/55">
-                                    {blurb}
-                                </p>
-                                <span className="mt-3 font-inter text-[14px] font-semibold text-[#F8290A]">
-                                    {value}
-                                </span>
-                            </a>
-                        ))}
+                        {CHANNELS.map(({ icon: Icon, title, blurb, value, href, soon }) => {
+                            const body = (
+                                <>
+                                    <span className="grid h-11 w-11 place-items-center rounded-xl bg-[#F8290A]/10 text-[#F8290A] transition-colors group-hover:bg-[#F8290A] group-hover:text-white">
+                                        <Icon size={20} strokeWidth={2} />
+                                    </span>
+                                    <h2 className="font-instrument mt-4 text-[20px] leading-tight text-[#1a1a1a]">
+                                        {title}
+                                    </h2>
+                                    <p className="mt-1 font-inter text-[13px] leading-relaxed text-[#1a1a1a]/55">
+                                        {blurb}
+                                    </p>
+                                    <span className={`mt-3 font-inter text-[14px] font-semibold ${soon ? "text-[#1a1a1a]/35" : "text-[#F8290A]"}`}>
+                                        {soon ? "Coming soon" : value}
+                                    </span>
+                                </>
+                            );
+                            return soon ? (
+                                <div
+                                    key={title}
+                                    className="flex flex-col rounded-2xl border border-black/10 bg-white/55 p-5 backdrop-blur-sm"
+                                >
+                                    {body}
+                                </div>
+                            ) : (
+                                <a
+                                    key={title}
+                                    href={href}
+                                    className="group flex flex-col rounded-2xl border border-black/10 bg-white/55 p-5 backdrop-blur-sm transition-all duration-300 hover:-translate-y-0.5 hover:border-[#F8290A]/50 hover:bg-white/80 hover:shadow-[0_12px_30px_-12px_rgba(249,115,22,0.35)]"
+                                >
+                                    {body}
+                                </a>
+                            );
+                        })}
                     </div>
 
                     {/* Message form */}

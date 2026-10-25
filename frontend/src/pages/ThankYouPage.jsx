@@ -114,10 +114,10 @@ export default function ThankYouPage() {
                     <p>
                         Need a hand with this order? Email{" "}
                         <a
-                            href="mailto:support@upyourplay.in?subject=Order%20help"
+                            href="mailto:hello@upyourplay.in?subject=Order%20help"
                             className="font-semibold text-[#F8290A] underline underline-offset-2"
                         >
-                            support@upyourplay.in
+                            hello@upyourplay.in
                         </a>{" "}
                         {orderId ? <>with reference <span className="font-semibold">#{orderId}</span> </> : null}
                         and we'll sort it out.

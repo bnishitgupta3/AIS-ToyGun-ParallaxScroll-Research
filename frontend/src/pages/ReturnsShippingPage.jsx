@@ -50,7 +50,7 @@ export default function ReturnsShippingPage() {
                     <Link to="/replace">replacement page</Link>: look up your order,
                     pick the item and reason, and we arrange a free pickup and ship
                     your replacement with fresh tracking, at no extra cost. You can
-                    also email support@upyourplay.in with your order ID and clear
+                    also email hello@upyourplay.in with your order ID and clear
                     photos or a video of the issue (an unboxing video helps us process
                     it faster).
                 </p>
@@ -95,9 +95,8 @@ export default function ReturnsShippingPage() {
 
             <Section heading="9. Contact & grievance">
                 <p>
-                    Support: support@upyourplay.in · Grievance Officer:
-                    grievance@upyourplay.in. You may also reach the National Consumer
-                    Helpline at 1915.
+                    Support and grievances: hello@upyourplay.in. You may also reach
+                    the National Consumer Helpline at 1915.
                 </p>
             </Section>
 

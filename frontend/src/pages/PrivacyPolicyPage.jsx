@@ -93,7 +93,7 @@ export default function PrivacyPolicyPage() {
                 </p>
                 <p>
                     Grievance Officer, Up Your Play<br />
-                    Email: grievance@upyourplay.in<br />
+                    Email: hello@upyourplay.in<br />
                     We aim to acknowledge complaints within 24 hours and resolve
                     them within the timelines prescribed by law.
                 </p>

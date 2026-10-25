@@ -125,10 +125,10 @@ export default function ReplacePage() {
                     <p className="mt-3">
                         Stuck, or past the window? Email{" "}
                         <a
-                            href="mailto:support@upyourplay.in?subject=Replacement%20help"
+                            href="mailto:hello@upyourplay.in?subject=Replacement%20help"
                             className="font-semibold text-[#F8290A] underline underline-offset-2"
                         >
-                            support@upyourplay.in
+                            hello@upyourplay.in
                         </a>{" "}
                         with your order ID and clear photos or a video of the issue, and
                         we will sort it out.

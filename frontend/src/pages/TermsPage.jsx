@@ -93,7 +93,7 @@ export default function TermsPage() {
             <Section heading="9. Grievance redressal">
                 <p>
                     For any complaint, contact our Grievance Officer at
-                    grievance@upyourplay.in. Consumers may also approach the National
+                    hello@upyourplay.in. Consumers may also approach the National
                     Consumer Helpline (1915) or the relevant Consumer Disputes
                     Redressal Commission.
                 </p>
