@@ -18,7 +18,7 @@ import LandingFooter from "@/components/landing/LandingFooter";
 const RETURNS_URL = "https://track.upyourplay.in";
 
 const STEPS = [
-    { icon: PackageSearch, title: "Look up your order", text: "Enter your Order ID and email to pull up what you bought." },
+    { icon: PackageSearch, title: "Look up your order", text: "Enter your Order ID and mobile number to pull up what you bought." },
     { icon: RefreshCw, title: "Pick the item & reason", text: "Choose the blaster to replace and tell us what went wrong." },
     { icon: CheckCircle2, title: "We approve it", text: "We review the request, usually within a day." },
     { icon: Truck, title: "Pickup & replacement", text: "We arrange a free pickup and ship your replacement with fresh tracking." },
