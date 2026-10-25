@@ -161,7 +161,8 @@ function ProductCard({ p }) {
                                     type="button"
                                     aria-label={`Photo ${i + 1}`}
                                     onClick={(e) => { e.stopPropagation(); setIdx(i); }}
-                                    className={`h-1.5 rounded-full transition-all ${i === cur ? "w-4 bg-white" : "w-1.5 bg-white/50"}`}
+                                    className={`h-1.5 rounded-full shadow-sm transition-all ${i === cur ? "w-4" : "w-1.5"}`}
+                                    style={{ background: i === cur ? p.accent : "rgba(0,0,0,0.35)" }}
                                 />
                             ))}
                         </div>
