@@ -54,7 +54,7 @@ export default function TermsPage() {
                 <p>
                     We offer replacements rather than cash refunds. If an item arrives
                     damaged, defective, or not as described, you may request a
-                    replacement within 7 days of delivery, subject to the conditions in
+                    replacement within 6 days of delivery, subject to the conditions in
                     our Returns & Shipping Policy. Where an identical replacement is
                     unavailable, we offer a product of equal value or store credit (a
                     gift card or coupon code you redeem at checkout). We do not

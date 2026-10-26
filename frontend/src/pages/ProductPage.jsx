@@ -175,12 +175,17 @@ function BuyBox({ product, details }) {
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4"><path d="M5 12h14M13 5l7 7-7 7" /></svg>
             </Link>
 
-            {/* trust row */}
+            {/* trust row — each badge gets a meaningful icon (D2C convention) */}
             <div className="mt-7 grid grid-cols-2 gap-2.5 border-t border-black/10 pt-6 font-inter text-[12px] text-[#1a1a1a]/65 sm:grid-cols-4">
-                {["Made in India", "Free shipping", "7-day returns", "Secure checkout"].map((t) => (
-                    <span key={t} className="flex items-center gap-1.5">
-                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke={accent} strokeWidth="3"><path d="M20 6 9 17l-5-5" /></svg>
-                        {t}
+                {[
+                    { label: "Made in India", icon: <><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z" /><path d="M4 22v-7" /></> },
+                    { label: "Free shipping", icon: <><rect x="1" y="6" width="13" height="10" rx="1" /><path d="M14 9h4l3 3v4h-7z" /><circle cx="6" cy="18" r="1.8" /><circle cx="17" cy="18" r="1.8" /></> },
+                    { label: "6-day returns", icon: <><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" /><path d="M3 3v5h5" /></> },
+                    { label: "Secure checkout", icon: <><rect x="4" y="10" width="16" height="11" rx="2" /><path d="M8 10V7a4 4 0 0 1 8 0v3" /></> },
+                ].map(({ label, icon }) => (
+                    <span key={label} className="flex items-center gap-1.5">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke={accent} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">{icon}</svg>
+                        {label}
                     </span>
                 ))}
             </div>

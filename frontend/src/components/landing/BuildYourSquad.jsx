@@ -178,12 +178,17 @@ function Panel({ units, mrpTotal, pct, finalTotal, youSave, contents, onCheckout
                 )}
             </div>
 
-            {/* Trust */}
+            {/* Trust — meaningful icon per badge (matches the PDP trust row) */}
             <div className="mt-4 grid grid-cols-2 gap-1.5 border-t border-black/5 pt-4 font-inter text-[11px] text-[#1a1a1a]/60">
-                {["Made in India", "Pressure-tested", "Holi-ready", "Secure checkout"].map((t) => (
-                    <span key={t} className="flex items-center gap-1.5">
-                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={RED} strokeWidth="3"><path d="M20 6 9 17l-5-5" /></svg>
-                        {t}
+                {[
+                    { label: "Made in India", icon: <><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z" /><path d="M4 22v-7" /></> },
+                    { label: "Pressure-tested", icon: <><path d="m12 14 4-4" /><path d="M3.34 19a10 10 0 1 1 17.32 0" /></> },
+                    { label: "Holi-ready", icon: <path d="M12 22a7 7 0 0 0 7-7c0-2-1-3.9-3-5.5s-3.5-4-4-6.5c-.5 2.5-2 4.9-4 6.5S5 13 5 15a7 7 0 0 0 7 7z" /> },
+                    { label: "Secure checkout", icon: <><rect x="4" y="10" width="16" height="11" rx="2" /><path d="M8 10V7a4 4 0 0 1 8 0v3" /></> },
+                ].map(({ label, icon }) => (
+                    <span key={label} className="flex items-center gap-1.5">
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke={RED} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">{icon}</svg>
+                        {label}
                     </span>
                 ))}
             </div>

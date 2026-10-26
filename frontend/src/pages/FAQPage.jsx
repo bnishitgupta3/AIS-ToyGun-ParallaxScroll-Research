@@ -53,7 +53,7 @@ export default function FAQPage() {
 
             <Section heading="Can I return or replace a product?">
                 <p>
-                    Yes. We accept returns within 7 days of delivery for items that
+                    Yes. We accept returns within 6 days of delivery for items that
                     are damaged, defective or not as described, in original,
                     unused condition. Used gel beads/refills are not returnable for
                     hygiene reasons unless defective. See{" "}
