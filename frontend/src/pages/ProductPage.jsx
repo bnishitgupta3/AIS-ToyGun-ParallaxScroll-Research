@@ -10,6 +10,7 @@ import { PRODUCTS } from "@/components/landing/ArsenalSection";
 import { PRODUCT_DETAILS } from "@/lib/productDetails";
 import { asset } from "@/lib/asset";
 import { trackEvent } from "@/lib/analytics";
+import { getReviewSummary, getReviews } from "@/lib/reviews";
 
 /* ── Conventional D2C product page (PDP) ──
    Gallery + buy box up top, then highlights, full specs, what's in the box,
@@ -95,11 +96,16 @@ function BuyBox({ product, details }) {
                 {product.tagline}
             </p>
 
-            {/* rating — honest pre-reviews state */}
-            <a href="#reviews" className="mt-3 inline-flex items-center gap-2 font-inter text-[12px] text-[#1a1a1a]/55 transition hover:text-[#1a1a1a]">
-                <Stars accent={accent} filled={0} />
-                Be the first to review
-            </a>
+            {/* rating — real reviews when present, else "be the first" */}
+            {(() => {
+                const rv = getReviewSummary(product.link);
+                return (
+                    <a href="#reviews" className="mt-3 inline-flex items-center gap-2 font-inter text-[12px] text-[#1a1a1a]/55 transition hover:text-[#1a1a1a]">
+                        <Stars accent={accent} filled={Math.round(rv.avg)} />
+                        {rv.count > 0 ? `${rv.avg} (${rv.count} review${rv.count === 1 ? "" : "s"})` : "Be the first to review"}
+                    </a>
+                );
+            })()}
 
             {/* price / coming soon */}
             {product.comingSoon ? (
@@ -457,6 +463,8 @@ export default function ProductPage() {
         return <Navigate to="/404" replace />;
     }
     const accent = product.accent;
+    const summary = getReviewSummary(link);
+    const reviews = getReviews(link);
 
     return (
         <main className="dot-grid relative w-full text-[#1a1a1a]">
@@ -519,24 +527,55 @@ export default function ProductPage() {
                 </div>
             </section>
 
-            {/* ── Reviews (honest pre-reviews state) ── */}
+            {/* ── Reviews ── */}
             <section id="reviews" className="border-y border-black/10 bg-white/60">
                 <div className="mx-auto max-w-6xl px-6 py-14 md:px-12">
                     <span className="font-inter text-[11px] font-semibold uppercase tracking-[0.3em]" style={{ color: accent }}>/// Ratings and reviews</span>
-                    <div className="mt-5 flex flex-col items-start gap-5 rounded-3xl border border-black/10 bg-white p-7 sm:flex-row sm:items-center sm:justify-between">
-                        <div>
-                            <div className="flex items-center gap-3">
-                                <Stars accent={accent} filled={0} />
-                                <span className="font-instrument text-[22px] text-[#1a1a1a]">No reviews yet</span>
+                    {summary.count > 0 ? (
+                        <>
+                            <div className="mt-5 flex flex-wrap items-center gap-4 rounded-3xl border border-black/10 bg-white p-7">
+                                <span className="font-instrument text-[44px] leading-none text-[#1a1a1a]">{summary.avg}</span>
+                                <div>
+                                    <Stars accent={accent} filled={Math.round(summary.avg)} />
+                                    <p className="mt-1 font-inter text-[13px] text-[#1a1a1a]/55">
+                                        {summary.count} verified review{summary.count === 1 ? "" : "s"}
+                                    </p>
+                                </div>
                             </div>
-                            <p className="mt-2 max-w-md font-inter text-[14px] text-[#1a1a1a]/60">
-                                Be the first to tell the squad how the {product.name} performs on the field. Verified reviews open with our launch.
-                            </p>
+                            <div className="mt-5 grid gap-4 sm:grid-cols-2">
+                                {reviews.map((r, i) => (
+                                    <div key={i} className="rounded-2xl border border-black/10 bg-white p-5">
+                                        <div className="flex items-center justify-between gap-3">
+                                            <Stars accent={accent} filled={Math.round(r.rating)} />
+                                            {r.verified && (
+                                                <span className="font-inter text-[10px] font-semibold uppercase tracking-[0.16em] text-[#1a1a1a]/40">Verified</span>
+                                            )}
+                                        </div>
+                                        {r.title && <h3 className="font-instrument mt-3 text-[18px] leading-tight text-[#1a1a1a]">{r.title}</h3>}
+                                        <p className="mt-1.5 font-inter text-[14px] leading-relaxed text-[#1a1a1a]/70">{r.body}</p>
+                                        <p className="mt-3 font-inter text-[12px] text-[#1a1a1a]/45">
+                                            {r.name}{r.location ? `, ${r.location}` : ""}
+                                        </p>
+                                    </div>
+                                ))}
+                            </div>
+                        </>
+                    ) : (
+                        <div className="mt-5 flex flex-col items-start gap-5 rounded-3xl border border-black/10 bg-white p-7 sm:flex-row sm:items-center sm:justify-between">
+                            <div>
+                                <div className="flex items-center gap-3">
+                                    <Stars accent={accent} filled={0} />
+                                    <span className="font-instrument text-[22px] text-[#1a1a1a]">No reviews yet</span>
+                                </div>
+                                <p className="mt-2 max-w-md font-inter text-[14px] text-[#1a1a1a]/60">
+                                    Be the first to tell the squad how the {product.name} performs on the field.
+                                </p>
+                            </div>
+                            <Link to="/contact" className="brutal brutal-press inline-flex shrink-0 items-center gap-2 rounded-full bg-white px-6 py-3 font-inter text-[12px] font-bold uppercase tracking-[0.14em] text-[#1a1a1a]">
+                                Write a review
+                            </Link>
                         </div>
-                        <Link to="/contact" className="brutal brutal-press inline-flex shrink-0 items-center gap-2 rounded-full bg-white px-6 py-3 font-inter text-[12px] font-bold uppercase tracking-[0.14em] text-[#1a1a1a]">
-                            Write a review
-                        </Link>
-                    </div>
+                    )}
                 </div>
             </section>
 

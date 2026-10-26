@@ -3,6 +3,8 @@ import { Link, useNavigate } from "react-router-dom";
 import { useCart, useCartItem } from "@/lib/cart";
 import NotifyMe from "@/components/showcase/NotifyMe";
 import PriceTag from "@/components/PriceTag";
+import StarRating from "@/components/StarRating";
+import { getReviewSummary } from "@/lib/reviews";
 import { PRODUCTS } from "@/components/landing/ArsenalSection";
 import { asset } from "@/lib/asset";
 import { trackEvent } from "@/lib/analytics";
@@ -188,6 +190,17 @@ function ProductCard({ p }) {
                 >
                     {p.name}
                 </h3>
+
+                {/* Star rating + count — shown only once the product has real reviews. */}
+                {(() => {
+                    const rv = getReviewSummary(p.link);
+                    return rv.count > 0 ? (
+                        <div className="mt-2 flex items-center gap-1.5">
+                            <StarRating rating={rv.avg} color={p.accent} size={13} />
+                            <span className="font-inter text-[12px] text-white/55">{rv.avg} ({rv.count})</span>
+                        </div>
+                    ) : null;
+                })()}
 
                 {/* Specs at a glance — white values on dark, always legible. */}
                 <div className="mt-3.5 flex flex-wrap gap-x-6 gap-y-2">
