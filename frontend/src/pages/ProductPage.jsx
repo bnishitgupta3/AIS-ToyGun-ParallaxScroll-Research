@@ -538,7 +538,7 @@ export default function ProductPage() {
                                 <div>
                                     <Stars accent={accent} filled={Math.round(summary.avg)} />
                                     <p className="mt-1 font-inter text-[13px] text-[#1a1a1a]/55">
-                                        {summary.count} verified review{summary.count === 1 ? "" : "s"}
+                                        {summary.count} review{summary.count === 1 ? "" : "s"}
                                     </p>
                                 </div>
                             </div>
