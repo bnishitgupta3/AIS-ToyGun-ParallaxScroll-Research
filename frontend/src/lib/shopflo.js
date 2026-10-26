@@ -14,7 +14,13 @@
 
 import { PRODUCT_LOOKUP } from "@/lib/cart";
 
-const CHECKOUT_ENDPOINT = process.env.REACT_APP_SHOPFLO_CHECKOUT_ENDPOINT || "";
+// Falls back to the deployed Cloudflare Worker so the Cloudflare preview uses
+// Shopflo with no build-time env. At prod go-live, override this via env to the
+// AWS Lambda endpoint. Prod never hits this fallback while REACT_APP_CHECKOUT_LIVE
+// keeps checkout gated.
+const CHECKOUT_ENDPOINT =
+    process.env.REACT_APP_SHOPFLO_CHECKOUT_ENDPOINT ||
+    "https://upyourplay-checkout.nishitguptaai.workers.dev";
 
 const SESSION_KEY = "uyp_sf_session";
 const SESSION_TTL_MS = 30 * 60 * 1000; // Shopflo session id is valid ~30 min
