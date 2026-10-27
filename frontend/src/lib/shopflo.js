@@ -105,3 +105,22 @@ export async function startShopfloCheckout(items) {
     }
     return { redirectUrl: data.checkoutUrl };
 }
+
+/* Fetch a NON-PII order summary (name UYP1xxx + items + totals) from our Worker,
+   for the /thank-you page. The URL only carries Shopify's numeric order id; this
+   resolves the friendly name and line items. Returns null if unavailable so the
+   page degrades gracefully (e.g. before the Admin token is set on the Worker). */
+export async function fetchOrderSummary(orderId) {
+    if (!orderId || !CHECKOUT_ENDPOINT) return null;
+    try {
+        const res = await fetch(
+            CHECKOUT_ENDPOINT.replace(/\/+$/, "") + "/order?id=" + encodeURIComponent(orderId),
+        );
+        if (!res.ok) return null;
+        const data = await res.json().catch(() => null);
+        if (!data || data.error || !data.name) return null;
+        return data;
+    } catch {
+        return null;
+    }
+}
