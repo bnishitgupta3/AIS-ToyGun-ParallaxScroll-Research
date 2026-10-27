@@ -22,7 +22,6 @@
 import { buildCart } from "./checkout-core.mjs";
 
 const DEFAULT_API = "https://api.shopflo.co/kratos/api/v2/token";
-const DEFAULT_SHOPIFY_API_VERSION = "2025-01";
 
 function allowedList(env) {
     return String(env.ALLOW_ORIGINS || "")
@@ -36,7 +35,7 @@ function corsHeaders(origin, env) {
     const allow = allowed.includes(origin) ? origin : allowed[0] || "*";
     return {
         "Access-Control-Allow-Origin": allow,
-        "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
+        "Access-Control-Allow-Methods": "POST, OPTIONS",
         "Access-Control-Allow-Headers": "Content-Type",
         "Access-Control-Max-Age": "86400",
         Vary: "Origin",
@@ -97,109 +96,12 @@ async function createShopfloCheckout(trusted, ctx, env) {
     return data.data && data.data.checkout_url;
 }
 
-/* ── Order summary for the /thank-you page ──
-   GET /order?id=<shopify order id>. Looks the order up with a read_orders Admin
-   API token (server-side only) and returns a NON-PII summary: name (e.g. UYP1014),
-   line items and totals. No customer name / email / address is ever returned.
-   `id` may be the numeric order id, a gid, or the order name. */
-function orderGid(id) {
-    const s = String(id).trim();
-    if (s.startsWith("gid://")) return s;
-    if (/^\d+$/.test(s)) return "gid://shopify/Order/" + s;
-    return null; // looks like a name -> search by name instead
-}
-
-const ORDER_FIELDS = `
-    name
-    displayFinancialStatus
-    totalDiscountsSet { shopMoney { amount } }
-    totalShippingPriceSet { shopMoney { amount } }
-    totalPriceSet { shopMoney { amount currencyCode } }
-    lineItems(first: 20) {
-        nodes {
-            title
-            quantity
-            discountedTotalSet { shopMoney { amount } }
-            originalUnitPriceSet { shopMoney { amount } }
-        }
-    }`;
-
-async function fetchOrderSummary(rawId, env) {
-    const store = env.SHOPIFY_STORE;
-    const token = env.SHOPIFY_ADMIN_TOKEN;
-    if (!store || !token) throw new Error("Order lookup not configured");
-    const ver = env.SHOPIFY_API_VERSION || DEFAULT_SHOPIFY_API_VERSION;
-    const endpoint = "https://" + store + "/admin/api/" + ver + "/graphql.json";
-
-    const gid = orderGid(rawId);
-    let query, variables;
-    if (gid) {
-        query = "query($id: ID!){ order(id:$id){ " + ORDER_FIELDS + " } }";
-        variables = { id: gid };
-    } else {
-        const name = String(rawId).trim().replace(/^#/, "");
-        query = "query($q: String!){ orders(first:1, query:$q){ nodes { " + ORDER_FIELDS + " } } }";
-        variables = { q: "name:" + name };
-    }
-
-    const res = await fetch(endpoint, {
-        method: "POST",
-        headers: { "Content-Type": "application/json", "X-Shopify-Access-Token": token },
-        body: JSON.stringify({ query, variables }),
-    });
-    const json = await res.json().catch(() => ({}));
-    const order = gid
-        ? json.data && json.data.order
-        : json.data && json.data.orders && json.data.orders.nodes && json.data.orders.nodes[0];
-    if (!order) return null;
-
-    const money = (m) => (m && m.shopMoney ? Number(m.shopMoney.amount) : 0);
-    const currency =
-        (order.totalPriceSet && order.totalPriceSet.shopMoney && order.totalPriceSet.shopMoney.currencyCode) ||
-        "INR";
-    return {
-        name: order.name,
-        status: order.displayFinancialStatus,
-        currency,
-        discount: money(order.totalDiscountsSet),
-        shipping: money(order.totalShippingPriceSet),
-        total: money(order.totalPriceSet),
-        items: (order.lineItems && order.lineItems.nodes ? order.lineItems.nodes : []).map((li) => ({
-            title: li.title,
-            quantity: li.quantity,
-            lineTotal: money(li.discountedTotalSet),
-            unitPrice: money(li.originalUnitPriceSet),
-        })),
-    };
-}
-
 export default {
     async fetch(request, env) {
         const origin = request.headers.get("Origin") || "";
         const headers = { ...corsHeaders(origin, env), "Content-Type": "application/json" };
-        const url = new URL(request.url);
 
         if (request.method === "OPTIONS") return new Response(null, { status: 204, headers });
-
-        // GET /order?id=<shopify order id> -> non-PII order summary for /thank-you.
-        if (request.method === "GET" && url.pathname === "/order") {
-            if (!allowedList(env).includes(origin)) {
-                return new Response(JSON.stringify({ error: "Origin not allowed" }), { status: 403, headers });
-            }
-            const id = url.searchParams.get("id") || "";
-            if (!id) return new Response(JSON.stringify({ error: "Missing order id" }), { status: 400, headers });
-            try {
-                const summary = await fetchOrderSummary(id, env);
-                if (!summary) return new Response(JSON.stringify({ error: "Order not found" }), { status: 404, headers });
-                return new Response(JSON.stringify(summary), { status: 200, headers });
-            } catch (e) {
-                return new Response(
-                    JSON.stringify({ error: (e && e.message) || "Lookup failed" }),
-                    { status: 502, headers },
-                );
-            }
-        }
-
         if (request.method !== "POST") {
             return new Response(JSON.stringify({ error: "Method not allowed" }), { status: 405, headers });
         }

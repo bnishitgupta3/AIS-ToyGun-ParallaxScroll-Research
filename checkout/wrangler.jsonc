@@ -11,13 +11,8 @@
     "BACK_PATH": "/",
     // Origins allowed to mint checkouts (CORS + server-side guard): prod, the
     // Cloudflare preview, and local dev. Add any other preview URLs here.
-    "ALLOW_ORIGINS": "https://upyourplay.in,https://www.upyourplay.in,https://ais-toygun-parallaxscroll-research.nishitguptaai.workers.dev,http://localhost:3000",
-    // Shopify Admin API (for the /thank-you order lookup). CANONICAL myshopify
-    // domain, NOT the custom domain.
-    "SHOPIFY_STORE": "ad0eqh-ma.myshopify.com",
-    "SHOPIFY_API_VERSION": "2025-01"
+    "ALLOW_ORIGINS": "https://upyourplay.in,https://www.upyourplay.in,https://ais-toygun-parallaxscroll-research.nishitguptaai.workers.dev,http://localhost:3000"
   }
-  // SECRETS (set via wrangler, never commit):
-  //   npx wrangler secret put SHOPFLO_API_KEY      (secret key from your Shopflo dashboard)
-  //   npx wrangler secret put SHOPIFY_ADMIN_TOKEN  (Admin API access token, read_orders scope)
+  // SECRET (set via wrangler, never commit):
+  //   npx wrangler secret put SHOPFLO_API_KEY     (the secret key from your Shopflo dashboard)
 }
