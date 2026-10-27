@@ -490,12 +490,19 @@ export default function BuyNowSheet({ open, product, onClose }) {
                                     disabled={checkingOut}
                                     className="group relative flex w-full items-center justify-center gap-2 overflow-hidden rounded-full bg-[#F8290A] py-4 font-inter text-[14px] font-bold uppercase tracking-[0.14em] text-white shadow-[inset_0_-4px_4px_rgba(255,255,255,0.35)] transition hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-70"
                                 >
+                                    {!checkingOut && (
+                                        <svg
+                                            width="15" height="15" viewBox="0 0 24 24" fill="none"
+                                            stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round"
+                                            className="relative -mt-0.5" aria-hidden="true"
+                                        >
+                                            <rect x="4" y="10" width="16" height="11" rx="2" />
+                                            <path d="M8 10V7a4 4 0 0 1 8 0v3" />
+                                        </svg>
+                                    )}
                                     <span className="relative">
                                         {checkingOut ? "Starting checkout…" : "Checkout"}
                                     </span>
-                                    {!checkingOut && (
-                                        <span className="relative transition-transform group-hover:translate-x-0.5">→</span>
-                                    )}
                                 </button>
                                 {checkoutError && (
                                     <p className="mt-2 text-center font-inter text-[12px] text-red-500">
