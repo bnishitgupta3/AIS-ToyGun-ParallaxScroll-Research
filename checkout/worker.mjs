@@ -67,7 +67,13 @@ async function createShopfloCheckout(trusted, ctx, env) {
         // Shopflo substitutes the order id + checkout id into these placeholders.
         success_url: ctx.successUrl,
         // is_flash_redirect -> Shopflo sends the buyer to success_url after pay.
-        ui_config: { metadata: { is_flash_redirect: true } },
+        // The guide says "the metadata in ui-config"; the Postman example nests
+        // metadata under layout (ui_config.layout.metadata). Put the flag in BOTH
+        // spots so whichever path Shopflo reads, it sees the flag.
+        ui_config: {
+            metadata: { is_flash_redirect: true },
+            layout: { metadata: { is_flash_redirect: true } },
+        },
     };
     // Build-Your-Squad discount as a Shopify CODE (Shopflo syncs Shopify codes).
     if (trusted.discountCode) {
