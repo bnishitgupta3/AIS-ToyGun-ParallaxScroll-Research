@@ -6,10 +6,12 @@ import LandingFooter from "@/components/landing/LandingFooter";
 import { useCart } from "@/lib/cart";
 
 /* ── Order confirmed (post-payment) ──
-   Shopflo redirects here after a SUCCESSFUL payment (is_flash_redirect), with
-   ?order_id=..&checkout_id=.. appended. We confirm the order and clear the local
-   cart so the next visit starts fresh. If Shopflo didn't substitute a value, the
-   param comes through as a literal "{placeholder}" — treat that as missing. */
+   Shopflo redirects here after a SUCCESSFUL payment (is_flash_redirect), with the
+   order id + checkout id appended. Shopflo's docs disagree on the order-id
+   placeholder name, so the worker sends both spellings (order_id + shopify_order_id);
+   we read whichever one resolved. We clear the local cart so the next visit starts
+   fresh. An unsubstituted value arrives as a literal "{placeholder}" — treat it as
+   missing. */
 
 function cleanParam(v) {
     if (!v) return "";
@@ -26,7 +28,7 @@ const NEXT = [
 
 export default function ThankYouPage() {
     const [params] = useSearchParams();
-    const orderId = cleanParam(params.get("order_id"));
+    const orderId = cleanParam(params.get("order_id")) || cleanParam(params.get("shopify_order_id"));
     const { clearCart } = useCart();
     const cleared = useRef(false);
 
