@@ -53,7 +53,7 @@ const META = {
     "/returns": {
         title: "Returns & Shipping · Up Your Play",
         description:
-            "Up Your Play returns, refunds and shipping policy for orders across India.",
+            "Up Your Play returns, replacements and shipping policy for orders across India.",
     },
     "/privacy": {
         title: "Privacy Policy · Up Your Play",

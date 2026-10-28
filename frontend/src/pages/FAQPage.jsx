@@ -53,10 +53,12 @@ export default function FAQPage() {
 
             <Section heading="Can I return or replace a product?">
                 <p>
-                    Yes. We accept returns within 6 days of delivery for items that
-                    are damaged, defective or not as described, in original,
-                    unused condition. Used gel beads/refills are not returnable for
-                    hygiene reasons unless defective. See{" "}
+                    Yes, as a replacement. Within 6 days of delivery we replace items
+                    that are damaged, defective or not as described, in original,
+                    unused condition. We do replacements, not cash refunds; if the same
+                    item is unavailable, you get store credit or a gift card of equal
+                    value. Used gel beads/refills are not eligible for hygiene reasons
+                    unless defective. See{" "}
                     <Link to="/returns" className="text-[#F8290A] underline-offset-2 hover:underline">
                         Returns &amp; Shipping
                     </Link>{" "}
@@ -71,7 +73,9 @@ export default function FAQPage() {
                         hello@upyourplay.in
                     </a>{" "}
                     with your order ID and photos or a short video of the issue.
-                    We will arrange a replacement or refund at no extra cost.
+                    We will arrange a free replacement at no extra cost. If the same
+                    item is unavailable, you get store credit or a gift card of equal
+                    value. We do not offer cash refunds.
                 </p>
             </Section>
 

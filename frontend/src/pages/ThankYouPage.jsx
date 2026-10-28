@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
-import { CheckCircle2, PackageSearch, Mail, MessageCircle } from "lucide-react";
+import { CheckCircle2, PackageSearch, Mail, MessageCircle, ReceiptText } from "lucide-react";
 import LandingNav from "@/components/landing/LandingNav";
 import LandingFooter from "@/components/landing/LandingFooter";
 import { useCart } from "@/lib/cart";
@@ -15,6 +15,10 @@ const NEXT = [
     { icon: PackageSearch, title: "We're packing it", text: "You'll get a tracking link the moment it ships." },
     { icon: MessageCircle, title: "Updates everywhere", text: "Dispatch and delivery alerts by email, SMS and WhatsApp." },
 ];
+
+/* Shopify customer-accounts portal — the shopper's order history, same URL as
+   the nav account icon. Log in with the email used at checkout. */
+const ACCOUNT_URL = "https://shopify.com/109663027486/account";
 
 export default function ThankYouPage() {
     const { clearCart } = useCart();
@@ -74,6 +78,17 @@ export default function ThankYouPage() {
                     >
                         Continue shopping
                     </Link>
+                </div>
+
+                {/* ── Order history (account) ── */}
+                <div className="reveal-up mt-4">
+                    <a
+                        href={ACCOUNT_URL}
+                        className="inline-flex items-center gap-1.5 font-inter text-[13px] font-medium text-[#1a1a1a]/55 underline-offset-4 transition-colors hover:text-[#F8290A] hover:underline"
+                    >
+                        <ReceiptText size={15} strokeWidth={2} />
+                        View your orders
+                    </a>
                 </div>
 
                 {/* ── What happens next ── */}
