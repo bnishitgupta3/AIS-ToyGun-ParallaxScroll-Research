@@ -103,15 +103,12 @@ export default function MissionSection({ missionRef }) {
                     ))}
                 </div>
 
-                <p className="mt-12 max-w-[54ch] text-base leading-relaxed text-zinc-400 md:text-lg">
-                    From Holi mornings with the whole mohalla to lazy weekend
-                    afternoons by the farmhouse pool, we engineered blasters that
-                    reach farther, last longer and never run dry. Built for every
-                    sunlit day, all year round, made for memories that get
-                    gloriously, joyfully wet.
+                <p className="mt-10 max-w-[48ch] text-base leading-relaxed text-zinc-400 md:text-lg">
+                    Blasters engineered to reach farther, last longer and never run
+                    dry. Built for every sunlit day, all year round.
                 </p>
 
-                <div className="mt-16 grid grid-cols-2 gap-8 border-t border-zinc-800 pt-12 md:grid-cols-4">
+                <div className="mt-14 grid grid-cols-2 gap-8 border-t border-zinc-800 pt-12 md:grid-cols-4">
                     {STATS.map((stat, i) => (
                         <div key={stat.label} className="mission-stat" style={{ opacity: 0 }}>
                             <div

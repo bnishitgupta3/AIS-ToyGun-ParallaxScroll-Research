@@ -297,11 +297,6 @@ export default function BuildYourSquad({ packsRef }) {
                 <h2 className="font-instrument mt-4 text-[clamp(40px,7vw,84px)] leading-[0.9] text-[#1a1a1a]">
                     Build your bundle, <span className="text-shimmer">save more</span>.
                 </h2>
-                <p className="mt-4 max-w-xl font-inter text-[15px] leading-relaxed text-[#1a1a1a]/60">
-                    Pick your blasters and the discount grows as the squad does. It is an{" "}
-                    <span className="font-bold text-[#F8290A]">EXTRA discount on top of our launch prices</span>
-                    , and one tap adds the whole bundle to your cart.
-                </p>
 
                 <div className="mt-10 grid grid-cols-1 items-start gap-6 lg:grid-cols-3">
                     <div className="grid grid-cols-2 content-start gap-4 self-start sm:grid-cols-2 lg:col-span-2">

@@ -265,10 +265,6 @@ export default function ArsenalGrid({ arsenalRef }) {
                 <h2 className="font-instrument mt-4 text-[clamp(40px,7vw,84px)] leading-[0.9] text-[#1a1a1a]">
                     Pick your <span className="text-shimmer">weapon</span>.
                 </h2>
-                <p className="mt-4 max-w-xl font-inter text-[15px] leading-relaxed text-[#1a1a1a]/60">
-                    Fully electric, trigger-only soakers engineered for Holi mornings
-                    and every sunlit day. Zero pumping, zero priming.
-                </p>
 
                 <div className="mt-12 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:max-w-4xl">
                     {PRODUCTS.filter((p) => p.link !== "/product/crimson").map((p) => (

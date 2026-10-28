@@ -38,19 +38,19 @@ const COPY = {
         badge: "Bestseller",
         lead: "Full-auto water power,",
         emph: "zero pumping.",
-        desc: "Trigger-only electric blaster with a 300ml drum-fed tank that soaks up to 10 metres.",
+        desc: "Drum-fed 300ml tank, soaks up to 10m.",
     },
     p1: {
         badge: "Crowd favourite",
         lead: "Rapid-fire splashes,",
         emph: "all summer long.",
-        desc: "Electric auto-fire and a 300ml drum, built for backyard battles and Holi mornings.",
+        desc: "Auto-fire 300ml drum, built for backyard battles.",
     },
     p2: {
         badge: "Coming soon",
         lead: "The Crimson",
         emph: "hits different.",
-        desc: "High-velocity gel blaster. 18m range, 11 shots a second. Be first in line.",
+        desc: "Gel blaster. 18m range, 11 shots a second.",
     },
 };
 
