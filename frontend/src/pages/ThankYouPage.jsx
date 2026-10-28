@@ -55,9 +55,8 @@ export default function ThankYouPage() {
                         Thank you for your order.
                     </p>
                     <p className="mx-auto mt-5 max-w-xl font-inter text-[15px] leading-relaxed text-[#1a1a1a]/65 sm:text-[16px]">
-                        Your payment went through and your order is confirmed. We've sent
-                        the order number and details to your email, and your tracking link
-                        will follow the moment it ships.
+                        We got your payment and your order is confirmed. We've emailed you
+                        the details, and your tracking link will arrive as soon as it ships.
                     </p>
                 </div>
 
