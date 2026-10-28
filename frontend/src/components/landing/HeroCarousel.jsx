@@ -94,7 +94,7 @@ const COUNT = SLIDES.length;
    constant scroll speed — re-tune them (speed = reel width / duration) if you
    change the item list or the text size. The Made in India and BIS lines are highlighted in brand yellow. */
 const MARQUEE_ITEMS = [
-    { t: "Proudly made in India, manufactured end to end", hot: true },
+    { t: "Proudly Made in India", hot: true },
     { t: "BIS certified", hot: true },
     { t: "Every unit clears 10+ quality checks" },
     { t: "300ml drum-fed tank" },
@@ -149,12 +149,26 @@ const TOP_MARQUEE_ITEMS = [
 ];
 const TOP_REEL = [...TOP_MARQUEE_ITEMS, ...TOP_MARQUEE_ITEMS];
 
+/* Highlight the promo code tokens in brand yellow so they pop on the red bar. */
+const TOP_CODES = ["UYPWELCOME10", "SQUAD10", "SQUAD13", "SQUAD16"];
+const TOP_CODE_SPLIT = /(UYPWELCOME10|SQUAD10|SQUAD13|SQUAD16)/g;
+const withCodes = (text) =>
+    text.split(TOP_CODE_SPLIT).map((part, i) =>
+        TOP_CODES.includes(part) ? (
+            <span key={i} className="text-[#F8F31A]">
+                {part}
+            </span>
+        ) : (
+            part
+        ),
+    );
+
 function TopReel({ hidden }) {
     return (
         <div className="flex shrink-0 items-center whitespace-nowrap" aria-hidden={hidden ? "true" : undefined}>
             {TOP_REEL.map((t, i) => (
                 <span key={i} className="flex items-center">
-                    <span style={{ letterSpacing: "0.12em" }} className="px-5 font-instrument text-[14px] font-bold uppercase sm:text-[16px]">{t}</span>
+                    <span style={{ letterSpacing: "0.12em" }} className="px-5 font-instrument text-[14px] font-bold uppercase sm:text-[16px]">{withCodes(t)}</span>
                     <span className="text-[12px]" role="img" aria-label="water">💦</span>
                 </span>
             ))}
