@@ -356,7 +356,7 @@ export default function HeroCarousel({ heroRef }) {
                        fill the column (flex-1) so the marquee below stays pinned
                        to the bottom of the first screen; the min-h is a floor that
                        keeps the tall mobile (stacked) slides from clipping. */}
-                <div className="relative flex-1 min-h-[468px] sm:min-h-[400px]">
+                <div className="relative flex-1 min-h-[540px] sm:min-h-[400px]">
                     {SLIDES.map((s, i) => {
                         const show = i === active;
                         const accent = s.accent;

@@ -40,8 +40,8 @@ export default function Toast() {
 
     return createPortal(
         <div
-            className={`fixed inset-x-0 bottom-5 z-[70] flex justify-center px-4 transition-all duration-300 ${
-                show ? "translate-y-0 opacity-100" : "pointer-events-none translate-y-3 opacity-0"
+            className={`fixed inset-x-0 top-32 z-[70] flex justify-center px-4 transition-all duration-300 sm:top-auto sm:bottom-5 ${
+                show ? "translate-y-0 opacity-100" : "pointer-events-none opacity-0 -translate-y-3 sm:translate-y-3"
             }`}
             role="status"
             aria-live="polite"
