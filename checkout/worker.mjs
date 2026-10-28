@@ -60,30 +60,21 @@ function toShopfloItem(l) {
 }
 
 async function createShopfloCheckout(trusted, ctx, env) {
-    // EXPERIMENT toggle. When USE_SHOPIFY_THANKYOU is "true" we OMIT success_url
-    // (and is_flash_redirect), so Shopflo falls back to Shopify's native
-    // order-status ("thank you") page per their docs — it already shows the order
-    // number + line items. "false" (default) keeps our own branded /thank-you page
-    // via flash-redirect. Flip the var in wrangler.jsonc and redeploy to A/B it.
-    const useShopifyThankYou = String(env.USE_SHOPIFY_THANKYOU || "").toLowerCase() === "true";
-
     const payload = {
         sf_session_id: ctx.sessionId,
         items: trusted.lineItems.map(toShopfloItem),
-        back_url: ctx.backUrl, // exit/abandon still returns to our store
-    };
-    if (!useShopifyThankYou) {
+        back_url: ctx.backUrl,
         // Shopflo substitutes the order id + checkout id into these placeholders.
-        payload.success_url = ctx.successUrl;
+        success_url: ctx.successUrl,
         // is_flash_redirect -> Shopflo sends the buyer to success_url after pay.
         // The guide says "the metadata in ui-config"; the Postman example nests
         // metadata under layout (ui_config.layout.metadata). Put the flag in BOTH
         // spots so whichever path Shopflo reads, it sees the flag.
-        payload.ui_config = {
+        ui_config: {
             metadata: { is_flash_redirect: true },
             layout: { metadata: { is_flash_redirect: true } },
-        };
-    }
+        },
+    };
     // Build-Your-Squad discount as a Shopify CODE (Shopflo syncs Shopify codes).
     if (trusted.discountCode) {
         payload.discounts = [{ type: "CODE", code: trusted.discountCode }];
