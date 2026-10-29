@@ -55,7 +55,7 @@ function Stars({ accent = "#1a1a1a", filled = 0 }) {
 }
 
 /* Buy box: price, specs, qty + add-to-cart (or notify for a pre-launch gun). */
-function BuyBox({ product, details }) {
+function BuyBox({ product, details, colors, colorIdx, onPickColor }) {
     const accent = product.accent;
     const { notifyAdded } = useCart();
     const { qty, set } = useCartItem(product.link);
@@ -124,6 +124,34 @@ function BuyBox({ product, details }) {
                             {pct}% off
                         </span>
                     )}
+                </div>
+            )}
+
+            {/* Colourways — swatch options for this product. */}
+            {colors && (
+                <div className="mt-5">
+                    <span className="font-inter text-[12px] font-medium text-[#1a1a1a]/55">
+                        Colour: <span className="font-semibold text-[#1a1a1a]/80">{colors[colorIdx].name}</span>
+                    </span>
+                    <div className="mt-2 flex items-center gap-2.5">
+                        {colors.map((c, i) => (
+                            <button
+                                key={c.id}
+                                type="button"
+                                aria-label={`Colour: ${c.name}`}
+                                aria-pressed={i === colorIdx}
+                                title={c.name}
+                                onClick={() => onPickColor(i)}
+                                className="h-7 w-7 rounded-full transition-transform hover:scale-110"
+                                style={{
+                                    background: c.hex,
+                                    boxShadow: i === colorIdx
+                                        ? `0 0 0 2px #fff, 0 0 0 4px ${accent}`
+                                        : "0 0 0 1px rgba(0,0,0,0.2)",
+                                }}
+                            />
+                        ))}
+                    </div>
                 </div>
             )}
 
@@ -196,7 +224,7 @@ function BuyBox({ product, details }) {
 /* Full-screen zoom lightbox (Amazon-style). Click/tap the image to toggle a 2.4x
    zoom; moving the pointer (desktop) or dragging (mobile) pans by steering the
    transform-origin. Thumbnails switch the image; Esc / backdrop / X closes. */
-function ZoomModal({ images, index, setIndex, onClose }) {
+function ZoomModal({ images, index, setIndex, onClose, tint }) {
     const [zoom, setZoom] = useState(false);
     const [origin, setOrigin] = useState({ x: 50, y: 50 });
     const frameRef = useRef(null);
@@ -267,7 +295,7 @@ function ZoomModal({ images, index, setIndex, onClose }) {
                         alt=""
                         draggable="false"
                         className="max-h-[82vh] w-auto select-none bg-[#f1f0ed] object-contain transition-transform duration-200"
-                        style={{ transform: zoom ? "scale(2.4)" : "scale(1)", transformOrigin: `${origin.x}% ${origin.y}%` }}
+                        style={{ transform: zoom ? "scale(2.4)" : "scale(1)", transformOrigin: `${origin.x}% ${origin.y}%`, ...(tint || {}) }}
                     />
                     {!zoom && (
                         <span className="pointer-events-none absolute bottom-3 right-3 rounded-full bg-black/55 px-3 py-1 font-inter text-[11px] font-semibold text-white">Tap to zoom</span>
@@ -286,7 +314,7 @@ function ZoomModal({ images, index, setIndex, onClose }) {
                             className="h-14 w-14 overflow-hidden rounded-lg border-2 bg-[#f1f0ed] transition"
                             style={{ borderColor: i === index ? "#fff" : "rgba(255,255,255,0.25)" }}
                         >
-                            <img src={img} alt="" className="h-full w-full object-contain p-1" />
+                            <img src={img} alt="" style={tint} className="h-full w-full object-contain p-1" />
                         </button>
                     ))}
                 </div>
@@ -299,7 +327,7 @@ function ZoomModal({ images, index, setIndex, onClose }) {
 /* Image gallery with thumbnails. The main image opens the zoom lightbox on tap,
    and flips to the prev/next image on a horizontal drag/swipe (mouse, touch or
    pen — via pointer events), the on-image arrows, the arrow keys, or thumbnails. */
-function Gallery({ product, images }) {
+function Gallery({ product, images, tint }) {
     const [active, setActive] = useState(0);
     const [zoomOpen, setZoomOpen] = useState(false);
     const srcs = images.map(productImg);
@@ -346,7 +374,7 @@ function Gallery({ product, images }) {
                 className="brutal-accent group relative block aspect-square w-full cursor-zoom-in select-none overflow-hidden rounded-3xl bg-[#f1f0ed]"
                 style={{ "--accent": product.accent, touchAction: "pan-y" }}
             >
-                <img src={srcs[active]} alt={`${product.name} view ${active + 1}`} draggable="false" className="pointer-events-none h-full w-full select-none object-contain p-6" />
+                <img src={srcs[active]} alt={`${product.name} view ${active + 1}`} draggable="false" style={tint} className="pointer-events-none h-full w-full select-none object-contain p-6" />
                 {product.comingSoon && (
                     <span className="absolute left-4 top-4 rounded-full px-3 py-1 font-inter text-[11px] font-bold uppercase tracking-[0.18em] text-white" style={{ background: product.accent }}>
                         Coming soon
@@ -390,11 +418,11 @@ function Gallery({ product, images }) {
                         className="aspect-square w-20 overflow-hidden rounded-xl border-2 bg-[#f1f0ed] transition"
                         style={{ borderColor: i === active ? product.accent : "rgba(0,0,0,0.1)" }}
                     >
-                        <img src={img} alt="" className="h-full w-full object-contain p-1.5" />
+                        <img src={img} alt="" style={tint} className="h-full w-full object-contain p-1.5" />
                     </button>
                 ))}
             </div>
-            {zoomOpen && <ZoomModal images={srcs} index={active} setIndex={setActive} onClose={() => setZoomOpen(false)} />}
+            {zoomOpen && <ZoomModal images={srcs} index={active} setIndex={setActive} tint={tint} onClose={() => setZoomOpen(false)} />}
         </div>
     );
 }
@@ -450,6 +478,7 @@ export default function ProductPage() {
     // All hooks run unconditionally (before any early return) to keep hook order
     // stable — useCartItem(link) is safe even when the slug is unknown.
     const [showBar, setShowBar] = useState(false);
+    const [colorIdx, setColorIdx] = useState(0);
     const buyRef = useRef(null);
     const { notifyAdded } = useCart();
     const { qty, set } = useCartItem(link);
@@ -468,6 +497,8 @@ export default function ProductPage() {
         return <Navigate to="/404" replace />;
     }
     const accent = product.accent;
+    const colors = Array.isArray(product.colors) && product.colors.length > 1 ? product.colors : null;
+    const colorTint = colors && colors[colorIdx] && colors[colorIdx].tint ? { filter: colors[colorIdx].tint } : undefined;
     const summary = getReviewSummary(link);
     const reviews = getReviews(link);
 
@@ -479,8 +510,8 @@ export default function ProductPage() {
             {/* ── Gallery + buy box ── */}
             <section id="pdp-top" className="mx-auto max-w-6xl px-6 pb-16 pt-28 sm:pt-32 md:px-12">
                 <div ref={buyRef} className="grid gap-10 lg:grid-cols-2 lg:gap-14">
-                    <Gallery product={product} images={details.gallery} />
-                    <BuyBox product={product} details={details} />
+                    <Gallery product={product} images={details.gallery} tint={colorTint} />
+                    <BuyBox product={product} details={details} colors={colors} colorIdx={colorIdx} onPickColor={setColorIdx} />
                 </div>
             </section>
 

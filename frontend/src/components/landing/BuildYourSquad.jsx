@@ -31,7 +31,13 @@ const nextTier = (u) => TIERS.find((t) => u < t.units) || null;
 function ProductCard({ p, qty, onAdd, onInc, onDec }) {
     const accent = p.accent;
     const comingSoon = p.comingSoon;
-    const img = p.image ? asset("/assets/products/" + p.image) : null;
+    // Colourways — a compact swatch row that swaps the photo (only when 2+ colours).
+    const colors = Array.isArray(p.colors) && p.colors.length > 1 ? p.colors : null;
+    const [colorIdx, setColorIdx] = useState(0);
+    const activeColor = colors ? colors[colorIdx] : null;
+    const imgName = (activeColor && activeColor.image) || p.image;
+    const img = imgName ? asset("/assets/products/" + imgName) : null;
+    const tint = activeColor && activeColor.tint ? { filter: activeColor.tint } : undefined;
     return (
         <div
             className="brutal-accent group flex flex-col overflow-hidden rounded-3xl bg-[#18181b]"
@@ -49,7 +55,7 @@ function ProductCard({ p, qty, onAdd, onInc, onDec }) {
                     </span>
                 ) : null}
                 {img && (
-                    <img src={img} alt={p.name} draggable="false" loading="lazy" decoding="async" className="absolute inset-0 h-full w-full object-cover object-center" />
+                    <img src={img} alt={p.name} draggable="false" loading="lazy" decoding="async" style={tint} className="absolute inset-0 h-full w-full object-cover object-center" />
                 )}
             </div>
 
@@ -67,6 +73,27 @@ function ProductCard({ p, qty, onAdd, onInc, onDec }) {
                     <div className="mt-1 flex items-baseline gap-1.5">
                         <span className="font-inter text-[15px] font-bold text-white">{inr(p.price)}</span>
                         {p.mrp > p.price && <span className="font-inter text-[12px] text-white/40 line-through">{inr(p.mrp)}</span>}
+                    </div>
+                )}
+                {colors && (
+                    <div className="mt-2 flex items-center gap-2">
+                        {colors.map((c, i) => (
+                            <button
+                                key={c.id}
+                                type="button"
+                                aria-label={`Colour: ${c.name}`}
+                                aria-pressed={i === colorIdx}
+                                title={c.name}
+                                onClick={() => setColorIdx(i)}
+                                className="h-4 w-4 rounded-full transition-transform hover:scale-110"
+                                style={{
+                                    background: c.hex,
+                                    boxShadow: i === colorIdx
+                                        ? `0 0 0 2px #18181b, 0 0 0 3.5px ${accent}`
+                                        : "0 0 0 1px rgba(255,255,255,0.3)",
+                                }}
+                            />
+                        ))}
                     </div>
                 )}
             </div>
