@@ -107,6 +107,14 @@ export const PRODUCTS = [
         tagline: "Fully Electric · Automatic · Trigger-Only",
         link: "/product/mp5k",
         image: "mp5k.jpg",
+        // Colourways — tile swatch switcher. colors[0] = default (current photo).
+        // Replace the "(preview)" 2nd colour with a real name + hex + photo (drop
+        // into /assets/products/) and its Shopify variant id/sku when ready;
+        // delete `tint`/`placeholder` once a real photo exists.
+        colors: [
+            { id: "smoke", name: "Smoke", hex: "#2f2f33", image: "mp5k.jpg" },
+            { id: "preview-blue", name: "Hydro Blue (preview)", hex: "#1f6fe5", image: "mp5k.jpg", tint: "sepia(0.7) saturate(2.4) hue-rotate(175deg)", placeholder: true },
+        ],
         accent: "#f97316",
         sub: "Water Gun",
         mrp: 1999,
@@ -124,6 +132,10 @@ export const PRODUCTS = [
         tagline: "Fully Electric · Automatic · Trigger-Only",
         link: "/product/m416",
         image: "m416.jpg",
+        colors: [
+            { id: "smoke", name: "Smoke", hex: "#2f2f33", image: "m416.jpg" },
+            { id: "preview-orange", name: "Lava Orange (preview)", hex: "#f97316", image: "m416.jpg", tint: "sepia(0.85) saturate(3) hue-rotate(-18deg)", placeholder: true },
+        ],
         accent: "#0871E7",
         sub: "Water Gun",
         mrp: 1999,

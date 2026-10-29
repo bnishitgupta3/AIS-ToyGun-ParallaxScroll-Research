@@ -66,10 +66,23 @@ function ProductCard({ p }) {
     const navigate = useNavigate();
     const [imgError, setImgError] = useState(false);
     const [hoverFailed, setHoverFailed] = useState(false);
-    const main = p.image ? asset("/assets/products/" + p.image) : null;
-    const hoverSrc = p.image
-        ? asset("/assets/products/" + p.image.replace(/\.(jpe?g|png|webp)$/i, "-hover.$1"))
-        : null;
+
+    // Colourways — a swatch row that swaps the photo on click. Only renders when
+    // the product defines 2+ colours (see PRODUCTS.colors); single-colour tiles
+    // are unchanged. colors[0] is the default.
+    const colors = Array.isArray(p.colors) && p.colors.length > 1 ? p.colors : null;
+    const [colorIdx, setColorIdx] = useState(0);
+    const activeColor = colors ? colors[colorIdx] : null;
+    const baseImg = (activeColor && activeColor.image) || p.image;
+    const tint = activeColor && activeColor.tint ? { filter: activeColor.tint } : undefined;
+
+    const main = baseImg ? asset("/assets/products/" + baseImg) : null;
+    const hoverName = activeColor && activeColor.hover
+        ? activeColor.hover
+        : baseImg
+            ? baseImg.replace(/\.(jpe?g|png|webp)$/i, "-hover.$1")
+            : null;
+    const hoverSrc = hoverName ? asset("/assets/products/" + hoverName) : null;
 
     // Card photo SLIDER: the main photo + the hover photo. Arrows / swipe cycle
     // through the shots WITHOUT leaving the card (#5); clicking the image, name
@@ -77,6 +90,13 @@ function ProductCard({ p }) {
     const images = main && !imgError ? (hoverSrc && !hoverFailed ? [main, hoverSrc] : [main]) : [];
     const n = images.length;
     const [idx, setIdx] = useState(0);
+    // Switch colourway: reset to the first shot and clear stale load-error flags.
+    const pickColor = (i) => {
+        setColorIdx(i);
+        setIdx(0);
+        setImgError(false);
+        setHoverFailed(false);
+    };
     const cur = n ? (((idx % n) + n) % n) : 0;
     const touchX = useRef(null);
     const swiped = useRef(false);
@@ -127,6 +147,7 @@ function ProductCard({ p }) {
                             loading="lazy"
                             decoding="async"
                             onError={() => (i === 0 ? setImgError(true) : setHoverFailed(true))}
+                            style={tint}
                             className={`absolute inset-0 h-full w-full object-cover object-center transition-opacity duration-500 ${i === cur ? "opacity-100" : "opacity-0"}`}
                         />
                     ))
@@ -201,6 +222,29 @@ function ProductCard({ p }) {
                         </div>
                     ) : null;
                 })()}
+
+                {/* Colourways — click a swatch to switch the photo. */}
+                {colors && (
+                    <div className="mt-3 flex items-center gap-2.5">
+                        {colors.map((c, i) => (
+                            <button
+                                key={c.id}
+                                type="button"
+                                aria-label={`Colour: ${c.name}`}
+                                aria-pressed={i === colorIdx}
+                                title={c.name}
+                                onClick={(e) => { e.stopPropagation(); e.preventDefault(); pickColor(i); }}
+                                className="h-5 w-5 rounded-full transition-transform hover:scale-110"
+                                style={{
+                                    background: c.hex,
+                                    boxShadow: i === colorIdx
+                                        ? `0 0 0 2px #18181b, 0 0 0 4px ${p.accent}`
+                                        : "0 0 0 1px rgba(255,255,255,0.3)",
+                                }}
+                            />
+                        ))}
+                    </div>
+                )}
 
                 {/* Specs at a glance — white values on dark, always legible. */}
                 <div className="mt-3.5 flex flex-wrap gap-x-6 gap-y-2">
