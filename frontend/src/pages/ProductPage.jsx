@@ -1,11 +1,11 @@
 import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
-import { Link, Navigate, useParams } from "react-router-dom";
+import { Link, Navigate, useParams, useNavigate } from "react-router-dom";
 import LandingNav from "@/components/landing/LandingNav";
 import LandingFooter from "@/components/landing/LandingFooter";
 import SectionDots from "@/components/landing/SectionDots";
 import NotifyMe from "@/components/showcase/NotifyMe";
-import { useCart, useCartItem } from "@/lib/cart";
+import { useCart, useCartItem, PRODUCT_LOOKUP } from "@/lib/cart";
 import { PRODUCTS } from "@/components/landing/ArsenalSection";
 import { PRODUCT_DETAILS } from "@/lib/productDetails";
 import { asset } from "@/lib/asset";
@@ -31,6 +31,17 @@ const launchSource = (name) =>
 
 // Checkout gate — same flag the cart uses; hides Buy Now on a gated prod build.
 const CHECKOUT_LIVE = process.env.REACT_APP_CHECKOUT_LIVE !== "false";
+
+/* "Buy more, save more" packs on the PDP. The discount % mirror the Build Your
+   Squad tiers (2 -> 10%, 4 -> 13%, 6 -> 16%). A pack of 2+ is sent to checkout as
+   a single-product BUNDLE, which the Worker prices with the matching SQUAD code;
+   Pack of 1 is a plain unit. */
+const PACK_TIERS = [
+    { qty: 1, pct: 0, label: "Buy 1" },
+    { qty: 2, pct: 10, label: "Buy 2" },
+    { qty: 4, pct: 13, label: "Buy 4", popular: true },
+    { qty: 6, pct: 16, label: "Buy 6" },
+];
 
 function HiIcon({ name }) {
     const common = {
@@ -90,39 +101,65 @@ function ProductHeader({ product, className = "" }) {
 /* Buy box: price, specs, add-to-cart + buy-now (or notify for a pre-launch gun). */
 function BuyBox({ product, details, colors, colorIdx, onPickColor }) {
     const accent = product.accent;
-    const { notifyAdded } = useCart();
-    const { qty, set, inc, dec } = useCartItem(product.link);
+    const { notifyAdded, setQty } = useCart();
+    const { qty } = useCartItem(product.link);
+    const navigate = useNavigate();
     const pct = product.mrp && product.price ? Math.round(((product.mrp - product.price) / product.mrp) * 100) : 0;
     // Play-time USP — surfaced as a subtle pill near the price + an accent spec.
     const play = product.stats.find((s) => /play/i.test(s.label));
     const playTime = play ? play.value.replace(/\*/g, "") : null;
 
-    // First tap drops one unit in; the +/- inside the button adjust from there.
-    const addOne = () => {
-        set(1);
-        trackEvent("add_to_cart", {
-            currency: "INR",
-            value: product.price || 0,
-            items: [{ item_id: product.link, item_name: product.name, quantity: 1 }],
-        });
-        notifyAdded(product.name);
+    // "Buy more, save more" pack selector. 2/4/6 reuse the Build Your Squad
+    // engine: a single-product bundle the Worker prices with the SQUAD tier.
+    const [selectedTier, setSelectedTier] = useState(0);
+    const packPrice = (q, p) => Math.round(product.price * q * (1 - p / 100));
+    const makeBundleKey = (t) => {
+        const key = "/bundle/pack-" + product.link.replace(/^\/product\//, "") + "-" + Date.now();
+        PRODUCT_LOOKUP[key] = {
+            name: `${product.name} · Pack of ${t.qty}`,
+            sub: `${t.qty} units · ${t.pct}% off`,
+            accent,
+            price: packPrice(t.qty, t.pct),
+            bundle: true,
+            units: t.qty,
+            contents: [{ link: product.link, qty: t.qty, name: product.name }],
+        };
+        return key;
     };
 
-    // Buy it now — skip the cart, hand just this item (× count) to Shopflo.
+    const addTier = () => {
+        const t = PACK_TIERS[selectedTier];
+        if (t.pct === 0) {
+            setQty(product.link, (qty || 0) + t.qty);
+        } else {
+            setQty(makeBundleKey(t), 1);
+        }
+        trackEvent("add_to_cart", {
+            currency: "INR",
+            value: packPrice(t.qty, t.pct),
+            items: [{ item_id: product.link, item_name: product.name, quantity: t.qty }],
+        });
+        notifyAdded(t.pct > 0 ? `${product.name} · Pack of ${t.qty}` : product.name);
+    };
+
+    const goSquad = () => navigate("/", { state: { scrollTo: "#squad-packs" } });
+
+    // Buy it now — hand the selected pack straight to Shopflo (skips the cart).
     const [buying, setBuying] = useState(false);
     const [buyError, setBuyError] = useState("");
-    const buyNow = async () => {
+    const buyTier = async () => {
         if (buying) return;
-        const n = Math.max(1, qty); // buy the qty already in the cart, else 1
+        const t = PACK_TIERS[selectedTier];
         setBuyError("");
         setBuying(true);
         try {
             trackEvent("begin_checkout", {
                 currency: "INR",
-                value: (product.price || 0) * n,
-                items: [{ item_id: product.link, item_name: product.name, quantity: n }],
+                value: packPrice(t.qty, t.pct),
+                items: [{ item_id: product.link, item_name: product.name, quantity: t.qty }],
             });
-            const res = await startCheckout({ [product.link]: n });
+            const items = t.pct === 0 ? { [product.link]: t.qty } : { [makeBundleKey(t)]: 1 };
+            const res = await startCheckout(items);
             if (res && res.redirectUrl) {
                 window.location.href = res.redirectUrl; // leaves the SPA for hosted checkout
             } else {
@@ -248,34 +285,64 @@ function BuyBox({ product, details, colors, colorIdx, onPickColor }) {
                     <NotifyMe productName={product.name} source={launchSource(product.name)} accent={accent} />
                 </div>
             ) : (
-                <div className="mt-5 space-y-2.5">
-                    {/* Arsenal-style add-to-cart: one button that becomes a -N+
-                        stepper (bound to the cart) once the item is in. */}
-                    {qty === 0 ? (
+                <div className="mt-5">
+                    {/* ── Buy more, save more ── pick a pack; 2+ gets the squad discount. */}
+                    <div className="space-y-2">
+                        {PACK_TIERS.map((t, i) => {
+                            const sel = i === selectedTier;
+                            const price = packPrice(t.qty, t.pct);
+                            const was = product.price * t.qty;
+                            return (
+                                <button
+                                    key={t.qty}
+                                    type="button"
+                                    onClick={() => setSelectedTier(i)}
+                                    aria-pressed={sel}
+                                    className="flex w-full items-center gap-3 rounded-2xl border-2 px-3.5 py-2.5 text-left transition"
+                                    style={{ borderColor: sel ? accent : "rgba(0,0,0,0.1)", background: sel ? `${accent}0a` : "#fff" }}
+                                >
+                                    <span className="grid h-5 w-5 shrink-0 place-items-center rounded-full border-2" style={{ borderColor: sel ? accent : "rgba(0,0,0,0.25)" }}>
+                                        {sel && <span className="h-2.5 w-2.5 rounded-full" style={{ background: accent }} />}
+                                    </span>
+                                    <div className="min-w-0 flex-1">
+                                        <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
+                                            <span className="font-instrument text-[17px] leading-none text-[#1a1a1a]">{t.label}</span>
+                                            {t.pct > 0 && (
+                                                <span className="rounded-full px-2 py-0.5 font-inter text-[10px] font-bold uppercase tracking-wide text-white" style={{ background: accent }}>Save {t.pct}%</span>
+                                            )}
+                                            {t.popular && (
+                                                <span className="rounded-full bg-[#1a1a1a] px-2 py-0.5 font-inter text-[10px] font-bold uppercase tracking-wide text-white">Popular</span>
+                                            )}
+                                        </div>
+                                        <div className="mt-0.5 font-inter text-[11px] text-[#1a1a1a]/50">
+                                            {t.qty} {t.qty === 1 ? "unit" : "units"}{t.pct > 0 ? ` · ${inr(Math.round(price / t.qty))} each` : ""}
+                                        </div>
+                                    </div>
+                                    <div className="shrink-0 text-right">
+                                        <div className="font-instrument text-[17px] leading-none text-[#1a1a1a]">{inr(price)}</div>
+                                        {t.pct > 0 && <div className="mt-0.5 font-inter text-[11px] text-[#1a1a1a]/40 line-through">{inr(was)}</div>}
+                                    </div>
+                                </button>
+                            );
+                        })}
+                    </div>
+
+                    {/* CTAs */}
+                    <div className="mt-4 space-y-2.5">
                         <button
                             type="button"
-                            onClick={addOne}
+                            onClick={addTier}
                             className="brutal brutal-press flex h-12 w-full items-center justify-center gap-2 rounded-full font-inter text-[13px] font-bold uppercase tracking-[0.14em] text-white transition hover:brightness-105"
                             style={{ background: accent }}
                         >
                             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.8"><path d="M12 5v14M5 12h14" /></svg>
                             Add to cart
                         </button>
-                    ) : (
-                        <div className="brutal flex h-12 w-full items-center justify-between rounded-full pl-1.5 pr-1.5 text-white" style={{ background: accent }}>
-                            <button type="button" aria-label="Remove one" onClick={dec} className="grid h-10 w-10 place-items-center rounded-full text-2xl leading-none transition hover:bg-white/20">−</button>
-                            <span className="flex-1 text-center font-inter text-[15px] font-bold tabular-nums">{qty} in cart</span>
-                            <button type="button" aria-label="Add one" onClick={() => { inc(); notifyAdded(product.name); }} className="grid h-10 w-10 place-items-center rounded-full text-2xl leading-none transition hover:bg-white/20">+</button>
-                        </div>
-                    )}
 
-                    {/* Buy it now — skips the cart, straight to Shopflo checkout.
-                        Hidden on a gated prod build (same flag as the cart). */}
-                    {CHECKOUT_LIVE && (
-                        <>
+                        {CHECKOUT_LIVE && (
                             <button
                                 type="button"
-                                onClick={buyNow}
+                                onClick={buyTier}
                                 disabled={buying}
                                 className="brutal brutal-press flex h-12 w-full items-center justify-center gap-2 rounded-full bg-[#1a1a1a] font-inter text-[13px] font-bold uppercase tracking-[0.14em] text-white transition hover:brightness-150 disabled:cursor-not-allowed disabled:opacity-70"
                             >
@@ -284,11 +351,23 @@ function BuyBox({ product, details, colors, colorIdx, onPickColor }) {
                                 )}
                                 {buying ? "Starting checkout…" : "Buy it now"}
                             </button>
-                            {buyError && (
-                                <p className="text-center font-inter text-[12px] text-red-500">{buyError}</p>
-                            )}
-                        </>
-                    )}
+                        )}
+
+                        {/* Build your own mixed bundle → the Build Your Squad builder. */}
+                        <button
+                            type="button"
+                            onClick={goSquad}
+                            className="brutal brutal-press flex h-12 w-full items-center justify-center gap-2 rounded-full font-inter text-[13px] font-bold uppercase tracking-[0.14em] text-[#1a1a1a] transition hover:brightness-95"
+                            style={{ background: "#F8F31A" }}
+                        >
+                            Build your own squad
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.6"><path d="M5 12h14M13 5l7 7-7 7" /></svg>
+                        </button>
+
+                        {buyError && (
+                            <p className="text-center font-inter text-[12px] text-red-500">{buyError}</p>
+                        )}
+                    </div>
                 </div>
             )}
 

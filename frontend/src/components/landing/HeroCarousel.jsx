@@ -543,9 +543,7 @@ export default function HeroCarousel({ heroRef }) {
                     })}
                 </div>
 
-                {/* ── Dots + scroll cue on ONE row ── the scroll chevron sits to the
-                       RIGHT of the carousel dots (same level), so it adds no extra
-                       height and the marquees stay on the first mobile screen. */}
+                {/* ── Dots ── */}
                 <div className="mt-3 flex items-center justify-center gap-2.5">
                     {SLIDES.map((s, i) => (
                         <button
@@ -560,19 +558,6 @@ export default function HeroCarousel({ heroRef }) {
                             style={i === active ? { background: SLIDES[active].accent } : undefined}
                         />
                     ))}
-                    <a
-                        href="#squad-packs"
-                        onClick={(e) => {
-                            e.preventDefault();
-                            scrollToSection("#squad-packs");
-                        }}
-                        aria-label="Scroll down"
-                        className="ml-1 flex h-5 w-5 items-center justify-center text-[#1a1a1a]/40 transition hover:text-[#1a1a1a]/70"
-                    >
-                        <svg className="animate-bounce" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                            <path d="M6 9l6 6 6-6" />
-                        </svg>
-                    </a>
                 </div>
             </div>
 
