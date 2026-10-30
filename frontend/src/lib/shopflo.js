@@ -66,18 +66,31 @@ const strip = (key) => String(key).replace(/^\/product\//, "").replace(/^\//, ""
    lines the Worker expects ([{product,qty} | {bundle:[{product,qty}]}]). Only
    STRUCTURE is sent; the Worker owns prices + the discount. */
 function toTrustedCart(items) {
-    const lines = [];
+    // Collapse the cart to total units per product (expanding any bundle contents).
+    const units = {};
     for (const [key, qty] of Object.entries(items || {})) {
         if (qty <= 0) continue;
         const info = PRODUCT_LOOKUP[key];
         if (info && info.bundle && Array.isArray(info.contents)) {
-            lines.push({ bundle: info.contents.map((c) => ({ product: strip(c.link), qty: c.qty * qty })) });
+            for (const c of info.contents) {
+                const p = strip(c.link);
+                units[p] = (units[p] || 0) + c.qty * qty;
+            }
         } else {
-            lines.push({ product: strip(key), qty });
+            const p = strip(key);
+            units[p] = (units[p] || 0) + qty;
         }
     }
-    if (!lines.length) throw new Error("Your cart has no items ready for checkout yet.");
-    return lines;
+    const entries = Object.entries(units).filter(([, q]) => q > 0);
+    if (!entries.length) throw new Error("Your cart has no items ready for checkout yet.");
+    // 2+ blasters qualify for a squad tier — send them as ONE bundle so the Worker
+    // prices the whole order with the matching SQUAD code. A lone blaster goes
+    // through as a plain line (no discount).
+    const totalUnits = entries.reduce((s, [, q]) => s + q, 0);
+    if (totalUnits >= 2) {
+        return [{ bundle: entries.map(([product, qty]) => ({ product, qty })) }];
+    }
+    return entries.map(([product, qty]) => ({ product, qty }));
 }
 
 /* Start a Shopflo checkout for the site cart `items`.

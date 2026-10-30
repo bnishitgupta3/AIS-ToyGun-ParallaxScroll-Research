@@ -102,11 +102,15 @@ export default function BuyNowSheet({ open, product, onClose }) {
     }, [open]);
 
     // Build a render list of { key, name, qty } from the items map.
-    const lines = Object.entries(items).map(([key, qty]) => ({
-        key,
-        qty,
-        ...(PRODUCT_LOOKUP[key] || { name: key.replace(/^\//, ""), sub: "" }),
-    }));
+    const lines = Object.entries(items).map(([key, qty]) => {
+        const info = PRODUCT_LOOKUP[key] || { name: key.replace(/^\//, ""), sub: "" };
+        // Gross (undiscounted) line value — bundles valued from their contents, so
+        // lines sum to the pre-discount total that the squad discount line reduces.
+        const gross = info.contents
+            ? info.contents.reduce((s, c) => s + c.qty * (PRODUCT_LOOKUP[c.link]?.price || 0), 0) * qty
+            : (info.price || 0) * qty;
+        return { key, qty, gross, ...info };
+    });
     // Cross-sell — every catalogue product NOT already in the cart. Standard
     // D2C mini-cart upsell (Away / Warby Parker / Allbirds): let the shopper
     // build their loadout without leaving the drawer, lifting AOV + conversion.
@@ -271,9 +275,9 @@ export default function BuyNowSheet({ open, product, onClose }) {
                                                 )}
                                             </>
                                         )}
-                                        {line.price != null && (
+                                        {line.gross > 0 && (
                                             <div className="mt-1 font-inter text-[13px] font-bold tabular-nums text-[#F8290A]">
-                                                {inr(line.price * line.qty)}
+                                                {inr(line.gross)}
                                             </div>
                                         )}
                                     </div>

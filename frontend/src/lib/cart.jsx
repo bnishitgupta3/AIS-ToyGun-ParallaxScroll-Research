@@ -149,44 +149,31 @@ export function CartProvider({ children }) {
         [items],
     );
 
-    // Sum of every line's own price (bundles carry a pre-discounted `price`).
-    const lineSubtotal = useMemo(
+    // Undiscounted cart value (₹) — bundles are valued from their CONTENTS at full
+    // sale price (not a pre-discounted `price`), so the single squad discount below
+    // covers the whole cart consistently.
+    const grossSubtotal = useMemo(
         () =>
-            Object.entries(items).reduce(
-                (s, [key, q]) => s + q * (PRODUCT_LOOKUP[key]?.price || 0),
-                0,
-            ),
+            Object.entries(items).reduce((s, [key, q]) => {
+                const info = PRODUCT_LOOKUP[key];
+                if (!info) return s;
+                if (info.bundle && Array.isArray(info.contents)) {
+                    return s + q * info.contents.reduce((cs, c) => cs + c.qty * (PRODUCT_LOOKUP[c.link]?.price || 0), 0);
+                }
+                return s + q * (info.price || 0);
+            }, 0),
         [items],
     );
-    // Units sitting INSIDE bundles — the squad tier/code is chosen from this
-    // (mirrors the Worker). That code then discounts the whole cart, so loose
-    // singles alongside a pack get the discount too.
-    const bundleUnits = useMemo(
-        () =>
-            Object.entries(items).reduce(
-                (s, [key, q]) => s + q * (PRODUCT_LOOKUP[key]?.bundle ? (PRODUCT_LOOKUP[key]?.units || 0) : 0),
-                0,
-            ),
-        [items],
-    );
-    // Value of loose (non-bundle) lines — the part the code discounts that isn't
-    // already baked into a bundle's pre-discounted price.
-    const looseSubtotal = useMemo(
-        () =>
-            Object.entries(items).reduce(
-                (s, [key, q]) => s + (PRODUCT_LOOKUP[key]?.bundle ? 0 : q * (PRODUCT_LOOKUP[key]?.price || 0)),
-                0,
-            ),
-        [items],
-    );
-    const squadTier = useMemo(() => activeSquadTier(bundleUnits), [bundleUnits]);
+    // Squad tier is chosen from the TOTAL blaster quantity (the "buy more, save
+    // more" offer) and, like the live Shopify code, discounts the whole cart.
+    const squadTier = useMemo(() => activeSquadTier(blasters), [blasters]);
     const squadCode = squadTier ? squadTier.code : null;
     const squadDiscount = useMemo(
-        () => (squadTier ? Math.round(looseSubtotal * (squadTier.pct / 100)) : 0),
-        [squadTier, looseSubtotal],
+        () => (squadTier ? Math.round(grossSubtotal * (squadTier.pct / 100)) : 0),
+        [squadTier, grossSubtotal],
     );
     // What the shopper pays (pre-shipping) — matches the Shopflo checkout total.
-    const subtotal = lineSubtotal - squadDiscount;
+    const subtotal = grossSubtotal - squadDiscount;
 
     // ── Squad Pack upsell signals ───────────────────────────────────────────
     // Individual = non-bundle line items. Once the order starts to look like

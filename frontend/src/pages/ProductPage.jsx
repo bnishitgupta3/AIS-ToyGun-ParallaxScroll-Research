@@ -5,7 +5,7 @@ import LandingNav from "@/components/landing/LandingNav";
 import LandingFooter from "@/components/landing/LandingFooter";
 import SectionDots from "@/components/landing/SectionDots";
 import NotifyMe from "@/components/showcase/NotifyMe";
-import { useCart, useCartItem, PRODUCT_LOOKUP } from "@/lib/cart";
+import { useCart, useCartItem } from "@/lib/cart";
 import { PRODUCTS } from "@/components/landing/ArsenalSection";
 import { PRODUCT_DETAILS } from "@/lib/productDetails";
 import { asset } from "@/lib/asset";
@@ -113,33 +113,19 @@ function BuyBox({ product, details, colors, colorIdx, onPickColor }) {
     // engine: a single-product bundle the Worker prices with the SQUAD tier.
     const [selectedTier, setSelectedTier] = useState(0);
     const packPrice = (q, p) => Math.round(product.price * q * (1 - p / 100));
-    const makeBundleKey = (t) => {
-        const key = "/bundle/pack-" + product.link.replace(/^\/product\//, "") + "-" + Date.now();
-        PRODUCT_LOOKUP[key] = {
-            name: `${product.name} · Pack of ${t.qty}`,
-            sub: `${t.qty} units · ${t.pct}% off`,
-            accent,
-            price: packPrice(t.qty, t.pct),
-            bundle: true,
-            units: t.qty,
-            contents: [{ link: product.link, qty: t.qty, name: product.name }],
-        };
-        return key;
-    };
 
+    // Add the pack as plain product QUANTITY — the cart consolidates it into one
+    // line and applies the squad discount dynamically from the TOTAL count (no
+    // separate bundle line). Picking a bigger pack simply adds more units.
     const addTier = () => {
         const t = PACK_TIERS[selectedTier];
-        if (t.pct === 0) {
-            setQty(product.link, (qty || 0) + t.qty);
-        } else {
-            setQty(makeBundleKey(t), 1);
-        }
+        setQty(product.link, (qty || 0) + t.qty);
         trackEvent("add_to_cart", {
             currency: "INR",
             value: packPrice(t.qty, t.pct),
             items: [{ item_id: product.link, item_name: product.name, quantity: t.qty }],
         });
-        notifyAdded(t.pct > 0 ? `${product.name} · Pack of ${t.qty}` : product.name);
+        notifyAdded(product.name, t.qty);
     };
 
     const goSquad = () => navigate("/", { state: { scrollTo: "#squad-packs" } });
@@ -158,8 +144,7 @@ function BuyBox({ product, details, colors, colorIdx, onPickColor }) {
                 value: packPrice(t.qty, t.pct),
                 items: [{ item_id: product.link, item_name: product.name, quantity: t.qty }],
             });
-            const items = t.pct === 0 ? { [product.link]: t.qty } : { [makeBundleKey(t)]: 1 };
-            const res = await startCheckout(items);
+            const res = await startCheckout({ [product.link]: t.qty });
             if (res && res.redirectUrl) {
                 window.location.href = res.redirectUrl; // leaves the SPA for hosted checkout
             } else {
