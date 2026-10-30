@@ -82,7 +82,7 @@ export default function MissionSection({ missionRef }) {
         <section
             ref={missionRef}
             id="mission"
-            className="relative z-10 w-full bg-zinc-950 px-6 py-32 md:px-20 md:py-44"
+            className="relative z-10 w-full bg-zinc-950 px-6 py-20 md:px-20 md:py-28"
         >
             <div ref={innerRef} className="mx-auto max-w-6xl">
                 <span className="font-mono-tactical text-xs font-bold uppercase tracking-[0.4em] text-[#F8290A]">

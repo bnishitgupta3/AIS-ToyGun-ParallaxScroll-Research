@@ -300,7 +300,7 @@ export default function ArsenalGrid({ arsenalRef }) {
         <section
             ref={arsenalRef}
             id="arsenal"
-            className="relative z-10 w-full px-6 py-24 md:px-12 md:py-32"
+            className="relative z-10 w-full px-6 py-14 md:px-12 md:py-20"
         >
             <div className="mx-auto max-w-7xl">
                 <span className="font-inter text-xs font-semibold uppercase tracking-[0.4em] text-[#F8290A]">

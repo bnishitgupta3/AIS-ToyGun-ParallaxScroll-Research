@@ -318,7 +318,7 @@ export default function BuildYourSquad({ packsRef }) {
     };
 
     return (
-        <section ref={setRefs} id="squad-packs" className="relative z-10 w-full px-6 pb-24 pt-4 md:px-12 md:pb-28">
+        <section ref={setRefs} id="squad-packs" className="relative z-10 w-full px-6 pb-14 pt-14 md:px-12 md:pb-20 md:pt-20">
             <div className="mx-auto max-w-7xl">
                 <span className="font-inter text-xs font-semibold uppercase tracking-[0.4em] text-[#F8290A]">/// Build Your Squad</span>
                 <h2 className="font-instrument mt-4 text-[clamp(40px,7vw,84px)] leading-[0.9] text-[#1a1a1a]">

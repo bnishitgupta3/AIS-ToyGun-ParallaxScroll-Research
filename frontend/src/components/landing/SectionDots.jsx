@@ -20,14 +20,13 @@ const productPinDist = () =>
 const SECTION_SETS = {
     home: {
         alwaysVisible: false,
-        revealId: "arsenal",
+        revealId: "squad-packs",
         sections: [
             { key: "hero", id: "hero", label: "Top" },
-            { key: "arsenal", id: "arsenal", label: "Arsenal" },
-            // `offset` nudges the click-scroll up so this section clears the
-            // fixed nav/marquee and lands cleanly. It defaults to 0 everywhere
-            // else, so the other dots are completely unchanged.
+            // Bundle promoted ABOVE the Arsenal on the homepage. `offset` nudges
+            // the click-scroll up so the section clears the fixed nav/marquee.
             { key: "squad", id: "squad-packs", label: "Squad Packs", offset: 96 },
+            { key: "arsenal", id: "arsenal", label: "Arsenal" },
             { key: "mission", id: "mission", label: "Mission" },
             { key: "footer", id: "footer", label: "Connect" },
         ],
@@ -48,6 +47,9 @@ const SECTION_SETS = {
     // `offset` lifts the click-scroll so the target clears the fixed top bar/nav.
     pdp: {
         alwaysVisible: true,
+        // The auto-revealed label overlapped the gallery/CTA on the PDP, so show
+        // the section name on hover/focus only here.
+        hideActiveLabel: true,
         sections: [
             { key: "top",     id: "pdp-top",   label: "Overview", offset: 112 },
             { key: "specs",   id: "pdp-specs", label: "Specs",    offset: 96 },
@@ -155,7 +157,7 @@ export default function SectionDots({ variant = "home" }) {
                             for the others. */}
                         <span
                             className={`pointer-events-none absolute right-full mr-3 whitespace-nowrap rounded-full bg-[#1a1a1a] px-2.5 py-1 font-inter text-[11px] font-medium text-white shadow-sm transition-opacity duration-300 ${
-                                active && revealed ? "opacity-100" : "opacity-0 group-hover:opacity-100"
+                                active && revealed && !cfg.hideActiveLabel ? "opacity-100" : "opacity-0 group-hover:opacity-100"
                             }`}
                         >
                             {s.label}

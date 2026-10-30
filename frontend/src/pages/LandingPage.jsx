@@ -47,11 +47,11 @@ export default function LandingPage() {
                 {/* 1 — HERO (shoppable product carousel) */}
                 <HeroCarousel heroRef={heroRef} />
 
-                {/* 2 — ARSENAL (shoppable photo grid) */}
-                <ArsenalGrid arsenalRef={arsenalRef} />
-
-                {/* 2b — BUILD YOUR SQUAD (interactive volume-bundle builder) */}
+                {/* 2 — BUILD YOUR SQUAD (bundle builder promoted FIRST on the homepage) */}
                 <BuildYourSquad />
+
+                {/* 2b — ARSENAL (shoppable photo grid) */}
+                <ArsenalGrid arsenalRef={arsenalRef} />
 
                 {/* 3 — MISSION (dark contrast section) */}
                 <MissionSection missionRef={missionRef} />

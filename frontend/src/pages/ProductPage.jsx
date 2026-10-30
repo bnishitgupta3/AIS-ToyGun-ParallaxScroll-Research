@@ -93,6 +93,9 @@ function BuyBox({ product, details, colors, colorIdx, onPickColor }) {
     const { notifyAdded } = useCart();
     const { qty, set, inc, dec } = useCartItem(product.link);
     const pct = product.mrp && product.price ? Math.round(((product.mrp - product.price) / product.mrp) * 100) : 0;
+    // Play-time USP — surfaced as a subtle pill near the price + an accent spec.
+    const play = product.stats.find((s) => /play/i.test(s.label));
+    const playTime = play ? play.value.replace(/\*/g, "") : null;
 
     // First tap drops one unit in; the +/- inside the button adjust from there.
     const addOne = () => {
@@ -178,6 +181,17 @@ function BuyBox({ product, details, colors, colorIdx, onPickColor }) {
                 </div>
             )}
 
+            {/* USP — play time kept subtly in the customer's eye near the price. */}
+            {playTime && !product.comingSoon && (
+                <div
+                    className="mt-3 inline-flex items-center gap-1.5 rounded-full px-3 py-1 font-inter text-[12px] font-semibold"
+                    style={{ background: `${accent}14`, color: accent }}
+                >
+                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round"><path d="M13 2L4 14h7l-1 8 9-12h-7l1-8z" /></svg>
+                    Up to {playTime} play time per charge
+                </div>
+            )}
+
             {/* Colourways — swatch options for this product. */}
             {colors && (
                 <div className="mt-5">
@@ -214,7 +228,13 @@ function BuyBox({ product, details, colors, colorIdx, onPickColor }) {
             <div className="mt-5 grid grid-cols-4 gap-2">
                 {product.stats.slice(0, 4).map((s) => (
                     <div key={s.label} className="rounded-xl border border-black/10 bg-white px-1.5 py-2 text-center">
-                        <div className="font-instrument text-[15px] leading-none text-[#1a1a1a] sm:text-[18px]" style={product.comingSoon ? { filter: "blur(4px)" } : undefined}>
+                        <div
+                            className="font-instrument text-[15px] leading-none sm:text-[18px]"
+                            style={{
+                                color: /play/i.test(s.label) ? accent : "#1a1a1a",
+                                ...(product.comingSoon ? { filter: "blur(4px)" } : {}),
+                            }}
+                        >
                             {s.value}
                         </div>
                         <div className="mt-1 font-inter text-[8px] font-semibold uppercase tracking-[0.1em] text-[#1a1a1a]/45">{s.label}</div>
@@ -520,7 +540,7 @@ function FaqItem({ q, a }) {
 function CrossSell({ current }) {
     const others = PRODUCTS.filter((p) => p.link !== current.link);
     return (
-        <section className="mx-auto max-w-6xl px-6 py-16 md:px-12">
+        <section className="mx-auto max-w-6xl px-6 py-12 md:px-12">
             <h2 className="font-instrument text-[clamp(28px,4vw,44px)] leading-[0.95] text-[#1a1a1a]">Complete your <span className="text-shimmer">squad</span>.</h2>
             <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
                 {others.map((p) => (
@@ -585,7 +605,7 @@ export default function ProductPage() {
             <SectionDots variant="pdp" />
 
             {/* ── Gallery + buy box ── */}
-            <section id="pdp-top" className="mx-auto max-w-6xl px-6 pb-14 pt-28 sm:pt-32 md:px-12">
+            <section id="pdp-top" className="mx-auto max-w-6xl px-6 pb-12 pt-32 md:px-12">
                 {/* Mobile: title above the pics (heading -> pics -> price order). */}
                 <ProductHeader product={product} className="mb-5 lg:hidden" />
                 <div ref={buyRef} className="grid gap-6 lg:grid-cols-2 lg:gap-14">
@@ -596,7 +616,7 @@ export default function ProductPage() {
 
             {/* ── Highlights ── */}
             <section className="border-y border-black/10 bg-white/60">
-                <div className="mx-auto grid max-w-6xl gap-6 px-6 py-14 sm:grid-cols-2 lg:grid-cols-4 md:px-12">
+                <div className="mx-auto grid max-w-6xl gap-6 px-6 py-10 sm:grid-cols-2 lg:grid-cols-4 md:px-12">
                     {details.highlights.map((h) => (
                         <div key={h.title} className="flex flex-col gap-2">
                             <span className="grid h-11 w-11 place-items-center rounded-2xl text-white" style={{ background: accent }}><HiIcon name={h.icon} /></span>
@@ -608,7 +628,7 @@ export default function ProductPage() {
             </section>
 
             {/* ── Specs + what's in the box ── */}
-            <section id="pdp-specs" className="mx-auto max-w-6xl px-6 py-16 md:px-12">
+            <section id="pdp-specs" className="mx-auto max-w-6xl px-6 py-12 md:px-12">
                 <div className="grid gap-12 lg:grid-cols-2">
                     <div>
                         <span className="font-inter text-[11px] font-semibold uppercase tracking-[0.3em]" style={{ color: accent }}>/// Full specs</span>
@@ -644,7 +664,7 @@ export default function ProductPage() {
 
             {/* ── Reviews ── */}
             <section id="reviews" className="border-y border-black/10 bg-white/60">
-                <div className="mx-auto max-w-6xl px-6 py-14 md:px-12">
+                <div className="mx-auto max-w-6xl px-6 py-10 md:px-12">
                     <span className="font-inter text-[11px] font-semibold uppercase tracking-[0.3em]" style={{ color: accent }}>/// Ratings and reviews</span>
                     {summary.count > 0 ? (
                         <>
@@ -695,7 +715,7 @@ export default function ProductPage() {
             </section>
 
             {/* ── FAQ ── */}
-            <section id="pdp-faq" className="mx-auto max-w-3xl px-6 py-16 md:px-12">
+            <section id="pdp-faq" className="mx-auto max-w-3xl px-6 py-12 md:px-12">
                 <span className="font-inter text-[11px] font-semibold uppercase tracking-[0.3em]" style={{ color: accent }}>/// FAQ</span>
                 <h2 className="font-instrument mt-3 text-[clamp(28px,4vw,44px)] leading-[0.95] text-[#1a1a1a]">Good to know.</h2>
                 <div className="mt-6 border-t border-black/10">

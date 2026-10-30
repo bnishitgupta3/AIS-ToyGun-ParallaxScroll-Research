@@ -24,7 +24,7 @@ export default function LegalLayout({ eyebrow, title, updated, children }) {
         <div className="dot-grid relative min-h-screen overflow-x-hidden text-[#1a1a1a]">
             <LandingNav />
 
-            <main className="mx-auto max-w-3xl px-6 pb-24 pt-36 sm:px-8 md:pt-44">
+            <main className="mx-auto max-w-3xl px-6 pb-16 pt-36 sm:px-8 md:pt-44">
                 <span className="reveal-up font-inter text-[11px] font-semibold uppercase tracking-[0.4em] text-[#F8290A]">
                     {eyebrow}
                 </span>
@@ -39,7 +39,7 @@ export default function LegalLayout({ eyebrow, title, updated, children }) {
                     </p>
                 )}
 
-                <div className="legal-body mt-10 space-y-7 font-inter text-[15px] leading-relaxed text-[#1a1a1a]/75">
+                <div className="legal-body mt-8 space-y-5 font-inter text-[15px] leading-relaxed text-[#1a1a1a]/75">
                     {children}
                 </div>
             </main>

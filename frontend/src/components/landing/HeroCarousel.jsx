@@ -70,18 +70,10 @@ const SQUAD_SLIDE = {
     perks: ["Up to 16% EXTRA off", "Free shipping, no minimum"],
 };
 
-const PRODUCT_SLIDES = PRODUCTS.map((p) => ({ ...p, ...(COPY[p.id] || {}) }));
-// Order: launched products, then the Squad upsell, then any coming-soon teaser
-// last — so the run reads MP5K, M416, Squad, Crimson.
-const COMING_SOON_IDX = PRODUCT_SLIDES.findIndex((p) => p.comingSoon);
-const SLIDES =
-    COMING_SOON_IDX === -1
-        ? [...PRODUCT_SLIDES, SQUAD_SLIDE]
-        : [
-              ...PRODUCT_SLIDES.slice(0, COMING_SOON_IDX),
-              SQUAD_SLIDE,
-              ...PRODUCT_SLIDES.slice(COMING_SOON_IDX),
-          ];
+// Launched products only (coming-soon guns like Crimson are kept OUT of the
+// hero), then the Squad bundle upsell. Reads MP5K, M416, Squad.
+const PRODUCT_SLIDES = PRODUCTS.filter((p) => !p.comingSoon).map((p) => ({ ...p, ...(COPY[p.id] || {}) }));
+const SLIDES = [...PRODUCT_SLIDES, SQUAD_SLIDE];
 const COUNT = SLIDES.length;
 
 /* ── Bottom marquee ── a second scrolling bar under the carousel leaning on
@@ -96,7 +88,7 @@ const COUNT = SLIDES.length;
 const MARQUEE_ITEMS = [
     { t: "Proudly Made in India", hot: true },
     { t: "BIS certified", hot: true },
-    { t: "Every unit clears 10+ quality checks" },
+    { t: "10+ quality checks" },
     { t: "300ml drum-fed tank" },
     { t: "Up to 45 min play time" },
 ];
@@ -142,9 +134,9 @@ function HeroMarquee() {
 /* Red scrolling marquee — the messages that used to live in the TOP bar, now
    running just ABOVE the dark bar at the bottom of the hero. */
 const TOP_MARQUEE_ITEMS = [
-    "New here? 10% off your first order with code UYPWELCOME10",
-    "Extra 10% to 16% off bundles with SQUAD10, SQUAD13, SQUAD16",
-    "Grab 2, 4, 6 or more to unlock your squad discount",
+    "10% off your first order · UYPWELCOME10",
+    "Up to 16% off bundles · SQUAD10 / SQUAD13 / SQUAD16",
+    "Buy 2, 4 or 6 to save more",
     "Free shipping across India",
 ];
 const TOP_REEL = [...TOP_MARQUEE_ITEMS, ...TOP_MARQUEE_ITEMS];
@@ -568,15 +560,16 @@ export default function HeroCarousel({ heroRef }) {
                     ))}
                 </div>
 
-                {/* ── Scroll-down cue ── nudges past the hero into the Arsenal. */}
+                {/* ── Scroll-down cue ── nudges past the hero into the bundle builder.
+                       Shown on every size (was desktop-only). */}
                 <a
-                    href="#arsenal"
+                    href="#squad-packs"
                     onClick={(e) => {
                         e.preventDefault();
-                        scrollToSection("#arsenal");
+                        scrollToSection("#squad-packs");
                     }}
-                    aria-label="Scroll to the Arsenal"
-                    className="mx-auto mt-4 hidden w-max flex-col items-center gap-1 text-[#1a1a1a]/45 transition hover:text-[#1a1a1a]/75 sm:flex"
+                    aria-label="Scroll down"
+                    className="mx-auto mt-3 flex w-max flex-col items-center gap-1 text-[#1a1a1a]/45 transition hover:text-[#1a1a1a]/75"
                 >
                     <span className="font-inter text-[9px] font-semibold uppercase tracking-[0.3em]">Scroll</span>
                     <svg className="animate-bounce" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
