@@ -11,6 +11,7 @@ import { PRODUCT_DETAILS } from "@/lib/productDetails";
 import { asset } from "@/lib/asset";
 import { trackEvent } from "@/lib/analytics";
 import { getReviewSummary, getReviews } from "@/lib/reviews";
+import { startCheckout } from "@/lib/checkout";
 
 /* ── Conventional D2C product page (PDP) ──
    Gallery + buy box up top, then highlights, full specs, what's in the box,
@@ -27,6 +28,9 @@ const inr = (n) => "₹" + Number(n).toLocaleString("en-IN");
 const productImg = (f) => asset("/assets/products/" + f);
 const launchSource = (name) =>
     "launch-" + (name || "product").toLowerCase().replace(/[^a-z0-9]+/g, "-");
+
+// Checkout gate — same flag the cart uses; hides Buy Now on a gated prod build.
+const CHECKOUT_LIVE = process.env.REACT_APP_CHECKOUT_LIVE !== "false";
 
 function HiIcon({ name }) {
     const common = {
@@ -71,6 +75,42 @@ function BuyBox({ product, details, colors, colorIdx, onPickColor }) {
         });
         notifyAdded(product.name, count);
     };
+
+    // Buy it now — skip the cart, hand just this item (× count) to Shopflo.
+    const [buying, setBuying] = useState(false);
+    const [buyError, setBuyError] = useState("");
+    const buyNow = async () => {
+        if (buying) return;
+        setBuyError("");
+        setBuying(true);
+        try {
+            trackEvent("begin_checkout", {
+                currency: "INR",
+                value: (product.price || 0) * count,
+                items: [{ item_id: product.link, item_name: product.name, quantity: count }],
+            });
+            const res = await startCheckout({ [product.link]: count });
+            if (res && res.redirectUrl) {
+                window.location.href = res.redirectUrl; // leaves the SPA for hosted checkout
+            } else {
+                setBuying(false); // provider opened its own checkout
+            }
+        } catch (e) {
+            setBuyError(e.message || "Could not start checkout. Please try again.");
+            setBuying(false);
+        }
+    };
+    // Reset if the shopper returns via browser back / bfcache after the redirect.
+    useEffect(() => {
+        const reset = () => {
+            setBuying(false);
+            setBuyError("");
+        };
+        window.addEventListener("pageshow", reset);
+        return () => {
+            window.removeEventListener("pageshow", reset);
+        };
+    }, []);
 
     return (
         <div className="lg:pt-2">
@@ -177,21 +217,44 @@ function BuyBox({ product, details, colors, colorIdx, onPickColor }) {
                     <NotifyMe productName={product.name} source={launchSource(product.name)} accent={accent} />
                 </div>
             ) : (
-                <div className="mt-7 flex flex-col gap-3 sm:flex-row sm:items-center">
-                    <div className="brutal flex w-max items-center rounded-full bg-white">
-                        <button type="button" aria-label="Decrease quantity" onClick={() => setCount((c) => Math.max(1, c - 1))} className="grid h-12 w-12 place-items-center rounded-full text-2xl leading-none text-[#1a1a1a] transition hover:bg-black/5">−</button>
-                        <span className="w-8 text-center font-inter text-[16px] font-bold tabular-nums">{count}</span>
-                        <button type="button" aria-label="Increase quantity" onClick={() => setCount((c) => Math.min(9, c + 1))} className="grid h-12 w-12 place-items-center rounded-full text-2xl leading-none text-[#1a1a1a] transition hover:bg-black/5">+</button>
+                <div className="mt-7 space-y-3">
+                    <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+                        <div className="brutal flex w-max items-center rounded-full bg-white">
+                            <button type="button" aria-label="Decrease quantity" onClick={() => setCount((c) => Math.max(1, c - 1))} className="grid h-12 w-12 place-items-center rounded-full text-2xl leading-none text-[#1a1a1a] transition hover:bg-black/5">−</button>
+                            <span className="w-8 text-center font-inter text-[16px] font-bold tabular-nums">{count}</span>
+                            <button type="button" aria-label="Increase quantity" onClick={() => setCount((c) => Math.min(9, c + 1))} className="grid h-12 w-12 place-items-center rounded-full text-2xl leading-none text-[#1a1a1a] transition hover:bg-black/5">+</button>
+                        </div>
+                        <button
+                            type="button"
+                            onClick={add}
+                            className="brutal brutal-press inline-flex h-12 w-full items-center justify-center gap-2 whitespace-nowrap rounded-full px-7 font-inter text-[13px] font-bold uppercase tracking-[0.14em] text-white sm:w-auto sm:flex-1"
+                            style={{ background: accent }}
+                        >
+                            Add to cart
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.6"><path d="M12 5v14M5 12h14" /></svg>
+                        </button>
                     </div>
-                    <button
-                        type="button"
-                        onClick={add}
-                        className="brutal brutal-press inline-flex h-12 w-full items-center justify-center gap-2 whitespace-nowrap rounded-full px-7 font-inter text-[13px] font-bold uppercase tracking-[0.14em] text-white sm:w-auto sm:flex-1"
-                        style={{ background: accent }}
-                    >
-                        Add to cart
-                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.6"><path d="M12 5v14M5 12h14" /></svg>
-                    </button>
+
+                    {/* Buy it now — skips the cart, straight to Shopflo checkout.
+                        Hidden on a gated prod build (same flag as the cart). */}
+                    {CHECKOUT_LIVE && (
+                        <>
+                            <button
+                                type="button"
+                                onClick={buyNow}
+                                disabled={buying}
+                                className="brutal brutal-press flex h-12 w-full items-center justify-center gap-2 rounded-full bg-[#1a1a1a] font-inter text-[13px] font-bold uppercase tracking-[0.14em] text-white transition hover:brightness-150 disabled:cursor-not-allowed disabled:opacity-70"
+                            >
+                                {!buying && (
+                                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round"><path d="M13 2L4 14h7l-1 8 9-12h-7l1-8z" /></svg>
+                                )}
+                                {buying ? "Starting checkout…" : "Buy it now"}
+                            </button>
+                            {buyError && (
+                                <p className="text-center font-inter text-[12px] text-red-500">{buyError}</p>
+                            )}
+                        </>
+                    )}
                 </div>
             )}
 
