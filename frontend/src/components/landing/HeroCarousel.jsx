@@ -122,7 +122,7 @@ function MarqueeReel({ hidden }) {
 /* Full-bleed dark bar at the very bottom of the hero (flush below the red one). */
 function HeroMarquee() {
     return (
-        <div className="marquee relative -mx-5 flex items-center overflow-hidden bg-[#1a1a1a] py-4 sm:-mx-8">
+        <div className="marquee relative -mx-5 flex items-center overflow-hidden bg-[#1a1a1a] py-2.5 sm:-mx-8">
             <div className="marquee-track flex min-w-max" style={{ animationDuration: "46s" }}>
                 <MarqueeReel />
                 <MarqueeReel hidden />
@@ -544,7 +544,7 @@ export default function HeroCarousel({ heroRef }) {
                 </div>
 
                 {/* ── Dots ── */}
-                <div className="mt-5 flex items-center justify-center gap-2.5">
+                <div className="mt-2 flex items-center justify-center gap-2.5">
                     {SLIDES.map((s, i) => (
                         <button
                             key={s.id}
@@ -560,8 +560,9 @@ export default function HeroCarousel({ heroRef }) {
                     ))}
                 </div>
 
-                {/* ── Scroll-down cue ── nudges past the hero into the bundle builder.
-                       Shown on every size (was desktop-only). */}
+                {/* ── Scroll-down cue ── a small bouncing chevron. Kept compact and
+                       tight to the dots so it doesn't push the marquees off the
+                       first mobile screen. */}
                 <a
                     href="#squad-packs"
                     onClick={(e) => {
@@ -569,10 +570,9 @@ export default function HeroCarousel({ heroRef }) {
                         scrollToSection("#squad-packs");
                     }}
                     aria-label="Scroll down"
-                    className="mx-auto mt-3 flex w-max flex-col items-center gap-1 text-[#1a1a1a]/45 transition hover:text-[#1a1a1a]/75"
+                    className="mx-auto mt-1 flex h-5 w-8 items-center justify-center text-[#1a1a1a]/40 transition hover:text-[#1a1a1a]/70"
                 >
-                    <span className="font-inter text-[9px] font-semibold uppercase tracking-[0.3em]">Scroll</span>
-                    <svg className="animate-bounce" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                    <svg className="animate-bounce" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                         <path d="M6 9l6 6 6-6" />
                     </svg>
                 </a>
