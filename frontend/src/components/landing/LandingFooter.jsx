@@ -16,7 +16,6 @@ const NAV_LINKS = {
     ],
     Support: [
         { label: "Track Order", to: "/track" },
-        { label: "Returns & Shipping", to: "/returns" },
         { label: "FAQ", to: "/faq" },
         { label: "Contact", to: "/contact" },
     ],
@@ -28,6 +27,12 @@ const NAV_LINKS = {
 };
 
 const SOCIALS = ["TK", "IG", "YT", "X"];
+
+// Payment methods accepted (processed via Cashfree). Shown as the footer "We
+// accept" row. Text badges for now — to use the official brand marks, drop the
+// logo files into /assets/payments/ and render <img> here instead (brand logos
+// shouldn't be hand-reproduced in code).
+const PAYMENTS = ["UPI", "Visa", "Mastercard", "RuPay", "Amex", "Net Banking"];
 
 export default function LandingFooter() {
     const [email, setEmail] = useState("");
@@ -169,8 +174,25 @@ export default function LandingFooter() {
                     ))}
                 </div>
 
+                {/* We accept — payment methods processed via Cashfree */}
+                <div className="mt-14 flex flex-wrap items-center gap-x-4 gap-y-3 border-t border-zinc-800 pt-8">
+                    <span className="font-mono-tactical text-[10px] font-bold uppercase tracking-[0.3em] text-zinc-600">
+                        We accept
+                    </span>
+                    <div className="flex flex-wrap items-center gap-2">
+                        {PAYMENTS.map((p) => (
+                            <span
+                                key={p}
+                                className="rounded-md bg-white px-2.5 py-1.5 font-inter text-[11px] font-bold tracking-tight text-[#1a1a1a] shadow-sm"
+                            >
+                                {p}
+                            </span>
+                        ))}
+                    </div>
+                </div>
+
                 {/* Bottom bar */}
-                <div className="mt-16 flex flex-col items-start justify-between gap-4 border-t border-zinc-800 pt-8 font-mono-tactical text-[10px] uppercase tracking-[0.3em] text-zinc-700 md:flex-row md:items-center">
+                <div className="mt-8 flex flex-col items-start justify-between gap-4 font-mono-tactical text-[10px] uppercase tracking-[0.3em] text-zinc-700 md:flex-row md:items-center">
                     <span>© 2026 Up Your Play · All rights reserved</span>
                     <div className="flex items-center gap-5">
                         <Link to="/404" className="text-zinc-700 transition-colors hover:text-[#F8290A]">
