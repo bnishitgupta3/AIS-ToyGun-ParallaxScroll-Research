@@ -58,22 +58,51 @@ function Stars({ accent = "#1a1a1a", filled = 0 }) {
     );
 }
 
-/* Buy box: price, specs, qty + add-to-cart (or notify for a pre-launch gun). */
+/* Product header — eyebrow badge + title + tagline. Shown ABOVE the gallery on
+   mobile (title-first, the standard D2C PDP order) and inside the buy box on
+   desktop (right column). */
+function ProductHeader({ product, className = "" }) {
+    return (
+        <div className={className}>
+            <nav className="font-inter text-[12px] font-medium text-[#1a1a1a]/45">
+                <Link to="/" className="transition hover:text-[#1a1a1a]">Home</Link>
+                <span className="px-1.5">/</span>
+                <Link to="/" state={{ scrollTo: "#arsenal" }} className="transition hover:text-[#1a1a1a]">Arsenal</Link>
+                <span className="px-1.5">/</span>
+                <span className="text-[#1a1a1a]/70">{product.name}</span>
+            </nav>
+            <span
+                className="brutal mt-3 inline-block rounded-full px-3 py-1 font-inter text-[10px] font-bold uppercase tracking-[0.22em] text-white"
+                style={{ background: product.accent }}
+            >
+                {product.sub}
+            </span>
+            <h1 className="font-instrument mt-2.5 text-[clamp(32px,7vw,60px)] leading-[0.92] text-[#1a1a1a]">
+                {product.name}
+            </h1>
+            <p className="mt-1.5 font-inter text-[12px] font-medium uppercase tracking-[0.14em] text-[#1a1a1a]/50">
+                {product.tagline}
+            </p>
+        </div>
+    );
+}
+
+/* Buy box: price, specs, add-to-cart + buy-now (or notify for a pre-launch gun). */
 function BuyBox({ product, details, colors, colorIdx, onPickColor }) {
     const accent = product.accent;
     const { notifyAdded } = useCart();
-    const { qty, set } = useCartItem(product.link);
-    const [count, setCount] = useState(1);
+    const { qty, set, inc, dec } = useCartItem(product.link);
     const pct = product.mrp && product.price ? Math.round(((product.mrp - product.price) / product.mrp) * 100) : 0;
 
-    const add = () => {
-        set((qty || 0) + count);
+    // First tap drops one unit in; the +/- inside the button adjust from there.
+    const addOne = () => {
+        set(1);
         trackEvent("add_to_cart", {
             currency: "INR",
-            value: (product.price || 0) * count,
-            items: [{ item_id: product.link, item_name: product.name, quantity: count }],
+            value: product.price || 0,
+            items: [{ item_id: product.link, item_name: product.name, quantity: 1 }],
         });
-        notifyAdded(product.name, count);
+        notifyAdded(product.name);
     };
 
     // Buy it now — skip the cart, hand just this item (× count) to Shopflo.
@@ -81,15 +110,16 @@ function BuyBox({ product, details, colors, colorIdx, onPickColor }) {
     const [buyError, setBuyError] = useState("");
     const buyNow = async () => {
         if (buying) return;
+        const n = Math.max(1, qty); // buy the qty already in the cart, else 1
         setBuyError("");
         setBuying(true);
         try {
             trackEvent("begin_checkout", {
                 currency: "INR",
-                value: (product.price || 0) * count,
-                items: [{ item_id: product.link, item_name: product.name, quantity: count }],
+                value: (product.price || 0) * n,
+                items: [{ item_id: product.link, item_name: product.name, quantity: n }],
             });
-            const res = await startCheckout({ [product.link]: count });
+            const res = await startCheckout({ [product.link]: n });
             if (res && res.redirectUrl) {
                 window.location.href = res.redirectUrl; // leaves the SPA for hosted checkout
             } else {
@@ -114,27 +144,8 @@ function BuyBox({ product, details, colors, colorIdx, onPickColor }) {
 
     return (
         <div className="lg:pt-2">
-            <nav className="font-inter text-[12px] font-medium text-[#1a1a1a]/45">
-                <Link to="/" className="transition hover:text-[#1a1a1a]">Home</Link>
-                <span className="px-1.5">/</span>
-                <Link to="/" state={{ scrollTo: "#arsenal" }} className="transition hover:text-[#1a1a1a]">Arsenal</Link>
-                <span className="px-1.5">/</span>
-                <span className="text-[#1a1a1a]/70">{product.name}</span>
-            </nav>
-
-            <span
-                className="brutal mt-4 inline-block rounded-full px-3 py-1 font-inter text-[10px] font-bold uppercase tracking-[0.22em] text-white"
-                style={{ background: accent }}
-            >
-                {product.sub}
-            </span>
-
-            <h1 className="font-instrument mt-3 text-[clamp(40px,6vw,64px)] leading-[0.92] text-[#1a1a1a]">
-                {product.name}
-            </h1>
-            <p className="mt-2 font-inter text-[13px] font-medium uppercase tracking-[0.14em] text-[#1a1a1a]/50">
-                {product.tagline}
-            </p>
+            {/* Title sits above the gallery on mobile; shows here on desktop. */}
+            <ProductHeader product={product} className="hidden lg:block" />
 
             {/* rating — real reviews when present, else "be the first" */}
             {(() => {
@@ -154,13 +165,13 @@ function BuyBox({ product, details, colors, colorIdx, onPickColor }) {
                     <p className="mt-1 font-inter text-[13px] text-[#1a1a1a]/55">Join the waitlist and we will email you the moment it drops.</p>
                 </div>
             ) : (
-                <div className="mt-5 flex items-end gap-3">
-                    <span className="font-instrument text-[40px] leading-none text-[#1a1a1a]">{inr(product.price)}</span>
+                <div className="mt-4 flex items-end gap-3">
+                    <span className="font-instrument text-[36px] leading-none text-[#1a1a1a]">{inr(product.price)}</span>
                     {product.mrp > product.price && (
-                        <span className="pb-1 font-inter text-[18px] text-[#1a1a1a]/40 line-through">{inr(product.mrp)}</span>
+                        <span className="pb-1 font-inter text-[16px] text-[#1a1a1a]/40 line-through">{inr(product.mrp)}</span>
                     )}
                     {pct > 0 && (
-                        <span className="mb-1.5 rounded-full px-2.5 py-1 font-inter text-[12px] font-bold" style={{ background: `${accent}1f`, color: accent }}>
+                        <span className="mb-1 rounded-full px-2.5 py-1 font-inter text-[12px] font-bold" style={{ background: `${accent}1f`, color: accent }}>
                             {pct}% off
                         </span>
                     )}
@@ -195,18 +206,18 @@ function BuyBox({ product, details, colors, colorIdx, onPickColor }) {
                 </div>
             )}
 
-            <p className="mt-5 max-w-lg font-inter text-[15px] leading-relaxed text-[#1a1a1a]/70">
+            <p className="mt-4 max-w-lg font-inter text-[14.5px] leading-relaxed text-[#1a1a1a]/70">
                 {details.overview}
             </p>
 
-            {/* key specs */}
-            <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-4">
+            {/* key specs — one compact row so more fits above the fold */}
+            <div className="mt-5 grid grid-cols-4 gap-2">
                 {product.stats.slice(0, 4).map((s) => (
-                    <div key={s.label} className="rounded-2xl border border-black/10 bg-white px-3 py-2.5">
-                        <div className="font-instrument text-[20px] leading-none text-[#1a1a1a]" style={product.comingSoon ? { filter: "blur(4px)" } : undefined}>
+                    <div key={s.label} className="rounded-xl border border-black/10 bg-white px-1.5 py-2 text-center">
+                        <div className="font-instrument text-[15px] leading-none text-[#1a1a1a] sm:text-[18px]" style={product.comingSoon ? { filter: "blur(4px)" } : undefined}>
                             {s.value}
                         </div>
-                        <div className="mt-1 font-inter text-[9px] font-semibold uppercase tracking-[0.16em] text-[#1a1a1a]/45">{s.label}</div>
+                        <div className="mt-1 font-inter text-[8px] font-semibold uppercase tracking-[0.1em] text-[#1a1a1a]/45">{s.label}</div>
                     </div>
                 ))}
             </div>
@@ -217,23 +228,26 @@ function BuyBox({ product, details, colors, colorIdx, onPickColor }) {
                     <NotifyMe productName={product.name} source={launchSource(product.name)} accent={accent} />
                 </div>
             ) : (
-                <div className="mt-7 space-y-3">
-                    <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-                        <div className="brutal flex w-max items-center rounded-full bg-white">
-                            <button type="button" aria-label="Decrease quantity" onClick={() => setCount((c) => Math.max(1, c - 1))} className="grid h-12 w-12 place-items-center rounded-full text-2xl leading-none text-[#1a1a1a] transition hover:bg-black/5">−</button>
-                            <span className="w-8 text-center font-inter text-[16px] font-bold tabular-nums">{count}</span>
-                            <button type="button" aria-label="Increase quantity" onClick={() => setCount((c) => Math.min(9, c + 1))} className="grid h-12 w-12 place-items-center rounded-full text-2xl leading-none text-[#1a1a1a] transition hover:bg-black/5">+</button>
-                        </div>
+                <div className="mt-5 space-y-2.5">
+                    {/* Arsenal-style add-to-cart: one button that becomes a -N+
+                        stepper (bound to the cart) once the item is in. */}
+                    {qty === 0 ? (
                         <button
                             type="button"
-                            onClick={add}
-                            className="brutal brutal-press inline-flex h-12 w-full items-center justify-center gap-2 whitespace-nowrap rounded-full px-7 font-inter text-[13px] font-bold uppercase tracking-[0.14em] text-white sm:w-auto sm:flex-1"
+                            onClick={addOne}
+                            className="brutal brutal-press flex h-12 w-full items-center justify-center gap-2 rounded-full font-inter text-[13px] font-bold uppercase tracking-[0.14em] text-white transition hover:brightness-105"
                             style={{ background: accent }}
                         >
+                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.8"><path d="M12 5v14M5 12h14" /></svg>
                             Add to cart
-                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.6"><path d="M12 5v14M5 12h14" /></svg>
                         </button>
-                    </div>
+                    ) : (
+                        <div className="brutal flex h-12 w-full items-center justify-between rounded-full pl-1.5 pr-1.5 text-white" style={{ background: accent }}>
+                            <button type="button" aria-label="Remove one" onClick={dec} className="grid h-10 w-10 place-items-center rounded-full text-2xl leading-none transition hover:bg-white/20">−</button>
+                            <span className="flex-1 text-center font-inter text-[15px] font-bold tabular-nums">{qty} in cart</span>
+                            <button type="button" aria-label="Add one" onClick={() => { inc(); notifyAdded(product.name); }} className="grid h-10 w-10 place-items-center rounded-full text-2xl leading-none transition hover:bg-white/20">+</button>
+                        </div>
+                    )}
 
                     {/* Buy it now — skips the cart, straight to Shopflo checkout.
                         Hidden on a gated prod build (same flag as the cart). */}
@@ -571,8 +585,10 @@ export default function ProductPage() {
             <SectionDots variant="pdp" />
 
             {/* ── Gallery + buy box ── */}
-            <section id="pdp-top" className="mx-auto max-w-6xl px-6 pb-16 pt-28 sm:pt-32 md:px-12">
-                <div ref={buyRef} className="grid gap-10 lg:grid-cols-2 lg:gap-14">
+            <section id="pdp-top" className="mx-auto max-w-6xl px-6 pb-14 pt-28 sm:pt-32 md:px-12">
+                {/* Mobile: title above the pics (heading -> pics -> price order). */}
+                <ProductHeader product={product} className="mb-5 lg:hidden" />
+                <div ref={buyRef} className="grid gap-6 lg:grid-cols-2 lg:gap-14">
                     <Gallery product={product} images={details.gallery} tint={colorTint} />
                     <BuyBox product={product} details={details} colors={colors} colorIdx={colorIdx} onPickColor={setColorIdx} />
                 </div>
