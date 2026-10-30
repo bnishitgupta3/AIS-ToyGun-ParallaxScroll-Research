@@ -48,6 +48,17 @@ const CartContext = createContext(null);
 const CART_STORAGE_KEY = "uyp_cart_v1";
 const CART_TTL_MS = 30 * 24 * 60 * 60 * 1000; // drop carts older than 30 days
 
+/* Squad discount tiers (mirror checkout-core.mjs / BuildYourSquad). The tier is
+   chosen from the total BUNDLE units (matching the Worker) and, like the live
+   Shopify code, then discounts the WHOLE cart — so loose singles added next to a
+   pack are discounted too, keeping the drawer total equal to the Shopflo total. */
+const TIERS = [
+    { units: 2, pct: 10, code: "SQUAD10" },
+    { units: 4, pct: 13, code: "SQUAD13" },
+    { units: 6, pct: 16, code: "SQUAD16" },
+];
+const activeSquadTier = (bundleUnits) => TIERS.reduce((acc, t) => (bundleUnits >= t.units ? t : acc), null);
+
 function loadCart() {
     try {
         const raw = localStorage.getItem(CART_STORAGE_KEY);
@@ -79,7 +90,10 @@ export function CartProvider({ children }) {
         try {
             const customBundles = {};
             for (const key of Object.keys(items)) {
-                if (key.startsWith("/bundle/custom-") && PRODUCT_LOOKUP[key]) {
+                // Runtime bundle definitions (Build Your Squad "custom-" + PDP
+                // "pack-") live only in memory, so persist them with the cart or
+                // they come back as a dangling key (404 + lost price) after a reload.
+                if ((key.startsWith("/bundle/custom-") || key.startsWith("/bundle/pack-")) && PRODUCT_LOOKUP[key]) {
                     customBundles[key] = PRODUCT_LOOKUP[key];
                 }
             }
@@ -135,8 +149,8 @@ export function CartProvider({ children }) {
         [items],
     );
 
-    // Cart price subtotal (₹) — bundles and products both carry a `price`.
-    const subtotal = useMemo(
+    // Sum of every line's own price (bundles carry a pre-discounted `price`).
+    const lineSubtotal = useMemo(
         () =>
             Object.entries(items).reduce(
                 (s, [key, q]) => s + q * (PRODUCT_LOOKUP[key]?.price || 0),
@@ -144,6 +158,35 @@ export function CartProvider({ children }) {
             ),
         [items],
     );
+    // Units sitting INSIDE bundles — the squad tier/code is chosen from this
+    // (mirrors the Worker). That code then discounts the whole cart, so loose
+    // singles alongside a pack get the discount too.
+    const bundleUnits = useMemo(
+        () =>
+            Object.entries(items).reduce(
+                (s, [key, q]) => s + q * (PRODUCT_LOOKUP[key]?.bundle ? (PRODUCT_LOOKUP[key]?.units || 0) : 0),
+                0,
+            ),
+        [items],
+    );
+    // Value of loose (non-bundle) lines — the part the code discounts that isn't
+    // already baked into a bundle's pre-discounted price.
+    const looseSubtotal = useMemo(
+        () =>
+            Object.entries(items).reduce(
+                (s, [key, q]) => s + (PRODUCT_LOOKUP[key]?.bundle ? 0 : q * (PRODUCT_LOOKUP[key]?.price || 0)),
+                0,
+            ),
+        [items],
+    );
+    const squadTier = useMemo(() => activeSquadTier(bundleUnits), [bundleUnits]);
+    const squadCode = squadTier ? squadTier.code : null;
+    const squadDiscount = useMemo(
+        () => (squadTier ? Math.round(looseSubtotal * (squadTier.pct / 100)) : 0),
+        [squadTier, looseSubtotal],
+    );
+    // What the shopper pays (pre-shipping) — matches the Shopflo checkout total.
+    const subtotal = lineSubtotal - squadDiscount;
 
     // ── Squad Pack upsell signals ───────────────────────────────────────────
     // Individual = non-bundle line items. Once the order starts to look like
@@ -176,8 +219,8 @@ export function CartProvider({ children }) {
     const clearToast = useCallback(() => setToast(null), []);
 
     const value = useMemo(
-        () => ({ items, setQty, clearCart, total, blasters, subtotal, squadNudge, drawer, openDrawer, closeDrawer, toast, notifyAdded, clearToast }),
-        [items, setQty, clearCart, total, blasters, subtotal, squadNudge, drawer, openDrawer, closeDrawer, toast, notifyAdded, clearToast],
+        () => ({ items, setQty, clearCart, total, blasters, subtotal, squadDiscount, squadCode, squadNudge, drawer, openDrawer, closeDrawer, toast, notifyAdded, clearToast }),
+        [items, setQty, clearCart, total, blasters, subtotal, squadDiscount, squadCode, squadNudge, drawer, openDrawer, closeDrawer, toast, notifyAdded, clearToast],
     );
 
     return <CartContext.Provider value={value}>{children}</CartContext.Provider>;

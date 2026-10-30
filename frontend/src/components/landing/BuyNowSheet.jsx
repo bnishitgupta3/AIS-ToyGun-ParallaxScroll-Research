@@ -32,7 +32,7 @@ const CHECKOUT_LIVE = process.env.REACT_APP_CHECKOUT_LIVE !== "false";
      • "Notify me at launch" (the placeholder CTA) becomes "Checkout" and
        redirects to `cart.checkoutUrl`. */
 export default function BuyNowSheet({ open, product, onClose }) {
-    const { items, setQty, total, blasters, subtotal, squadNudge } = useCart();
+    const { items, setQty, total, blasters, subtotal, squadDiscount, squadCode, squadNudge } = useCart();
     const hasItems = total > 0;
     const navigate = useNavigate();
     const location = useLocation();
@@ -463,6 +463,14 @@ export default function BuyNowSheet({ open, product, onClose }) {
                 <div className="relative z-10 shrink-0 border-t border-[#1a1a1a]/10 bg-white px-7 pb-[max(1.75rem,env(safe-area-inset-bottom))] pt-4 shadow-[0_-8px_22px_-16px_rgba(0,0,0,0.25)] md:px-10">
                     {hasItems && (
                         <div className="mb-3.5">
+                            {squadDiscount > 0 && (
+                                <div className="mb-1.5 flex items-baseline justify-between font-inter text-[13px]">
+                                    <span className="font-semibold text-[#15803d]">
+                                        Squad discount{squadCode ? ` · ${squadCode}` : ""}
+                                    </span>
+                                    <span className="font-bold tabular-nums text-[#15803d]">− {inr(squadDiscount)}</span>
+                                </div>
+                            )}
                             <div className="flex items-baseline justify-between">
                                 <div className="font-inter text-[13px] font-semibold text-[#1a1a1a]/70">
                                     Subtotal
