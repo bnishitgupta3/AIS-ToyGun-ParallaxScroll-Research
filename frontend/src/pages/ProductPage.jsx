@@ -514,7 +514,7 @@ function Gallery({ product, images, tint }) {
     };
 
     return (
-        <div className="lg:sticky lg:top-28">
+        <div className="lg:sticky lg:top-28 lg:self-start">
             <div
                 role="button"
                 tabIndex={0}

@@ -87,7 +87,11 @@ body,
     font-family: "Inter", ui-sans-serif, system-ui, sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    overflow-x: hidden;
+    /* `clip` (not `hidden`) keeps marquees from causing a horizontal scrollbar
+       WITHOUT making a scroll container — `hidden` would force overflow-y to
+       `auto` and break viewport-relative `position: sticky` (e.g. the PDP
+       gallery pinned beside the scrolling buy box on desktop). */
+    overflow-x: clip;
 }
 
 /* ──────────────────────────────────────────────────────────────
