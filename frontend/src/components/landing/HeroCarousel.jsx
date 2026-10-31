@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useCart, useCartItem } from "@/lib/cart";
 import { asset } from "@/lib/asset";
 import { trackEvent } from "@/lib/analytics";
+import { startCheckout } from "@/lib/checkout";
 import { scrollToSection } from "@/lib/scrollToSection";
 import { PRODUCTS } from "@/components/landing/ArsenalSection";
 
@@ -26,6 +27,10 @@ import { PRODUCTS } from "@/components/landing/ArsenalSection";
  */
 
 const inr = (n) => "₹" + Number(n).toLocaleString("en-IN");
+
+// Checkout gate — same flag the cart/PDP use; a gated build falls back to "View
+// details" instead of a Buy Now that couldn't complete.
+const CHECKOUT_LIVE = process.env.REACT_APP_CHECKOUT_LIVE !== "false";
 
 /* Transparent cutout for a product image: mp5k.jpg -> /cutout/mp5k.webp */
 const cutout = (img) =>
@@ -311,6 +316,36 @@ export default function HeroCarousel({ heroRef }) {
         notifyAdded(slide.name);
     };
 
+    // Buy Now — hand just this gun (qty 1) straight to Shopflo, skipping the cart.
+    const [buying, setBuying] = useState(false);
+    const buyNow = async (slide) => {
+        if (buying || !slide.link) {
+            return;
+        }
+        setBuying(true);
+        try {
+            trackEvent("hero_buy_now", { product: slide.name, price: slide.price });
+            const res = await startCheckout({ [slide.link]: 1 });
+            if (res && res.redirectUrl) {
+                window.location.href = res.redirectUrl; // leaves the SPA for hosted checkout
+            } else {
+                setBuying(false);
+            }
+        } catch (e) {
+            setBuying(false);
+        }
+    };
+    // Reset the button if the shopper returns via browser back / bfcache.
+    useEffect(() => {
+        const reset = () => {
+            setBuying(false);
+        };
+        window.addEventListener("pageshow", reset);
+        return () => {
+            window.removeEventListener("pageshow", reset);
+        };
+    }, []);
+
     const goSquad = (e) => {
         if (e) e.preventDefault();
         trackEvent("hero_build_squad", {});
@@ -502,15 +537,31 @@ export default function HeroCarousel({ heroRef }) {
                                                             <path d="M5 12h14M13 5l7 7-7 7" />
                                                         </svg>
                                                     </button>
-                                                    <Link
-                                                        to={s.link}
-                                                        className="group inline-flex items-center gap-1.5 font-inter text-[12px] font-semibold uppercase tracking-[0.14em] text-[#1a1a1a]/75 transition hover:gap-2.5 hover:text-[#1a1a1a]"
-                                                    >
-                                                        View details
-                                                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4">
-                                                            <path d="M5 12h14M13 5l7 7-7 7" />
-                                                        </svg>
-                                                    </Link>
+                                                    {CHECKOUT_LIVE ? (
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => buyNow(s)}
+                                                            disabled={buying}
+                                                            className="brutal brutal-press inline-flex items-center gap-2 rounded-full bg-[#1a1a1a] px-6 py-3 font-inter text-[13px] font-bold uppercase tracking-[0.12em] text-white transition hover:brightness-150 disabled:cursor-not-allowed disabled:opacity-70"
+                                                        >
+                                                            {buying ? "…" : "Buy now"}
+                                                            {!buying && (
+                                                                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round">
+                                                                    <path d="M13 2L4 14h7l-1 8 9-12h-7l1-8z" />
+                                                                </svg>
+                                                            )}
+                                                        </button>
+                                                    ) : (
+                                                        <Link
+                                                            to={s.link}
+                                                            className="group inline-flex items-center gap-1.5 font-inter text-[12px] font-semibold uppercase tracking-[0.14em] text-[#1a1a1a]/75 transition hover:gap-2.5 hover:text-[#1a1a1a]"
+                                                        >
+                                                            View details
+                                                            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4">
+                                                                <path d="M5 12h14M13 5l7 7-7 7" />
+                                                            </svg>
+                                                        </Link>
+                                                    )}
                                                 </>
                                             ) : (
                                                 <>
