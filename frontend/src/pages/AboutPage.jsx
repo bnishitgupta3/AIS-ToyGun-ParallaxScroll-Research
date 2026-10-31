@@ -41,11 +41,7 @@ export default function AboutPage() {
 
             <main className="mx-auto max-w-5xl px-6 pb-24 pt-36 sm:px-8 md:pt-44">
                 {/* ── Hero ── */}
-                <span className="reveal-up font-inter text-[11px] font-semibold uppercase tracking-[0.4em] text-[#F8290A]">
-                    /// About Up Your Play
-                </span>
-
-                <h1 className="reveal-up font-instrument mt-5 text-[clamp(40px,8vw,84px)] leading-[0.95] tracking-tight text-[#1a1a1a]">
+                <h1 className="reveal-up font-instrument text-[clamp(40px,8vw,84px)] leading-[0.95] tracking-tight text-[#1a1a1a]">
                     We build the blasters
                     <br />
                     <span className="text-[#1a1a1a]/50">every sunlit day deserves.</span>

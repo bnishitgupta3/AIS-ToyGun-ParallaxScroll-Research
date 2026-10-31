@@ -2,7 +2,7 @@ import LegalLayout, { Section } from "@/components/legal/LegalLayout";
 
 export default function TermsPage() {
     return (
-        <LegalLayout eyebrow="/// Legal" title="Terms & Conditions" updated="5 October 2026">
+        <LegalLayout title="Terms & Conditions" updated="5 October 2026">
             <p>
                 These Terms & Conditions govern your access to and use of the Up Your
                 Play website and the purchase of our products. The Up Your Play brand

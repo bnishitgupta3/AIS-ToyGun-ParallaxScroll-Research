@@ -91,7 +91,7 @@ export default function LandingFooter() {
 
                     <div>
                         <span className="font-mono-tactical text-[11px] font-bold uppercase tracking-[0.3em] text-[#F8290A]">
-                            /// Drop Alerts
+                            Drop Alerts
                         </span>
                         <p className="mt-2 text-sm text-zinc-500">
                             New drops, limited colorways, and early access. First in your inbox.

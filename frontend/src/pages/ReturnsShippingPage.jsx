@@ -3,7 +3,7 @@ import LegalLayout, { Section } from "@/components/legal/LegalLayout";
 
 export default function ReturnsShippingPage() {
     return (
-        <LegalLayout eyebrow="/// Legal" title="Returns & Shipping Policy" updated="5 October 2026">
+        <LegalLayout title="Returns & Shipping Policy" updated="5 October 2026">
             <p>
                 This policy explains how we ship orders and handle returns,
                 replacements and cancellations. The Up Your Play brand and website

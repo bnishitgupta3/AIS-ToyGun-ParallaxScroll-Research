@@ -55,11 +55,7 @@ export default function ComingSoonPage() {
                     transition={{ duration: 0.9, ease: EASE }}
                     className="flex w-full flex-col items-center text-center md:w-[52%] md:items-start md:text-left"
                 >
-                    <span className="font-inter text-[11px] font-semibold uppercase tracking-[0.4em] text-[#F8290A]">
-                        /// Up Your Play · Made in India
-                    </span>
-
-                    <h1 className="font-instrument mt-4 text-[clamp(46px,8.5vw,94px)] leading-[0.9] tracking-tight text-[#1a1a1a]">
+                    <h1 className="font-instrument text-[clamp(46px,8.5vw,94px)] leading-[0.9] tracking-tight text-[#1a1a1a]">
                         Get ready to
                         <br className="hidden sm:block" /> get{" "}
                         <span className="text-[#F8290A]">drenched.</span>

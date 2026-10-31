@@ -12,7 +12,7 @@ import LandingFooter from "@/components/landing/LandingFooter";
  * The entrance animation is now a lightweight CSS fade-up (`.reveal-up`), so
  * there is no framer-motion code left to fail. Do NOT reintroduce motion.* here.
  */
-export default function LegalLayout({ eyebrow, title, updated, children }) {
+export default function LegalLayout({ title, updated, children }) {
     // NOTE: braces are REQUIRED. An implicit return here returns whatever
     // window.scrollTo() returns — normally undefined, but GSAP's mobile scroll
     // normalization patches scrollTo to return a value, which React then treats
@@ -25,11 +25,7 @@ export default function LegalLayout({ eyebrow, title, updated, children }) {
             <LandingNav />
 
             <main className="mx-auto max-w-3xl px-6 pb-16 pt-36 sm:px-8 md:pt-44">
-                <span className="reveal-up font-inter text-[11px] font-semibold uppercase tracking-[0.4em] text-[#F8290A]">
-                    {eyebrow}
-                </span>
-
-                <h1 className="reveal-up font-instrument mt-4 text-[clamp(34px,6vw,60px)] leading-[0.95] tracking-tight text-[#1a1a1a]">
+                <h1 className="reveal-up font-instrument text-[clamp(34px,6vw,60px)] leading-[0.95] tracking-tight text-[#1a1a1a]">
                     {title}
                 </h1>
 

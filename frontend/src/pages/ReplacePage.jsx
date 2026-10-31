@@ -38,10 +38,7 @@ export default function ReplacePage() {
             <main className="mx-auto max-w-4xl px-6 pb-24 pt-36 sm:px-8 md:pt-44">
                 {/* ── Hero ── */}
                 <div className="reveal-up max-w-2xl">
-                    <span className="font-inter text-[11px] font-semibold uppercase tracking-[0.4em] text-[#F8290A]">
-                        /// Returns &amp; exchanges
-                    </span>
-                    <h1 className="font-instrument mt-4 text-[clamp(40px,7vw,76px)] leading-[0.95] tracking-tight text-[#1a1a1a]">
+                    <h1 className="font-instrument text-[clamp(40px,7vw,76px)] leading-[0.95] tracking-tight text-[#1a1a1a]">
                         Need a replacement?
                     </h1>
                     <p className="mt-5 max-w-xl font-inter text-[15px] leading-relaxed text-[#1a1a1a]/65 sm:text-[17px]">

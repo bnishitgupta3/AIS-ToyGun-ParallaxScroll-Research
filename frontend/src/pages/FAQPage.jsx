@@ -3,7 +3,7 @@ import LegalLayout, { Section } from "@/components/legal/LegalLayout";
 
 export default function FAQPage() {
     return (
-        <LegalLayout eyebrow="/// Support" title="Frequently Asked Questions">
+        <LegalLayout title="Frequently Asked Questions">
             <p>
                 Everything you need to know about Up Your Play blasters, orders and play.
                 Still stuck? Reach us any time on the{" "}

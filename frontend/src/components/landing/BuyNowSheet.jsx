@@ -203,11 +203,7 @@ export default function BuyNowSheet({ open, product, onClose }) {
                     sticky action bar below stays put (fixes the "can't tell it
                     scrolls / CTA buried at the bottom" feel on phones). */}
                 <div ref={bodyRef} className="flex-1 min-h-0 overflow-y-auto overscroll-contain px-7 pb-6 pt-10 md:px-10 md:pt-16">
-                    <span className="font-inter text-[11px] font-semibold uppercase tracking-[0.35em] text-[#F8290A]">
-                        /// Your cart
-                    </span>
-
-                    <h2 className="font-instrument mt-3 text-[clamp(28px,5.5vw,46px)] leading-[0.95] tracking-tight text-[#1a1a1a]">
+                    <h2 className="font-instrument text-[clamp(28px,5.5vw,46px)] leading-[0.95] tracking-tight text-[#1a1a1a]">
                         {hasItems
                             ? blasters === 1
                                 ? "1 blaster ready."

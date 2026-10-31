@@ -22,10 +22,7 @@ export default function TrackOrderPage() {
     return (
         <div className="dot-grid grid min-h-screen place-items-center px-6 text-center text-[#1a1a1a]">
             <div className="max-w-md">
-                <span className="font-inter text-[11px] font-semibold uppercase tracking-[0.4em] text-[#F8290A]">
-                    /// Order tracking
-                </span>
-                <h1 className="font-instrument mt-4 text-[clamp(28px,5vw,44px)] leading-tight">
+                <h1 className="font-instrument text-[clamp(28px,5vw,44px)] leading-tight">
                     Taking you to your tracking page.
                 </h1>
                 <p className="mt-3 font-inter text-[14px] text-[#1a1a1a]/60">

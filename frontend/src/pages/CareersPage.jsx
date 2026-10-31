@@ -52,10 +52,7 @@ export default function CareersPage() {
             <main className="mx-auto max-w-6xl px-6 pb-24 pt-36 sm:px-8 md:pt-44">
                 {/* ── Hero ── */}
                 <div className="reveal-up max-w-2xl">
-                    <span className="font-inter text-[11px] font-semibold uppercase tracking-[0.4em] text-[#F8290A]">
-                        /// Careers
-                    </span>
-                    <h1 className="font-instrument mt-4 text-[clamp(40px,7.5vw,80px)] leading-[0.92] tracking-tight text-[#1a1a1a]">
+                    <h1 className="font-instrument text-[clamp(40px,7.5vw,80px)] leading-[0.92] tracking-tight text-[#1a1a1a]">
                         Come make a <span className="text-[#F8290A]">splash.</span>
                     </h1>
                     <p className="mt-5 max-w-xl font-inter text-[15px] leading-relaxed text-[#1a1a1a]/65 sm:text-[17px]">

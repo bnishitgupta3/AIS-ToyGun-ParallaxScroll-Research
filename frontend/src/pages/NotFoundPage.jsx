@@ -23,20 +23,11 @@ export default function NotFoundPage() {
             <div className="pointer-events-none absolute right-[18%] bottom-[20%] h-56 w-56 rounded-full bg-[#0871E7]/10 blur-3xl" />
 
             <main className="relative z-10 flex flex-1 flex-col items-center justify-center px-6 text-center">
-                <motion.span
-                    initial={{ opacity: 0, y: 12 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.7, ease: EASE }}
-                    className="font-inter text-[11px] font-semibold uppercase tracking-[0.45em] text-[#F8290A]"
-                >
-                    /// Error 404
-                </motion.span>
-
                 <motion.h1
                     initial={{ opacity: 0, scale: 0.95 }}
                     animate={{ opacity: 1, scale: 1 }}
                     transition={{ duration: 1.1, ease: EASE }}
-                    className="font-instrument mt-5 text-[clamp(64px,16vw,170px)] leading-[0.85] tracking-tight text-[#1a1a1a]"
+                    className="font-instrument text-[clamp(64px,16vw,170px)] leading-[0.85] tracking-tight text-[#1a1a1a]"
                 >
                     All washed out.
                 </motion.h1>

@@ -695,8 +695,7 @@ export default function ProductPage() {
             <section id="pdp-specs" className="mx-auto max-w-6xl px-6 py-12 md:px-12">
                 <div className="grid gap-12 lg:grid-cols-2">
                     <div>
-                        <span className="font-inter text-[11px] font-semibold uppercase tracking-[0.3em]" style={{ color: accent }}>/// Full specs</span>
-                        <h2 className="font-instrument mt-3 text-[clamp(28px,4vw,40px)] leading-[0.95] text-[#1a1a1a]">The numbers.</h2>
+                        <h2 className="font-instrument text-[clamp(28px,4vw,40px)] leading-[0.95] text-[#1a1a1a]">The numbers.</h2>
                         <dl className="mt-6 divide-y divide-black/10 border-y border-black/10">
                             {product.stats.map((s) => (
                                 <div key={s.label} className="flex items-baseline justify-between py-3">
@@ -710,8 +709,7 @@ export default function ProductPage() {
                         )}
                     </div>
                     <div>
-                        <span className="font-inter text-[11px] font-semibold uppercase tracking-[0.3em]" style={{ color: accent }}>/// In the box</span>
-                        <h2 className="font-instrument mt-3 text-[clamp(28px,4vw,40px)] leading-[0.95] text-[#1a1a1a]">What you get.</h2>
+                        <h2 className="font-instrument text-[clamp(28px,4vw,40px)] leading-[0.95] text-[#1a1a1a]">What you get.</h2>
                         <ul className="mt-6 space-y-3">
                             {details.whatsInBox.map((item) => (
                                 <li key={item} className="flex items-center gap-3 font-inter text-[15px] text-[#1a1a1a]/75">
@@ -729,7 +727,7 @@ export default function ProductPage() {
             {/* ── Reviews ── */}
             <section id="reviews" className="border-y border-black/10 bg-white/60">
                 <div className="mx-auto max-w-6xl px-6 py-10 md:px-12">
-                    <span className="font-inter text-[11px] font-semibold uppercase tracking-[0.3em]" style={{ color: accent }}>/// Ratings and reviews</span>
+                    <span className="font-inter text-[11px] font-semibold uppercase tracking-[0.3em]" style={{ color: accent }}>Ratings and reviews</span>
                     {summary.count > 0 ? (
                         <>
                             <div className="mt-5 flex flex-wrap items-center gap-4 rounded-3xl border border-black/10 bg-white p-7">
@@ -780,8 +778,7 @@ export default function ProductPage() {
 
             {/* ── FAQ ── */}
             <section id="pdp-faq" className="mx-auto max-w-3xl px-6 py-12 md:px-12">
-                <span className="font-inter text-[11px] font-semibold uppercase tracking-[0.3em]" style={{ color: accent }}>/// FAQ</span>
-                <h2 className="font-instrument mt-3 text-[clamp(28px,4vw,44px)] leading-[0.95] text-[#1a1a1a]">Good to know.</h2>
+                <h2 className="font-instrument text-[clamp(28px,4vw,44px)] leading-[0.95] text-[#1a1a1a]">Good to know.</h2>
                 <div className="mt-6 border-t border-black/10">
                     {details.faq.map((f) => <FaqItem key={f.q} q={f.q} a={f.a} />)}
                 </div>

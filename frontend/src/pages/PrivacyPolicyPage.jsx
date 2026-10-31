@@ -2,7 +2,7 @@ import LegalLayout, { Section } from "@/components/legal/LegalLayout";
 
 export default function PrivacyPolicyPage() {
     return (
-        <LegalLayout eyebrow="/// Legal" title="Privacy Policy" updated="5 October 2026">
+        <LegalLayout title="Privacy Policy" updated="5 October 2026">
             <p>
                 This Privacy Policy describes how Up Your Play, a brand operated by
                 Sri Stita Machinery Pvt Ltd ("we", "us", "our"), collects, uses,

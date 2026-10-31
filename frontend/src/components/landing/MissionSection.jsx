@@ -85,11 +85,7 @@ export default function MissionSection({ missionRef }) {
             className="relative z-10 w-full bg-zinc-950 px-6 py-20 md:px-20 md:py-28"
         >
             <div ref={innerRef} className="mx-auto max-w-6xl">
-                <span className="font-mono-tactical text-xs font-bold uppercase tracking-[0.4em] text-[#F8290A]">
-                    /// The Mission
-                </span>
-
-                <div className="mt-10 flex flex-wrap items-baseline gap-x-5 gap-y-2">
+                <div className="flex flex-wrap items-baseline gap-x-5 gap-y-2">
                     {WORDS.map(({ text, color, shimmer }, i) => (
                         <span
                             key={i}
