@@ -364,11 +364,15 @@ export default function HeroCarousel({ heroRef }) {
         }
     };
 
+    // On desktop the hero stops ~140px short of the fold (lg:min-h) so the two
+    // marquees — pinned to the hero's bottom edge by the flex-1 column — lift up
+    // and the top of the next section peeks through underneath. That "there's
+    // more below" cue replaces the scroll icon. Mobile keeps the full-height hero.
     return (
         <section
             ref={heroRef}
             id="hero"
-            className="relative flex min-h-[100svh] w-full flex-col overflow-hidden px-5 pt-28 sm:px-8 sm:pt-32"
+            className="relative flex min-h-[100svh] w-full flex-col overflow-hidden px-5 pt-28 sm:px-8 sm:pt-32 lg:min-h-[calc(100svh_-_140px)]"
             onPointerEnter={(e) => {
                 // Pause on hover for a real mouse only. A touch can emit a
                 // synthetic enter with no matching leave, which used to stick.
