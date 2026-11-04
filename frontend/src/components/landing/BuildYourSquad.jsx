@@ -143,8 +143,10 @@ function Panel({ units, mrpTotal, pct, finalTotal, youSave, contents, onCheckout
                 An <span className="font-bold text-[#F8290A]">EXTRA</span> discount, stacked on top of our sale prices.
             </p>
 
-            {/* Tier progress — nodes on the bar, each discount % aligned beneath its node */}
-            <div className="mt-6 px-3">
+            {/* Tier progress — nodes on the bar, each discount % aligned beneath its
+                node. Extra horizontal inset (px-6) so the last tier's label, centred
+                on the 100% node, clears the card edge instead of clipping it. */}
+            <div className="mt-6 px-6">
                 <div className="relative h-1.5 rounded-full bg-black/10">
                     <div className="absolute inset-y-0 left-0 rounded-full transition-all duration-300" style={{ width: `${pf * 100}%`, background: RED }} />
                     {TIERS.map((t) => {
