@@ -36,25 +36,21 @@ const CHECKOUT_LIVE = process.env.REACT_APP_CHECKOUT_LIVE !== "false";
 const cutout = (img) =>
     asset("/assets/products/cutout/" + img.replace(/\.(jpg|jpeg|png)$/i, ".webp"));
 
-/* Hero marketing copy per product id. Kept here (not in the shared PRODUCTS
-   data) so the headline voice lives in one place. No long dashes in copy. */
+/* Hero copy per product id. Kept here (not in the shared PRODUCTS data) so the
+   per-slide voice lives in one place. The headline itself is just the model
+   name (s.name) — this only holds the badge label and a short spec one-liner.
+   No long dashes in copy. */
 const COPY = {
     p0: {
         badge: "Bestseller",
-        lead: "Full-auto water power,",
-        emph: "zero pumping.",
         desc: "Drum-fed 300ml tank, soaks up to 10m.",
     },
     p1: {
         badge: "Crowd favourite",
-        lead: "Rapid-fire splashes,",
-        emph: "all summer long.",
         desc: "Auto-fire 300ml drum, built for backyard battles.",
     },
     p2: {
         badge: "Coming soon",
-        lead: "The Crimson",
-        emph: "hits different.",
         desc: "Gel blaster. 18m range, 11 shots a second.",
     },
 };
@@ -460,10 +456,18 @@ export default function HeroCarousel({ heroRef }) {
                                             {s.badge} · {s.sub}
                                         </span>
 
+                                        {/* Product slides lead with the model name only; the
+                                            squad bundle slide keeps its two-line lead/emph. */}
                                         <h1 className="mt-4 font-instrument text-[clamp(34px,7vw,68px)] font-bold leading-[0.95] tracking-tight text-[#1a1a1a] sm:mt-5">
-                                            {s.lead}
-                                            <br />
-                                            <span style={{ color: accent }}>{s.emph}</span>
+                                            {isSquad ? (
+                                                <>
+                                                    {s.lead}
+                                                    <br />
+                                                    <span style={{ color: accent }}>{s.emph}</span>
+                                                </>
+                                            ) : (
+                                                <span style={{ color: accent }}>{s.name}</span>
+                                            )}
                                         </h1>
 
                                         <p className="mx-auto mt-3.5 max-w-md font-inter text-[13.5px] leading-relaxed text-[#1a1a1a]/70 sm:text-[15px] lg:mx-0">
