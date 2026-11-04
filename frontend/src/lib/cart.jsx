@@ -245,9 +245,9 @@ export function useCartItem(key) {
    query already containing the merchandise title and variant. Delete this
    table and read directly from the Shopify cart line. */
 export const PRODUCT_LOOKUP = {
-    "/product/mp5k": { name: "MP5K", sub: "Water Gun", accent: "#f97316", price: 1299 },
-    "/product/m416": { name: "M416 Water X", sub: "Water Gun", accent: "#0871E7", price: 1299 },
-    "/product/crimson": { name: "Crimson Blaster", sub: "Gel Blaster", accent: "#ef4444", comingSoon: true },
+    "/product/mp5k": { name: "MP5K", sub: "Water Gun", accent: "#f97316", price: 1299, image: "mp5k.jpg" },
+    "/product/m416": { name: "M416 Water X", sub: "Water Gun", accent: "#0871E7", price: 1299, image: "m416.jpg" },
+    "/product/crimson": { name: "Crimson Blaster", sub: "Gel Blaster", accent: "#ef4444", comingSoon: true, image: "crimson.jpg" },
     /* Squad packs (bundles) — each is a single cart line. Flagged `bundle` so
        they're excluded from the cross-sell CATALOG below. */
     "/bundle/duo":   { name: "Duo Pack",   sub: "Bundle", accent: "#F8290A", price: 2338, bundle: true, units: 2,

@@ -1,12 +1,17 @@
 import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { Link, useNavigate, useLocation } from "react-router-dom";
-import { useCart, PRODUCT_LOOKUP, CATALOG, MAX_BUNDLE_SAVING } from "@/lib/cart";
+import { useCart, PRODUCT_LOOKUP, CATALOG } from "@/lib/cart";
 import { scrollToSection } from "@/lib/scrollToSection";
+import { asset } from "@/lib/asset";
 import { startCheckout } from "@/lib/checkout";
 import NotifyMe from "@/components/showcase/NotifyMe";
 
 const inr = (n) => "₹" + Number(n).toLocaleString("en-IN");
+
+/* Transparent product cutout for a line thumbnail: mp5k.jpg -> /cutout/mp5k.webp */
+const cutout = (img) =>
+    asset("/assets/products/cutout/" + img.replace(/\.(jpg|jpeg|png)$/i, ".webp"));
 
 /* Checkout gate — lets prod ship the full site WITHOUT a live checkout until
    Shopflo + live payments are ready. Default ON (dev + Cloudflare preview, so
@@ -32,25 +37,14 @@ const CHECKOUT_LIVE = process.env.REACT_APP_CHECKOUT_LIVE !== "false";
      • "Notify me at launch" (the placeholder CTA) becomes "Checkout" and
        redirects to `cart.checkoutUrl`. */
 export default function BuyNowSheet({ open, product, onClose }) {
-    const { items, setQty, total, blasters, subtotal, squadDiscount, squadCode, squadNudge } = useCart();
+    const { items, setQty, total, blasters, subtotal, squadDiscount, squadCode } = useCart();
     const hasItems = total > 0;
     const navigate = useNavigate();
     const location = useLocation();
 
-    // Squad Pack upsell → jump to the #squad-packs section. Close the drawer
+    // Empty-cart CTA → jump to the Arsenal (product grid). Close the drawer
     // first; on the homepage scroll straight there, otherwise route home and let
     // LandingPage's scrollTo handler land it.
-    const goToSquadPacks = () => {
-        onClose();
-        if (location.pathname === "/") {
-            setTimeout(() => scrollToSection("#squad-packs"), 60);
-        } else {
-            navigate("/", { state: { scrollTo: "#squad-packs" } });
-        }
-    };
-
-    // Empty-cart CTA → jump to the Arsenal (product grid). Same close-then-scroll
-    // pattern as the Squad Pack upsell above.
     const goToArsenal = () => {
         onClose();
         if (location.pathname === "/") {
@@ -222,11 +216,36 @@ export default function BuyNowSheet({ open, product, onClose }) {
                           cartLinesUpdate instead of setQty. ── */}
                     {hasItems && (
                         <ul className="mt-7 divide-y divide-[#1a1a1a]/10 rounded-2xl border border-[#1a1a1a]/10">
-                            {lines.map((line) => (
+                            {lines.map((line) => {
+                                // SKU thumbnail(s): a single product shows its own
+                                // cutout; a bundle shows the cutouts of the guns
+                                // inside it (up to two, overlapped).
+                                const thumbs = (line.contents
+                                    ? line.contents.map((c) => PRODUCT_LOOKUP[c.link]?.image)
+                                    : [line.image]
+                                ).filter(Boolean).slice(0, 2);
+                                const tint = line.accent || "#F8290A";
+                                return (
                                 <li
                                     key={line.key}
                                     className="flex items-center justify-between gap-3 px-4 py-3"
                                 >
+                                    {/* SKU image — transparent cutout on an accent-tinted chip */}
+                                    <div
+                                        className="relative grid h-14 w-14 shrink-0 place-items-center overflow-hidden rounded-xl border border-[#1a1a1a]/10"
+                                        style={{ background: `${tint}14` }}
+                                    >
+                                        {thumbs.length >= 2 ? (
+                                            <>
+                                                <img src={cutout(thumbs[0])} alt="" draggable="false" loading="lazy" decoding="async" className="absolute left-0.5 top-1/2 w-9 -translate-y-1/2 -rotate-6 drop-shadow-[0_4px_6px_rgba(0,0,0,0.18)]" />
+                                                <img src={cutout(thumbs[1])} alt="" draggable="false" loading="lazy" decoding="async" className="absolute right-0.5 top-1/2 w-9 -translate-y-1/2 rotate-6 drop-shadow-[0_4px_6px_rgba(0,0,0,0.18)]" />
+                                            </>
+                                        ) : thumbs.length === 1 ? (
+                                            <img src={cutout(thumbs[0])} alt="" draggable="false" loading="lazy" decoding="async" className="w-12 -rotate-6 drop-shadow-[0_4px_6px_rgba(0,0,0,0.18)]" />
+                                        ) : (
+                                            <span className="h-2.5 w-2.5 rounded-full" style={{ background: tint }} />
+                                        )}
+                                    </div>
                                     <div className="min-w-0 flex-1">
                                         {/* Name links to the product's experience
                                             page; closing the drawer as we go so it
@@ -316,46 +335,12 @@ export default function BuyNowSheet({ open, product, onClose }) {
                                         </button>
                                     </div>
                                 </li>
-                            ))}
+                                );
+                            })}
                         </ul>
                     )}
 
                     {/* (Subtotal now lives in the sticky action bar below.) */}
-
-                    {/* ── Squad Pack upsell ── Fires once the order looks like
-                          group play (2+ blasters or 3+ units) and no bundle is
-                          in yet. Quantified saving + one tap through to the
-                          packs section — the AOV lever that pairs with the
-                          auto-open. */}
-                    {squadNudge && (
-                        <button
-                            type="button"
-                            onClick={goToSquadPacks}
-                            className="group mt-5 flex w-full items-center gap-3.5 rounded-2xl border border-[#F8290A]/25 bg-[#F8290A]/[0.05] p-4 text-left transition hover:bg-[#F8290A]/[0.09]"
-                        >
-                            <span className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-[#F8290A]/[0.12] text-[#F8290A]">
-                                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                    <circle cx="9" cy="8" r="3.2" />
-                                    <path d="M15.5 6.2a3 3 0 0 1 0 5.6" />
-                                    <path d="M3.5 19a5.5 5.5 0 0 1 11 0" />
-                                    <path d="M17 13.7a5.5 5.5 0 0 1 3.5 5.1" />
-                                </svg>
-                            </span>
-                            <span className="min-w-0 flex-1">
-                                <span className="block font-instrument text-[19px] leading-tight text-[#1a1a1a]">
-                                    Playing as a squad?
-                                </span>
-                                <span className="mt-0.5 block font-inter text-[12.5px] leading-snug text-[#1a1a1a]/60">
-                                    Grab a Squad Pack and save up to{" "}
-                                    <b className="font-bold text-[#F8290A]">{inr(MAX_BUNDLE_SAVING)}</b>{" "}
-                                    vs buying singly.
-                                </span>
-                            </span>
-                            <span className="shrink-0 whitespace-nowrap font-inter text-[11px] font-bold uppercase tracking-[0.14em] text-[#F8290A] transition group-hover:translate-x-0.5">
-                                Shop →
-                            </span>
-                        </button>
-                    )}
 
                     {/* ── Anticipation flourish (only when cart is empty —
                           when there ARE items the focus belongs on the list) ── */}
