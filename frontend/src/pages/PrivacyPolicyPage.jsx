@@ -1,4 +1,5 @@
 import LegalLayout, { Section } from "@/components/legal/LegalLayout";
+import ManageCookies from "@/components/ManageCookies";
 
 export default function PrivacyPolicyPage() {
     return (
@@ -65,8 +66,10 @@ export default function PrivacyPolicyPage() {
                 <p>
                     We use cookies and similar technologies to keep the site
                     functional and to understand usage. You can control cookies
-                    through your browser settings.
+                    through your browser settings, or turn analytics cookies off
+                    (or back on) for this browser here:
                 </p>
+                <ManageCookies />
             </Section>
 
             <Section heading="7. Data retention & security">

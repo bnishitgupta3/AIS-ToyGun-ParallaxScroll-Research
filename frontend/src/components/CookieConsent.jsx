@@ -13,10 +13,13 @@ export default function CookieConsent() {
     const [visible, setVisible] = useState(false);
 
     useEffect(() => {
-        // Load analytics on every visit.
-        initAnalytics();
-        initClarity();
-        trackPageview(window.location.pathname + window.location.search);
+        // Load analytics on every visit, unless the visitor turned them off via
+        // the "Manage cookies" control on the Privacy page (persisted "denied").
+        if (getConsent() !== "denied") {
+            initAnalytics();
+            initClarity();
+            trackPageview(window.location.pathname + window.location.search);
+        }
         // Show the notice once to a new visitor; never again after acknowledged.
         if (getConsent() == null) setVisible(true);
     }, []);

@@ -47,6 +47,15 @@ export function disableAnalytics() {
     window[`ga-disable-${GA_ID}`] = true;
 }
 
+/* Re-enable GA after a prior opt-out: clear the per-ID disable flag and make
+   sure the tag is loaded. Pairs with disableAnalytics() for a "manage cookies"
+   control. */
+export function enableAnalytics() {
+    if (!GA_ID || typeof window === "undefined") return;
+    window[`ga-disable-${GA_ID}`] = false;
+    initAnalytics();
+}
+
 /* ──────────────────────────────────────────────────────────────────────────
    Microsoft Clarity — behavioural analytics: heatmaps + session replay.
    Same opt-out model and env gating as GA above: set REACT_APP_CLARITY_ID (the
