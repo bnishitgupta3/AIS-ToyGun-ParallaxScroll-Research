@@ -14,13 +14,26 @@
 
 import { PRODUCT_LOOKUP } from "@/lib/cart";
 
-// Falls back to the deployed Cloudflare Worker so the Cloudflare preview uses
-// Shopflo with no build-time env. At prod go-live, override this via env to the
-// AWS Lambda endpoint. Prod never hits this fallback while REACT_APP_CHECKOUT_LIVE
-// keeps checkout gated.
-const CHECKOUT_ENDPOINT =
-    process.env.REACT_APP_SHOPFLO_CHECKOUT_ENDPOINT ||
-    "https://upyourplay-checkout.nishitguptaai.workers.dev";
+// Checkout endpoint resolver. The checkout API is migrating off the Cloudflare
+// Worker onto AWS Lambda; resolved at call time so it reads the live host.
+// Precedence:
+//   1. REACT_APP_SHOPFLO_CHECKOUT_ENDPOINT build env  — prod deploy sets this.
+//   2. Cloudflare preview (*.workers.dev) + local dev  — the AWS preview Lambda.
+//   3. Everything else (prod upyourplay.in)            — the Cloudflare Worker,
+//      until its own prod Lambda is live, then this whole fallback goes away.
+const PREVIEW_LAMBDA = "https://doefelwugi3ikb34itzoknxdhq0qfllb.lambda-url.us-east-1.on.aws/";
+const CF_WORKER = "https://upyourplay-checkout.nishitguptaai.workers.dev";
+
+function resolveCheckoutEndpoint() {
+    if (process.env.REACT_APP_SHOPFLO_CHECKOUT_ENDPOINT) {
+        return process.env.REACT_APP_SHOPFLO_CHECKOUT_ENDPOINT;
+    }
+    const host = typeof window !== "undefined" ? window.location.hostname : "";
+    if (host.endsWith(".workers.dev") || host === "localhost" || host === "127.0.0.1") {
+        return PREVIEW_LAMBDA;
+    }
+    return CF_WORKER;
+}
 
 const SESSION_KEY = "uyp_sf_session";
 const SESSION_TTL_MS = 30 * 60 * 1000; // Shopflo session id is valid ~30 min
@@ -96,7 +109,8 @@ function toTrustedCart(items) {
 /* Start a Shopflo checkout for the site cart `items`.
    Returns { redirectUrl } for the caller to navigate to. */
 export async function startShopfloCheckout(items) {
-    if (!CHECKOUT_ENDPOINT) {
+    const endpoint = resolveCheckoutEndpoint();
+    if (!endpoint) {
         throw new Error("Shopflo checkout isn't switched on yet. Please try again shortly.");
     }
     const lines = toTrustedCart(items);
@@ -104,7 +118,7 @@ export async function startShopfloCheckout(items) {
 
     let res;
     try {
-        res = await fetch(CHECKOUT_ENDPOINT, {
+        res = await fetch(endpoint, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ sf_session_id, lines }),
