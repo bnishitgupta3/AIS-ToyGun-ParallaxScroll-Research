@@ -46,3 +46,44 @@ export function disableAnalytics() {
     if (!GA_ID || typeof window === "undefined") return;
     window[`ga-disable-${GA_ID}`] = true;
 }
+
+/* ──────────────────────────────────────────────────────────────────────────
+   Microsoft Clarity — behavioural analytics: heatmaps + session replay.
+   Same opt-out model and env gating as GA above: set REACT_APP_CLARITY_ID (the
+   10-char project id from the Clarity dashboard) in your host's env vars.
+   Without it this is a no-op, so dev and preview builds stay clean.
+   Clarity tracks SPA route changes on its own, so there's no per-navigation
+   call to mirror trackPageview(). */
+const CLARITY_ID = process.env.REACT_APP_CLARITY_ID;
+
+export function initClarity() {
+    if (!CLARITY_ID || typeof window === "undefined" || window.__clarityInitialized) return;
+    window.__clarityInitialized = true;
+
+    // Standard Clarity bootstrap: defines the window.clarity() queue stub, then
+    // async-loads the tag. Calls made before the tag arrives are queued.
+    (function (c, l, a, r, i) {
+        c[a] = c[a] || function () {
+            (c[a].q = c[a].q || []).push(arguments);
+        };
+        const t = l.createElement(r);
+        t.async = 1;
+        t.src = "https://www.clarity.ms/tag/" + i;
+        const y = l.getElementsByTagName(r)[0];
+        y.parentNode.insertBefore(t, y);
+    })(window, document, "clarity", "script", CLARITY_ID);
+}
+
+/* Opt-out: withdraw consent and tear the session down. We send both the current
+   v2 consent signal and the legacy stop call; whichever the loaded Clarity build
+   understands takes effect and the rest queue as harmless no-ops. Guarded so a
+   call before the tag loads (window.clarity is the queue stub) is still safe. */
+export function disableClarity() {
+    if (typeof window === "undefined" || typeof window.clarity !== "function") return;
+    try {
+        window.clarity("consentv2", { ad_Storage: "denied", analytics_Storage: "denied" });
+    } catch { /* no-op */ }
+    try {
+        window.clarity("stop");
+    } catch { /* no-op */ }
+}

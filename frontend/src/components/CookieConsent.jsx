@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { getConsent, setConsent } from "@/lib/consent";
-import { initAnalytics, trackPageview, disableAnalytics } from "@/lib/analytics";
+import { initAnalytics, initClarity, trackPageview, disableAnalytics, disableClarity } from "@/lib/analytics";
 
 /* Cookie notice (opt-out model).
 
@@ -18,6 +18,7 @@ export default function CookieConsent() {
         if (choice !== "denied") {
             // Opt-out: load analytics by default for everyone.
             initAnalytics();
+            initClarity();
             trackPageview(window.location.pathname + window.location.search);
         }
         if (choice == null) setVisible(true); // show the notice once to new visitors
@@ -32,6 +33,7 @@ export default function CookieConsent() {
         setConsent("denied");
         setVisible(false);
         disableAnalytics();
+        disableClarity();
     };
 
     if (!visible) return null;
