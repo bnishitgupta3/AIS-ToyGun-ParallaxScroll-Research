@@ -61,6 +61,11 @@ jobs:
           # Microsoft Clarity project id (heatmaps + session replay). Prod-only,
           # like GA, so preview traffic never pollutes the Clarity dashboard.
           REACT_APP_CLARITY_ID: z8sb7f4uz1
+          # Shopflo checkout API — prod points at its OWN AWS Lambda Function URL
+          # (ap-south-1 / Mumbai), a separate function from the us-east-1 preview
+          # Lambda. Set explicitly here; the frontend resolver also defaults prod
+          # to this same URL, so the two never diverge.
+          REACT_APP_SHOPFLO_CHECKOUT_ENDPOINT: https://ga3cr7rkculakq5w2tilfminyq0zrwlj.lambda-url.ap-south-1.on.aws/
           # Live checkout is ON in prod (gate opened at go-live, 2026-10-29).
           # To pause checkout and show the waitlist again, re-add this line:
           #   REACT_APP_CHECKOUT_LIVE: "false"

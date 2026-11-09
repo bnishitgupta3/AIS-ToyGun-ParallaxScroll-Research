@@ -1,28 +1,28 @@
 /* ── Shopflo headless checkout handoff (Token API + redirect) ──
    Flow (validated against Shopflo's V2 Token API, 2026-10-23):
      1. get/reuse an sf_session_id (UUID, valid ~30 min) for attribution
-     2. POST the cart STRUCTURE + session id to our serverless Worker
-        (checkout/worker.mjs), which holds the SECRET api key and calls Shopflo's
-        Token API to mint a checkout_url
+     2. POST the cart STRUCTURE + session id to our serverless endpoint
+        (AWS Lambda checkout/lambda.mjs), which holds the SECRET api key and calls
+        Shopflo's Token API to mint a checkout_url
      3. redirect the browser to that checkout_url (Shopflo hosted checkout)
    After payment Shopflo returns to /thank-you?order_id=..&checkout_id=..; on
    exit/back it returns to our home. No secret ever touches the browser.
 
-   Config: REACT_APP_SHOPFLO_CHECKOUT_ENDPOINT = the deployed Worker URL.
+   Config: REACT_APP_SHOPFLO_CHECKOUT_ENDPOINT = the deployed checkout endpoint
+   URL (an AWS Lambda Function URL).
    Switch on with REACT_APP_CHECKOUT_PROVIDER=shopflo. Until the endpoint is set,
    this throws a friendly, catchable Error so the cart shows the message. */
 
 import { PRODUCT_LOOKUP } from "@/lib/cart";
 
-// Checkout endpoint resolver. The checkout API is migrating off the Cloudflare
-// Worker onto AWS Lambda; resolved at call time so it reads the live host.
+// Checkout endpoint resolver. The checkout API runs on AWS Lambda Function URLs,
+// one per environment; resolved at call time so it reads the live host.
 // Precedence:
 //   1. REACT_APP_SHOPFLO_CHECKOUT_ENDPOINT build env  — prod deploy sets this.
-//   2. Cloudflare preview (*.workers.dev) + local dev  — the AWS preview Lambda.
-//   3. Everything else (prod upyourplay.in)            — the Cloudflare Worker,
-//      until its own prod Lambda is live, then this whole fallback goes away.
+//   2. Cloudflare preview (*.workers.dev) + local dev  — the preview Lambda (us-east-1).
+//   3. Everything else (prod upyourplay.in)            — the prod Lambda (ap-south-1).
 const PREVIEW_LAMBDA = "https://doefelwugi3ikb34itzoknxdhq0qfllb.lambda-url.us-east-1.on.aws/";
-const CF_WORKER = "https://upyourplay-checkout.nishitguptaai.workers.dev";
+const PROD_LAMBDA = "https://ga3cr7rkculakq5w2tilfminyq0zrwlj.lambda-url.ap-south-1.on.aws/";
 
 function resolveCheckoutEndpoint() {
     if (process.env.REACT_APP_SHOPFLO_CHECKOUT_ENDPOINT) {
@@ -32,7 +32,7 @@ function resolveCheckoutEndpoint() {
     if (host.endsWith(".workers.dev") || host === "localhost" || host === "127.0.0.1") {
         return PREVIEW_LAMBDA;
     }
-    return CF_WORKER;
+    return PROD_LAMBDA;
 }
 
 const SESSION_KEY = "uyp_sf_session";
