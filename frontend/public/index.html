@@ -39,9 +39,14 @@
 
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-        <!-- Inter (100–900) body/UI · Instrument Serif (logo). Display headlines use
-             self-hosted Hinato (see @font-face in index.css) — no external load. -->
-        <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+        <!-- Inter (body/UI) + Instrument Serif (logo). Loaded ASYNC so the stylesheet
+             never render-blocks first paint: preload it, then swap media print -> all on
+             load. react-snap keeps this inert during prerender (skipThirdPartyRequests),
+             so the served HTML ships the non-blocking form. Display headlines use
+             self-hosted Hinato (see @font-face in index.css), no external load. -->
+        <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700;800;900&display=swap" />
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700;800;900&display=swap" media="print" onload="this.media='all'" />
+        <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700;800;900&display=swap" /></noscript>
         <title>Up Your Play · Premium Water Guns &amp; Gel Blasters in India</title>
         <script>window.addEventListener("error",function(e){if(e.error instanceof DOMException&&e.error.name==="DataCloneError"&&e.message&&e.message.includes("PerformanceServerTiming")){e.stopImmediatePropagation();e.preventDefault()}},true);</script>
 
