@@ -1,5 +1,11 @@
-@import url("https://api.fontshare.com/v2/css?f[]=cabinet-grotesk@900,800,700,500&f[]=satoshi@700,500,400&display=swap");
-@import url("https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap");
+/* PERF: removed two render-blocking @import font fetches that were in the
+   critical rendering path — Fontshare (Cabinet Grotesk + Satoshi) and Google
+   JetBrains Mono. None of those families are referenced anywhere in the app
+   (verified), so they were pure dead weight blocking first paint. The fonts the
+   app actually uses are: Inter (body/UI, loaded in index.html), Instrument Serif
+   (logo, index.html), self-hosted Hinato (display, below) and self-hosted Nokia
+   (below). Do NOT re-add CSS @import for fonts — use a <link> in index.html so it
+   does not serialise behind the stylesheet. */
 /* Nokia pixel font — SELF-HOSTED. Was loaded from the untrusted third-party
    CDN db.onlinewebfonts.com (supply-chain + privacy risk); now served from our
    own origin. */

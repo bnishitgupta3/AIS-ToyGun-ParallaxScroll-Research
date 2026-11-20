@@ -1,9 +1,13 @@
-import { useState } from "react";
+import { lazy, Suspense, useState } from "react";
 import { Link } from "react-router-dom";
 import { motion } from "@/lib/motionShim";
-import ComingSoonGun from "@/components/landing/ComingSoonGun";
 import { isPrerendering } from "@/lib/isPrerendering";
 import { asset } from "@/lib/asset";
+
+// Code-split: the 3-D teaser gun pulls three.js. Lazy + client-only (!PRERENDER)
+// keeps three.js out of the main bundle; it loads only when this page mounts in a
+// real browser.
+const ComingSoonGun = lazy(() => import("@/components/landing/ComingSoonGun"));
 
 const EASE = [0.16, 1, 0.3, 1];
 const PRERENDER = isPrerendering();
@@ -126,7 +130,11 @@ export default function ComingSoonPage() {
                             SOON
                         </h2>
                     </div>
-                    {!PRERENDER && <ComingSoonGun />}
+                    {!PRERENDER && (
+                        <Suspense fallback={null}>
+                            <ComingSoonGun />
+                        </Suspense>
+                    )}
                 </div>
             </main>
 

@@ -438,9 +438,10 @@ export default function HeroCarousel({ heroRef }) {
                                         ) : (
                                             <img
                                                 src={cutout(s.image)}
-                                                alt={`${s.name} ${s.sub}`}
+                                                alt={`${s.name} electric water gun blaster`}
                                                 draggable="false"
                                                 loading={i === 0 ? "eager" : "lazy"}
+                                                fetchpriority={i === 0 ? "high" : "auto"}
                                                 decoding="async"
                                                 className="relative w-[min(78vw,400px)] -rotate-6 drop-shadow-[0_26px_34px_rgba(0,0,0,0.25)] lg:w-[520px] xl:w-[560px]"
                                             />

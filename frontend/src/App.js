@@ -1,8 +1,7 @@
 import "@/App.css";
-import { Component, useEffect, useRef } from "react";
+import { Component, lazy, Suspense, useEffect, useRef } from "react";
 import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import gsap from "gsap";
-import { useProgress } from "@react-three/drei";
 
 /* ── All routes are EAGER (no route-level code-splitting) ──
    Code-splitting (React.lazy) was reverted after it caused "o is not a function"
@@ -27,9 +26,21 @@ import TrackOrderPage        from "@/pages/TrackOrderPage";
 import ThankYouPage          from "@/pages/ThankYouPage";
 import ReplacePage           from "@/pages/ReplacePage";
 import ProductPage            from "@/pages/ProductPage";
-import ProductShowcase        from "@/pages/ProductShowcase";
-import M416Showcase           from "@/pages/M416Showcase";
-import CrimsonBlasterShowcase from "@/pages/CrimsonBlasterShowcase";
+/* ── Heavy 3-D showcase routes are CODE-SPLIT ──
+   These three routes pull three.js + @react-three/fiber + drei (the bulk of the
+   old 1.6 MB bundle). Lazy-loading them moves all of that into async chunks that
+   download ONLY when a /3d route is opened, so the homepage and every content
+   page stop paying for three.js. The split is deliberately limited to just these
+   routes (not the content/legal pages) to keep the shared-chunk surface tiny —
+   the thing that previously caused the "o is not a function" stale-chunk crash.
+   Safe now: the real root causes were fixed (no hydrateRoot, block-wrapped
+   effects), the deploy keeps old hashed chunks (S3 sync has no --delete, so a
+   visitor on an old build never 404s a chunk), and <Suspense> + the
+   AppErrorBoundary below catch anything that slips through. Do NOT widen this to
+   other routes without keeping that story intact. */
+const ProductShowcase        = lazy(() => import("@/pages/ProductShowcase"));
+const M416Showcase           = lazy(() => import("@/pages/M416Showcase"));
+const CrimsonBlasterShowcase = lazy(() => import("@/pages/CrimsonBlasterShowcase"));
 import RouteSeo              from "@/components/seo/RouteSeo";
 import BuyNowSheet           from "@/components/landing/BuyNowSheet";
 import CookieConsent         from "@/components/CookieConsent";
@@ -90,33 +101,31 @@ function ScrollToTop() {
    document in. No React state, no per-page wrappers — one source of
    truth at the document level. */
 function BodyReveal() {
-    const { progress, active } = useProgress();
     const revealed = useRef(false);
 
-    const reveal = () => {
-        if (revealed.current) return;
-        revealed.current = true;
-        document.body.classList.remove("loading");
-        gsap.to("body", { autoAlpha: 1, duration: 0.45, ease: "power2.inOut" });
-    };
-
-    /* Fallback: never blank the page for more than ~900ms waiting on the
-       heavy .glb downloads. The HTML, fonts and GSAP animations show
-       immediately; the 3-D guns stream in afterwards via Suspense. This is
-       what keeps the site feeling instant on slow / mobile connections. */
     useEffect(() => {
-        const t = setTimeout(reveal, 900);
-        return () => clearTimeout(t);
-        // eslint-disable-next-line react-hooks/exhaustive-deps
+        const reveal = () => {
+            if (revealed.current) {
+                return;
+            }
+            revealed.current = true;
+            document.body.classList.remove("loading");
+            gsap.to("body", { autoAlpha: 1, duration: 0.45, ease: "power2.inOut" });
+        };
+        // Production HTML is already revealed at build time by react-snap (no
+        // `loading` class in the served markup), so here this just confirms it.
+        // It still matters for local dev and any non-prerendered route served the
+        // SPA shell: reveal on the first client frame. The 3-D loader this used to
+        // wait on (drei useProgress) is gone — three.js no longer loads on the
+        // critical path — so there is nothing left to block the reveal. The short
+        // timeout is the safety net so the page can never get stuck hidden.
+        const raf = requestAnimationFrame(() => requestAnimationFrame(reveal));
+        const t = setTimeout(reveal, 600);
+        return () => {
+            cancelAnimationFrame(raf);
+            clearTimeout(t);
+        };
     }, []);
-
-    /* Reveal sooner if the models actually finish first. */
-    useEffect(() => {
-        if (progress >= 100 && !active) {
-            requestAnimationFrame(() => requestAnimationFrame(reveal));
-        }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [progress, active]);
 
     return null;
 }
@@ -194,6 +203,7 @@ function App() {
             <Toast />
             <WhatsAppButton />
             <RoutedErrorBoundary>
+            <Suspense fallback={<div style={{ minHeight: "100vh", background: "#050505" }} aria-hidden="true" />}>
             <Routes>
                 {/* Home — full D2C landing page */}
                 <Route path="/"               element={<LandingPage />} />
@@ -227,6 +237,7 @@ function App() {
                 <Route path="/404"            element={<NotFoundPage />} />
                 <Route path="*"              element={<NotFoundPage />} />
             </Routes>
+            </Suspense>
             </RoutedErrorBoundary>
         </BrowserRouter>
         </CartProvider>
