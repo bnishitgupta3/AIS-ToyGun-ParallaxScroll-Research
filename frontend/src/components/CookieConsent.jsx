@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { getConsent, setConsent } from "@/lib/consent";
 import { initAnalytics, initClarity, trackPageview } from "@/lib/analytics";
+import { isPrerendering } from "@/lib/isPrerendering";
 
 /* Minimal cookie notice, the way most D2C storefronts do it: analytics load for
    every visitor and the notice is a one-tap acknowledgement shown once, with no
@@ -13,15 +14,68 @@ export default function CookieConsent() {
     const [visible, setVisible] = useState(false);
 
     useEffect(() => {
+        let cleanup;
         // Load analytics on every visit, unless the visitor turned them off via
-        // the "Manage cookies" control on the Privacy page (persisted "denied").
-        if (getConsent() !== "denied") {
-            initAnalytics();
-            initClarity();
-            trackPageview(window.location.pathname + window.location.search);
+        // the "Manage cookies" control (persisted "denied"). Skip during
+        // react-snap prerender so the tags are never baked into the static HTML.
+        if (getConsent() !== "denied" && !isPrerendering()) {
+            const start = () => {
+                initAnalytics();
+                initClarity();
+                trackPageview(window.location.pathname + window.location.search);
+            };
+            // GA4 + Clarity are heavy on a throttled phone CPU and were delaying
+            // the hero LCP. On MOBILE, defer both until the first user
+            // interaction OR a 4s safety timeout, whichever comes first: the
+            // visit is still counted when they init, only a pre-timeout bounce
+            // is missed. DESKTOP has the headroom, so it loads immediately.
+            const isMobile =
+                typeof window.matchMedia === "function" &&
+                window.matchMedia("(max-width: 767px)").matches;
+            if (isMobile) {
+                let done = false;
+                let idleHandle;
+                let timer;
+                const events = ["pointerdown", "touchstart", "keydown", "scroll", "wheel"];
+                const opts = { passive: true, capture: true };
+                const run = () => {
+                    if (done) {
+                        return;
+                    }
+                    done = true;
+                    if (cleanup) {
+                        cleanup();
+                    }
+                    start();
+                };
+                // Load on first interaction, or when the browser goes idle after
+                // the critical render (so analytics never land on top of the hero
+                // LCP). requestIdleCallback's timeout still fires it on a busy
+                // page; older browsers fall back to a plain timeout.
+                if (typeof window.requestIdleCallback === "function") {
+                    idleHandle = window.requestIdleCallback(run, { timeout: 5000 });
+                } else {
+                    timer = setTimeout(run, 3500);
+                }
+                events.forEach((e) => window.addEventListener(e, run, opts));
+                cleanup = () => {
+                    if (idleHandle && typeof window.cancelIdleCallback === "function") {
+                        window.cancelIdleCallback(idleHandle);
+                    }
+                    if (timer) {
+                        clearTimeout(timer);
+                    }
+                    events.forEach((e) => window.removeEventListener(e, run, opts));
+                };
+            } else {
+                start();
+            }
         }
         // Show the notice once to a new visitor; never again after acknowledged.
-        if (getConsent() == null) setVisible(true);
+        if (getConsent() == null) {
+            setVisible(true);
+        }
+        return cleanup;
     }, []);
 
     const dismiss = () => {

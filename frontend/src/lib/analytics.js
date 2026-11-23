@@ -4,10 +4,15 @@
 
    GA4 has a live "Realtime" report — that is your real-time dashboard. */
 
+import { isPrerendering } from "./isPrerendering";
+
 const GA_ID = process.env.REACT_APP_GA_MEASUREMENT_ID;
 
 export function initAnalytics() {
-    if (!GA_ID || typeof window === "undefined" || window.__gaInitialized) return;
+    // isPrerendering guard: never load GA during react-snap prerender, so the
+    // gtag <script> is NOT serialized into the static HTML (where it would load
+    // before React and block the hero LCP on mobile). Real browsers run it.
+    if (!GA_ID || typeof window === "undefined" || window.__gaInitialized || isPrerendering()) return;
     window.__gaInitialized = true;
 
     const s = document.createElement("script");
@@ -66,7 +71,8 @@ export function enableAnalytics() {
 const CLARITY_ID = process.env.REACT_APP_CLARITY_ID;
 
 export function initClarity() {
-    if (!CLARITY_ID || typeof window === "undefined" || window.__clarityInitialized) return;
+    // Same prerender guard as GA: keep the Clarity tag out of the static HTML.
+    if (!CLARITY_ID || typeof window === "undefined" || window.__clarityInitialized || isPrerendering()) return;
     window.__clarityInitialized = true;
 
     // Standard Clarity bootstrap: defines the window.clarity() queue stub, then
